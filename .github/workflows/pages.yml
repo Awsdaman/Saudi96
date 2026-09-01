@@ -35,7 +35,11 @@ jobs:
       - run: npm run lint
       - run: npm run build
 
+      # enablement يُفعّل Pages بنفسه في أول تشغيل إن سمحت الخطة،
+      # فلا يبقى إلا اختيار المصدر مرّة واحدة في إعدادات المستودع
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -27,9 +27,11 @@ Then double-click **`dist/index.html`**.
 `.github/workflows/pages.yml` builds and publishes on every push to `main`. It runs
 `validate` and `lint` first, so a broken content edit fails the deploy instead of shipping.
 
-The switch is in the repository settings, not in the code — **Settings → Pages → Source:
-GitHub Actions**. The repository must also be public, *or* on a plan that allows Pages on
-private repositories; Pages is disabled on a private repo on the free plan.
+The workflow passes `enablement: true`, so the first run turns Pages on by itself where the
+plan allows it. What it cannot do is change who may see the repository: **Pages is disabled
+on a private repository on the free plan**, so the repo must be public, or on a plan that
+allows Pages on private repos. If the source is not already GitHub Actions, set it once at
+**Settings → Pages → Source: GitHub Actions**.
 
 Once enabled the game is at `https://<user>.github.io/Saudi96/` and needs no further setup:
 
