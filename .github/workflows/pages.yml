@@ -1,0 +1,52 @@
+name: نشر اللعبة على GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# GITHUB_TOKEN يحتاج صلاحية الكتابة على Pages، والـid-token للنشر الموثّق
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# نشرٌ واحد في كل وقت؛ ولا يُلغى الجاري كي لا يبقى الموقع نصفَ منشور
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # ci لا install: يلتزم بـpackage-lock.json حرفياً
+      - run: npm ci
+
+      # فحص المحتوى قبل البناء — روابط مكسورة وصور مفقودة ومجالات أرقام معكوسة
+      - run: npm run validate
+      - run: npm run lint
+      - run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

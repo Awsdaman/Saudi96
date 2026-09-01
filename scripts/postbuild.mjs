@@ -1,4 +1,9 @@
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, rmSync, writeFileSync } from 'node:fs'
+
+// أصول الشعارات قبل القصّ تقع تحت public/ فتُنسخ إلى dist/ مع كل بناء،
+// ولا شيء يقرؤها وقت التشغيل — ٢٥ ميغابايت تُحمَل مع كل نشر وكل نسخة
+// تُنقل إلى جهاز آخر. تبقى في المستودع لأن سكربتات القصّ تقرؤها منه.
+rmSync('dist/assets/logos-source', { recursive: true, force: true })
 
 // وحدات ES لا تعمل عبر file://، والحزمة صارت IIFE — فتُزال سمات الوحدات.
 // مهم: وحدات ES مؤجَّلة تلقائياً، أما السكربت العادي فلا؛ وبما أن الوسم في <head>

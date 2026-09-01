@@ -22,6 +22,25 @@ npm run build
 
 Then double-click **`dist/index.html`**.
 
+### On the web — GitHub Pages
+
+`.github/workflows/pages.yml` builds and publishes on every push to `main`. It runs
+`validate` and `lint` first, so a broken content edit fails the deploy instead of shipping.
+
+The switch is in the repository settings, not in the code — **Settings → Pages → Source:
+GitHub Actions**. The repository must also be public, *or* on a plan that allows Pages on
+private repositories; Pages is disabled on a private repo on the free plan.
+
+Once enabled the game is at `https://<user>.github.io/Saudi96/` and needs no further setup:
+
+- `base: './'` makes every URL relative, so the project subpath (`/Saudi96/`) just works.
+- Screens are hash routes (`#presenter`), so no 404 fallback or rewrite rule is needed.
+- Both windows share one https origin, so the presenter handshake works as it does on disk.
+
+The deployed site is about 32 MB — `scripts/postbuild.mjs` drops
+`assets/logos-source` (the 25 MB of pre-crop originals) from `dist/`, since nothing reads it
+at runtime. The originals stay in the repository for the cropping scripts.
+
 ### On another machine
 
 The repo does not carry `dist/` — it is rebuilt from source. On the other machine, with

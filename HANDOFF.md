@@ -6,6 +6,12 @@ the README is the reference.
 **Repo:** https://github.com/Awsdaman/Saudi96 (private) · `main` · working dir
 `C:\Users\Aous\Games\SaudiKnowledge`
 
+**Web build:** `.github/workflows/pages.yml` deploys `main` to GitHub Pages. It is committed
+and verified against a subpath build, but **Pages is not enabled yet** — that is a repository
+setting (Settings -> Pages -> Source: GitHub Actions), and the repo must be public or on a
+plan that allows Pages on private repos. Until then the game runs from `npm run dev` or
+`dist/index.html` only.
+
 ---
 
 ## What this is
