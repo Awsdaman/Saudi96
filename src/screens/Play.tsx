@@ -63,7 +63,7 @@ export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Prop
         streak={state.streak}
         timeLeft={state.timeLeft}
         totalTime={state.totalTime}
-        roundTitle={meta?.title ?? 'لعبتي'}
+        roundTitle={state.title}
         paused={state.paused}
       />
 

@@ -51,10 +51,9 @@ function Game() {
   // ── بثّ الحالة إلى شاشة المقدّم ──
   useEffect(() => {
     if (state.phase === 'playing' && question) {
-      const meta = ROUNDS.find((r) => r.id === state.roundId)
       sendToPresenter({
         kind: 'mcq',
-        roundTitle: meta?.title ?? 'لعبتي',
+        roundTitle: state.title,
         index: state.index,
         total: state.questions.length,
         prompt: question.prompt,
@@ -71,7 +70,7 @@ function Game() {
     } else if (view === 'home' && state.phase === 'home') {
       sendToPresenter({ kind: 'idle' })
     }
-  }, [state.phase, state.index, state.selected, state.score, question, state.roundId, state.questions.length, state.streak, state.paused, view])
+  }, [state.phase, state.index, state.selected, state.score, question, state.roundId, state.title, state.questions.length, state.streak, state.paused, view])
 
   function beginRound(id: RoundId) {
     setIntroRound(id)
@@ -88,14 +87,18 @@ function Game() {
     }
     const meta = ROUNDS.find((r) => r.id === id)!
     setView('home')
-    start(id, poolFor(id), count, meta.seconds)
+    // بدء جولةٍ عادية يُبطل «لعبتي» السابقة، وإلا أعاد زرّ «جولة أخرى»
+    // في شاشة النتيجة تلك الجولةَ المخصّصة بدل الجولة التي انتهت للتوّ
+    lastCustom.current = null
+    start(id, meta.title, poolFor(id), count, meta.seconds)
   }
 
   function beginCustom(pool: Question[], count: number) {
     lastCustom.current = { pool, count }
     setIsRecord(false)
     setView('home')
-    start('trivia', pool, count, CUSTOM_SECONDS)
+    // معرّف الأسئلة المعرفية وعاءٌ لا أكثر — والعنوان يُمرَّر صريحاً
+    start('trivia', 'لعبتي', pool, count, CUSTOM_SECONDS)
   }
 
   // الانتقال إلى النتائج يمرّ دائماً عبر next، فهنا تُحفظ النتيجة —
@@ -175,7 +178,7 @@ function Game() {
         onReplay={() => {
           const c = lastCustom.current
           if (c) beginCustom(c.pool, c.count)
-          else start(state.roundId!, poolFor(state.roundId!), state.questions.length,
+          else start(state.roundId!, state.title, poolFor(state.roundId!), state.questions.length,
             ROUNDS.find((r) => r.id === state.roundId)!.seconds)
         }}
         onHome={goHome}

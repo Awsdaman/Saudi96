@@ -15,6 +15,12 @@ export interface AnswerRecord {
 export interface GameState {
   phase: 'home' | 'playing' | 'results'
   roundId: RoundId | null
+  /**
+   * عنوان الجولة كما يُعرض. لا يُشتقّ من roundId: جولة «لعبتي» تستعير
+   * معرّف الأسئلة المعرفية وعاءً لها، فاشتقاقُ العنوان منه يسمّيها
+   * «أسئلة معرفية» على الشاشة وعلى شاشة المقدّم معاً.
+   */
+  title: string
   questions: Question[]
   index: number
   selected: number | null
@@ -31,6 +37,7 @@ export interface GameState {
 const initial: GameState = {
   phase: 'home',
   roundId: null,
+  title: '',
   questions: [],
   index: 0,
   selected: null,
@@ -44,7 +51,7 @@ const initial: GameState = {
 }
 
 type Action =
-  | { type: 'start'; roundId: RoundId; pool: readonly Question[]; count: number; seconds: number }
+  | { type: 'start'; roundId: RoundId; title: string; pool: readonly Question[]; count: number; seconds: number }
   | { type: 'tick'; delta: number }
   | { type: 'answer'; choice: number }
   | { type: 'next' }
@@ -59,6 +66,7 @@ function reducer(state: GameState, action: Action): GameState {
         ...initial,
         phase: questions.length ? 'playing' : 'results',
         roundId: action.roundId,
+        title: action.title,
         questions,
         timeLeft: action.seconds,
         totalTime: action.seconds,
@@ -139,8 +147,8 @@ export function useGame() {
   }, [running])
 
   const start = useCallback(
-    (roundId: RoundId, pool: readonly Question[], count: number, seconds: number) =>
-      dispatch({ type: 'start', roundId, pool, count, seconds }),
+    (roundId: RoundId, title: string, pool: readonly Question[], count: number, seconds: number) =>
+      dispatch({ type: 'start', roundId, title, pool, count, seconds }),
     [],
   )
   const answer = useCallback((choice: number) => dispatch({ type: 'answer', choice }), [])
