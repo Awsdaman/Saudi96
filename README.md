@@ -3,6 +3,9 @@
 An Arabic-only, RTL Saudi knowledge quiz game that runs locally on your PC.
 Built from `saudi-game-research-pack.md`.
 
+**Picking this up in a fresh session? Start with [`HANDOFF.md`](HANDOFF.md)** — current
+state, open items, and the traps that already cost time. This file is the reference behind it.
+
 ## Running it
 
 ```bash
