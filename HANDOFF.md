@@ -4,7 +4,7 @@ Read this first, then `README.md` for depth. This file is orientation and open i
 the README is the reference.
 
 **Repo:** https://github.com/Awsdaman/Saudi96 (private) · `main` · working dir
-`C:\Users\Aous\Games\SaudiKnowledge`
+the repository root
 
 **Web build:** `.github/workflows/pages.yml` deploys `main` to GitHub Pages. It is committed
 and verified against a subpath build, but **Pages is not enabled yet** — that is a repository
@@ -24,7 +24,7 @@ presenter window so the host can see the answer while the players cannot.
 Not published, no backend, no network at runtime. All content is JSON on disk, all images
 are local files, scores live in `localStorage`.
 
-Built from a research pack at `C:\Users\Aous\Downloads\saudi-game-research-pack.md`.
+Built from a research pack (`saudi-game-research-pack.md`, kept outside the repo).
 
 ---
 

@@ -11,6 +11,7 @@
     "fetch": "node scripts/fetch-all.mjs",
     "validate": "node scripts/validate-content.mjs",
     "review:people": "node scripts/people-review.mjs",
+    "fetch-credits": "node scripts/fetch-credits.mjs",
     "export-crops": "node scripts/export-for-crop.mjs",
     "import-crops": "node scripts/import-crops.mjs"
   },

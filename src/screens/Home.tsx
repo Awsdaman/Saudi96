@@ -7,6 +7,7 @@ import './Home.css'
 interface Props {
   onPick: (id: RoundId) => void
   onCustom: () => void
+  onCredits: () => void
 }
 
 interface Tile {
@@ -17,7 +18,7 @@ interface Tile {
   best: number
 }
 
-export function Home({ onPick, onCustom }: Props) {
+export function Home({ onPick, onCustom, onCredits }: Props) {
   const tiles: Tile[] = ROUNDS.map((r) => ({
     key: r.id,
     title: r.title,
@@ -79,6 +80,12 @@ export function Home({ onPick, onCustom }: Props) {
       </header>
 
       <div className="tile-grid">{tiles.map(renderTile)}</div>
+
+      {/* الصور من ويكيميديا وأكثرها تشترط نسبها إلى أصحابها،
+          فيلزم أن يكون إلى القائمة سبيلٌ من حيث تُعرض */}
+      <button className="home-credits stage-hide" onClick={onCredits}>
+        مصادر الصور
+      </button>
     </div>
   )
 }

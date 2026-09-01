@@ -113,3 +113,17 @@
   .tile-grid { grid-template-columns: repeat(2, 1fr); max-width: 460px; }
   .tile { max-height: none; }
 }
+
+/* رابطٌ هادئ: لا ينافس المربّعات، ولا يختفي عمّن يبحث عنه */
+.home-credits {
+  color: var(--muted);
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.home-credits:hover { color: var(--text); }
+
+.home-credits:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }

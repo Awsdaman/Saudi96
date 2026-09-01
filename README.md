@@ -314,6 +314,38 @@ build:
 returns mostly `429`, stop and try again later rather than retrying immediately — the
 remaining files are waiting on their side, not yours.
 
+## Image credits
+
+Every image comes from Wikimedia Commons or a Wikipedia, and each keeps its original
+licence. `src/data/credits.json` records the licence, author and file page for all 135, and
+the **مصادر الصور** screen (linked from the home screen) renders them grouped by obligation.
+
+```bash
+npm run fetch-credits   # re-reads licences from the Wikimedia API
+```
+
+The fetcher asks for **50 files per request**, not one per file. One request per file
+exhausts the API quota and comes back `429`, which looks identical to "the file has no
+licence" — the first run of this script reported 129 of 135 as unlicensed for exactly that
+reason. Batched, the whole set takes five requests.
+
+What the licences actually say:
+
+| | Count | Obligation |
+|---|---|---|
+| CC BY / CC BY-SA | 64 | credit the author and name the licence |
+| Public domain / CC0 | 43 | none |
+| Other free licences | 2 | varies |
+| **Non-free (fair use)** | **26** | **see below** |
+
+**The 26 non-free ones need a decision before this is published.** They are ministry and
+authority logos uploaded to Arabic Wikipedia under a fair-use rationale written for an
+encyclopaedia article. Fair use does not travel with the file: a rationale that covers an
+encyclopaedia entry about a ministry does not automatically cover a game hosted elsewhere.
+Using a logo to identify the body it belongs to is a weak, defensible use, and this is a
+non-commercial educational game — but it is not the same permission as CC-BY, and the
+credits screen says so rather than implying a licence that does not exist.
+
 ## Content
 
 `src/data/` holds all content as plain JSON:

@@ -11,6 +11,7 @@ import { saveBest } from './game/storage'
 import { useGame } from './game/useGame'
 import { useSurface } from './game/useSurface'
 import type { Entity, Question, RoundId } from './game/types'
+import { Credits } from './screens/Credits'
 import { CustomBuilder } from './screens/CustomBuilder'
 import { Home } from './screens/Home'
 import { LogoResults } from './screens/LogoResults'
@@ -23,7 +24,7 @@ import { RoundIntro } from './screens/RoundIntro'
 /** ثوانٍ افتراضية للجولة المخصّصة */
 const CUSTOM_SECONDS = 22
 
-type View = 'home' | 'intro' | 'custom' | 'logos' | 'logoResults'
+type View = 'home' | 'intro' | 'custom' | 'logos' | 'logoResults' | 'credits'
 
 interface LogoOutcome { known: number; total: number; missed: Entity[] }
 
@@ -210,5 +211,15 @@ function Game() {
     return <CustomBuilder onStart={beginCustom} onBack={goHome} />
   }
 
-  return <Home onPick={beginRound} onCustom={() => setView('custom')} />
+  if (view === 'credits') {
+    return <Credits onBack={goHome} />
+  }
+
+  return (
+    <Home
+      onPick={beginRound}
+      onCustom={() => setView('custom')}
+      onCredits={() => setView('credits')}
+    />
+  )
 }
