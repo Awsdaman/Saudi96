@@ -53,6 +53,42 @@ Three build settings exist specifically so `file://` works, and all three are re
   in `<head>` — without `defer` the bundle runs before `<div id="root">` exists and the page
   stays blank. The script fails the build if `defer` is ever missing.
 
+## Two surfaces — device and stage
+
+The game renders in one of two visual surfaces, switched by a single attribute on the root
+element (`useSurface.ts`):
+
+| | `data-surface="night"` | `data-surface="stage"` |
+|---|---|---|
+| When | nobody is watching but you | the presenter window is connected |
+| Ground | dark green, near-black | warm off-white `#F5F0E6` |
+| Sizing | `px` / `clamp()` | the stage unit `--u` |
+| Host controls | on screen | hidden (`.stage-hide`) |
+
+**Why light on the projector.** A projector cannot emit black — it can only *withhold*
+light, and the screen's own reflectance fills the gap. A dark UI therefore spends the lamp
+on nothing and washes out the moment anyone turns a lamp on, which in a majlis they will.
+The light surface puts the lamp behind the content instead.
+
+**The stage unit.** `--u: min(1vw, 1.78vh)` — derived from whichever axis is scarcer, so
+the same layout holds on a 16:9 projector and a 4:3 one without a second set of rules.
+Everything on the stage surface is sized in `--u`, so nothing is tuned to one screen.
+
+**Nothing on the stage surface may scroll.** Nobody can reach the wall to swipe it. `.play`
+is `height: 100dvh; overflow: hidden`, and the image is the element that absorbs whatever
+height is left (`flex: 1 1 0`) — a fixed `vh` height or an `aspect-ratio` on the image makes
+the column overflow and silently clips a row of answers off the bottom of the wall.
+
+The no-scroll lock belongs to `.play` **only**. Locking it at the root instead strands the
+«ابدأ» button below the fold on the pre-round screen, and the round can no longer be started
+at all once the presenter connects.
+
+**Portrait photos get two columns.** A portrait in a full-width frame leaves four fifths of
+it empty and holds the face to roughly a third of the screen height. On the stage surface
+`.play:has(.reveal-portrait)` becomes a grid — image down one side at full height, prompt
+and answers stacked down the other — which spends the wasted width on the face instead
+(measured: 255px tall → 561px at 1280×720, 633px at 1024×768).
+
 ## The seven tiles
 
 The home screen is the title, then seven square tiles in a 4+3 grid (3 columns below 980px,
@@ -101,6 +137,21 @@ Two implementation details that are load-bearing:
 
 The presenter view is the same app at `#presenter` (`isPresenterWindow()` in `App.tsx`), so
 it needs no separate build entry and works from `file://` too.
+
+**It is also the host's console, not just a monitor.** The transport was already
+bidirectional, so the presenter window sends commands back (`sendCommand` / `listenForCommands`
+in `presenter.ts`) and the host drives the round from the laptop without reaching for the
+projected window:
+
+| Key | Button | Does |
+|---|---|---|
+| `Space` | كشف الإجابة | reveals the answer to the room |
+| `Enter` · `←` · `→` | التالي | next question |
+| — | تخطّي | reveal and advance in one go |
+| `P` | إيقاف | pauses the timer — for the argument that always breaks out |
+
+Pause is real game state (`paused` in `useGame`), so the countdown stops rather than the
+screen merely freezing.
 
 ### لعبتي — the custom round
 

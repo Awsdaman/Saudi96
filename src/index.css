@@ -70,32 +70,87 @@
   font-display: swap;
 }
 
-:root {
+/* ── السطحان ─────────────────────────────────────────────────
+   سطحان لا نمطان. الفرق بينهما ليس ذوقاً بل مسافة نظر:
+
+   «ليل»  — هاتف أو حاسب على مسافة ذراع. الأرضية داكنة والمعلومة كثيفة.
+   «ضوء»  — جهاز عرض في غرفة مضاءة على مسافة أمتار. الأرضية فاتحة،
+            لأن العارض لا يبعث سواداً وإنما يمتنع عن بعث الضوء —
+            فالأسود يُعرض بلون الجدار خلفه وتضيع معه التباينات كلها.
+            الأرضية الفاتحة تستثمر المصباح بدل أن تصارعه.
+
+   والتبديل استنتاج لا تفضيل: اتّصال شاشة المقدّم يعني أن هذه النافذة
+   صارت معروضة على الجدار، فلا حاجة إلى زرّ في الواجهة. (useSurface.ts) */
+
+:root,
+[data-surface='night'] {
   --green:        #006C35;
-  --green-bright: #00A651;
+  --green-bright: #2FD07B;
   --green-dim:    #0a3d22;
-  --gold:         #C9A227;
+  --gold:         #E3B94A;
   --sand:         #E8DCC4;
 
   --bg:      #0B1410;
-  --surface: #132019;
-  --raised:  #1B2C22;
+  --surface: #152220;
+  --raised:  #1E2F27;
   --line:    #2A4034;
 
   --text:   #F2F5F0;
-  --muted:  #8FA398;
+  --muted:  #A3B7AB;
+  /* بديل opacity:.4 — الشفافية كانت تهبط بالتباين إلى 2.61:1 */
+  --dim:    #7E9187;
 
-  --correct: #00A651;
-  --wrong:   #C0392B;
+  --correct:      #2FD07B;
+  --correct-fill: rgba(47, 208, 123, 0.16);
+  --wrong:        #FF6B5E;
+  --wrong-fill:   rgba(255, 107, 94, 0.14);
+
+  --sadu: #2FD07B;
 
   --radius: 16px;
   --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
 
+  --u: 1vw;
+
+  color-scheme: dark;
+}
+
+[data-surface='stage'] {
+  --green:        #006C35;
+  --green-bright: #00512A;
+  --green-dim:    #CDE3D6;
+  --gold:         #8A6410;
+  --sand:         #E8DCC4;
+
+  --bg:      #F5F0E6;
+  --surface: #FFFFFF;
+  --raised:  #FFFFFF;
+  --line:    #DAD2C2;
+
+  --text:   #111C16;
+  --muted:  #41544A;
+  --dim:    #7A8A81;
+
+  --correct:      #00753A;
+  --correct-fill: #DFF0E4;
+  --wrong:        #9E2B25;
+  --wrong-fill:   #F7E2E0;
+
+  --sadu: #9E2B25;
+
+  --shadow: 0 8px 32px rgba(17, 28, 22, 0.10);
+
+  /* الوحدة من المحور الأضيق: يثبت التخطيط بين عارض ٤:٣ وآخر ١٦:٩.
+     الاعتماد على vw وحده ينكسر على الأول، وعلى vh وحده ينكسر على الثاني. */
+  --u: min(1vw, 1.78vh);
+
+  color-scheme: light;
+}
+
+:root {
   --font: 'Thmanyah Sans', 'Segoe UI', 'Tahoma', sans-serif;
   /* للعناوين الكبيرة وأرقام النتيجة */
   --font-display: 'Thmanyah Serif Display', 'Thmanyah Sans', 'Segoe UI', serif;
-
-  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -104,16 +159,26 @@ html, body, #root { height: 100%; }
 
 body {
   margin: 0;
-  background:
-    radial-gradient(1100px 700px at 78% -12%, rgba(0, 166, 81, 0.14), transparent 62%),
-    radial-gradient(760px 520px at 12% 108%, rgba(201, 162, 39, 0.09), transparent 60%),
-    var(--bg);
+  background: var(--bg);
   color: var(--text);
   font-family: var(--font);
   /* الأرقام الغربية (0-9) هي المعتاد في واجهات السعودية */
   font-variant-numeric: lining-nums;
   -webkit-font-smoothing: antialiased;
 }
+
+/* الهالات الملوّنة للّيل وحده — على الأرضية الفاتحة تُوسّخ الصورة المعروضة */
+:root:not([data-surface='stage']) body {
+  background:
+    radial-gradient(1100px 700px at 78% -12%, rgba(47, 208, 123, 0.12), transparent 62%),
+    radial-gradient(760px 520px at 12% 108%, rgba(227, 185, 74, 0.08), transparent 60%),
+    var(--bg);
+}
+
+/* منعُ التمرير يخصّ شاشة اللعب وحدها — انظر .play في Play.css.
+   قفلُ الجذر كلّه كان يبتلع شاشة ما قبل الجولة: صفحةٌ أطول من
+   الشاشة بلا تمرير، فيسقط زرّ «ابدأ» تحت الحافة ولا سبيل إليه،
+   فيعجز المقدّم عن بدء الجولة أصلاً بمجرّد فتحه شاشته. */
 
 button {
   font-family: inherit;
@@ -134,6 +199,32 @@ h1, h2, h3, p { margin: 0; }
   unicode-bidi: isolate;
   display: inline-block;
 }
+
+/* ── شريط السدو ──
+   نسيج نجدي من تدرّجين متكرّرين، بلا صورة ولا أصل خارجي.
+   يظهر في ثلاثة مواضع فقط: تحت عنوان الجولة على المسرح، ومساراً
+   لتقدّم الجولة، وفاصلاً في شاشة النتائج. الزخرفة التي تُستعمل في
+   كل مكان تكفّ عن كونها زخرفة.
+   وهو يفعل ما عجز عنه الشريط ذو الخمسة بكسل: النسيج يُقرأ من آخر
+   الغرفة بوصفه ملمساً، حتى حين لا يُقرأ مقدار امتلائه. */
+.sadu {
+  height: 10px;
+  border-radius: 999px;
+  background:
+    repeating-linear-gradient(135deg, var(--sadu) 0 5px, transparent 5px 11px),
+    repeating-linear-gradient(45deg,  var(--sadu) 0 5px, transparent 5px 11px);
+  opacity: 0.55;
+}
+
+[data-surface='stage'] .sadu {
+  height: calc(var(--u) * 0.9);
+  background:
+    repeating-linear-gradient(135deg, var(--sadu) 0 calc(var(--u) * 0.7), transparent calc(var(--u) * 0.7) calc(var(--u) * 1.5)),
+    repeating-linear-gradient(45deg,  var(--sadu) 0 calc(var(--u) * 0.7), transparent calc(var(--u) * 0.7) calc(var(--u) * 1.5));
+}
+
+/* ما يخصّ اللاعب الفرد لا الغرفة — يُخفى عن الشاشة المعروضة */
+[data-surface='stage'] .stage-hide { display: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }

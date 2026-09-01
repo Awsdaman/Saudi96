@@ -24,6 +24,8 @@ export interface GameState {
   timeLeft: number
   totalTime: number
   records: AnswerRecord[]
+  /** يوقفه المقدّم من شاشته حين يتحدّث أحد */
+  paused: boolean
 }
 
 const initial: GameState = {
@@ -38,6 +40,7 @@ const initial: GameState = {
   timeLeft: 0,
   totalTime: 0,
   records: [],
+  paused: false,
 }
 
 type Action =
@@ -45,6 +48,7 @@ type Action =
   | { type: 'tick'; delta: number }
   | { type: 'answer'; choice: number }
   | { type: 'next' }
+  | { type: 'pause' }
   | { type: 'home' }
 
 function reducer(state: GameState, action: Action): GameState {
@@ -63,7 +67,7 @@ function reducer(state: GameState, action: Action): GameState {
 
     case 'tick': {
       // المؤقّت يعمل فقط أثناء انتظار الإجابة
-      if (state.phase !== 'playing' || state.selected !== null) return state
+      if (state.phase !== 'playing' || state.selected !== null || state.paused) return state
       const timeLeft = state.timeLeft - action.delta
       if (timeLeft > 0) return { ...state, timeLeft }
       // نفاد الوقت = إجابة خاطئة تكسر السلسلة
@@ -100,8 +104,12 @@ function reducer(state: GameState, action: Action): GameState {
     case 'next': {
       const index = state.index + 1
       if (index >= state.questions.length) return { ...state, phase: 'results' }
-      return { ...state, index, selected: null, timeLeft: state.totalTime }
+      return { ...state, index, selected: null, timeLeft: state.totalTime, paused: false }
     }
+
+    case 'pause':
+      if (state.phase !== 'playing') return state
+      return { ...state, paused: !state.paused }
 
     case 'home':
       return initial
@@ -115,7 +123,7 @@ export function useGame() {
   const [state, dispatch] = useReducer(reducer, initial)
 
   // مؤقّت واحد يعمل طوال الجولة؛ الـ reducer يتجاهل النبضات وقت التوقّف
-  const running = state.phase === 'playing' && state.selected === null
+  const running = state.phase === 'playing' && state.selected === null && !state.paused
   const lastRef = useRef(0)
 
   useEffect(() => {
@@ -137,10 +145,11 @@ export function useGame() {
   )
   const answer = useCallback((choice: number) => dispatch({ type: 'answer', choice }), [])
   const next = useCallback(() => dispatch({ type: 'next' }), [])
+  const pause = useCallback(() => dispatch({ type: 'pause' }), [])
   const home = useCallback(() => dispatch({ type: 'home' }), [])
 
   const question = state.questions[state.index] as Question | undefined
   const reveal = revealProgress(state.timeLeft, state.totalTime)
 
-  return { state, question, reveal, start, answer, next, home }
+  return { state, question, reveal, start, answer, next, pause, home }
 }

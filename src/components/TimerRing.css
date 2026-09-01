@@ -1,0 +1,35 @@
+.ring {
+  flex: none;
+  width: 34px;
+  height: 34px;
+}
+
+[data-surface='stage'] .ring {
+  width: calc(var(--u) * 4.2);
+  height: calc(var(--u) * 4.2);
+}
+
+.ring circle {
+  fill: none;
+  stroke-width: 3.5;
+}
+
+.ring-track { stroke: var(--line); }
+
+.ring-value {
+  stroke: var(--green-bright);
+  stroke-linecap: round;
+  /* يبدأ من الأعلى بدل يمين الدائرة */
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  transition: stroke-dasharray 120ms linear, stroke 300ms;
+}
+
+.ring.is-low .ring-value {
+  stroke: var(--wrong);
+  animation: ring-pulse 1s ease-in-out infinite;
+}
+
+@keyframes ring-pulse {
+  50% { opacity: 0.45; }
+}

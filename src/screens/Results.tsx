@@ -30,6 +30,9 @@ export function Results({ state, isRecord, onReplay, onHome }: Props) {
         {isRecord && <p className="results-record">رقم قياسي جديد</p>}
       </header>
 
+      {/* ثالث مواضع السدو وآخرها */}
+      <div className="sadu results-rule" />
+
       <div className="stats">
         <div className="stat">
           <span className="stat-value">

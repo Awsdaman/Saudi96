@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react'
 import { ROUNDS, poolFor } from './game/content'
 import {
   isPresenterWindow,
+  listenForCommands,
   sendToPresenter,
   watchPresenterHandshake,
   type PresenterState,
 } from './game/presenter'
 import { saveBest } from './game/storage'
 import { useGame } from './game/useGame'
+import { useSurface } from './game/useSurface'
 import type { Entity, Question, RoundId } from './game/types'
 import { CustomBuilder } from './screens/CustomBuilder'
 import { Home } from './screens/Home'
@@ -32,13 +34,16 @@ export default function App() {
 }
 
 function Game() {
-  const { state, question, reveal, start, answer, next, home } = useGame()
+  const { state, question, reveal, start, answer, next, pause, home } = useGame()
   const [view, setView] = useState<View>('home')
   const [introRound, setIntroRound] = useState<RoundId | null>(null)
   const [logoCount, setLogoCount] = useState(12)
   const [isRecord, setIsRecord] = useState(false)
   const [logoOutcome, setLogoOutcome] = useState<LogoOutcome | null>(null)
   const lastCustom = useRef<{ pool: Question[]; count: number } | null>(null)
+
+  // اتّصال شاشة المقدّم يعني أن هذه النافذة صارت معروضة على الجدار
+  useSurface()
 
   useEffect(() => watchPresenterHandshake(), [])
 
@@ -60,11 +65,12 @@ function Game() {
         revealed: state.selected !== null,
         score: state.score,
         streak: state.streak,
+        paused: state.paused,
       })
     } else if (view === 'home' && state.phase === 'home') {
       sendToPresenter({ kind: 'idle' })
     }
-  }, [state.phase, state.index, state.selected, state.score, question, state.roundId, state.questions.length, state.streak, view])
+  }, [state.phase, state.index, state.selected, state.score, question, state.roundId, state.questions.length, state.streak, state.paused, view])
 
   function beginRound(id: RoundId) {
     setIntroRound(id)
@@ -98,6 +104,30 @@ function Game() {
     if (isLast && state.roundId) setIsRecord(saveBest(state.roundId, state.score))
     next()
   }
+
+  // أوامر شاشة المقدّم تُنفَّذ هنا لأن الحالة كلها في هذه النافذة.
+  // المستمع يُركّب مرة واحدة ويقرأ من ref، وإلا التقط إغلاقاً قديماً
+  // فنفّذ الأمر على سؤال سابق.
+  const cmd = useRef({ handleNext, answer, pause, done: state.selected !== null })
+  useEffect(() => {
+    cmd.current = { handleNext, answer, pause, done: state.selected !== null }
+  })
+
+  useEffect(
+    () =>
+      listenForCommands((c) => {
+        const cur = cmd.current
+        if (c.cmd === 'next') cur.handleNext()
+        else if (c.cmd === 'pause') cur.pause()
+        // الكشف بلا إجابة = لم تعرفها الغرفة، فلا نقاط
+        else if (c.cmd === 'reveal') { if (!cur.done) cur.answer(-1) }
+        else if (c.cmd === 'skip') {
+          if (!cur.done) cur.answer(-1)
+          cur.handleNext()
+        }
+      }),
+    [],
+  )
 
   function goHome() {
     home()

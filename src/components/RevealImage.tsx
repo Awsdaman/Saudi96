@@ -13,13 +13,17 @@ interface Props {
    * فتختفي فوق سطح اللعبة الداكن — لذا تُعرض على لوح فاتح.
    */
   plate?: 'light' | 'dark'
+  /** اسم الجهة أو المعلم — يصير وصفاً بديلاً بعد الكشف وحده */
+  label?: string
   /** صور الأشخاص طولية، فإطار 4:3 يهدر ارتفاعها ويصغّر الوجه على الشاشة */
   frame?: 'wide' | 'portrait'
 }
 
-export function RevealImage({ src, progress, kind, revealed, plate = 'dark', frame = 'wide' }: Props) {
+export function RevealImage({ src, progress, kind, revealed, plate = 'dark', label, frame = 'wide' }: Props) {
   const p = revealed ? 1 : Math.min(1, Math.max(0, progress))
   const cls = `reveal reveal-${plate}${frame === 'portrait' ? ' reveal-portrait' : ''}`
+  // فارغ ما دامت الصورة هي اللغز: وصفها قبل الكشف يُفسده
+  const alt = revealed && label ? label : ''
 
   if (kind === 'silhouette') {
     // الظل أولاً: الشكل وحده بلا لون. ثم يذوب اللون تدريجياً.
@@ -28,7 +32,7 @@ export function RevealImage({ src, progress, kind, revealed, plate = 'dark', fra
     return (
       <div className={cls}>
         <img className="reveal-img reveal-shadow" src={src} alt="" style={{ opacity: 1 - colorIn }} />
-        <img className="reveal-img" src={src} alt="" style={{ opacity: colorIn }} />
+        <img className="reveal-img" src={src} alt={alt} style={{ opacity: colorIn }} />
       </div>
     )
   }
@@ -40,7 +44,7 @@ export function RevealImage({ src, progress, kind, revealed, plate = 'dark', fra
         <img
           className="reveal-img"
           src={src}
-          alt=""
+          alt={alt}
           style={{ filter: `blur(${Math.pow(1 - p, 1.8) * 28}px)` }}
         />
       </div>
@@ -54,7 +58,7 @@ export function RevealImage({ src, progress, kind, revealed, plate = 'dark', fra
         <img
           className="reveal-img"
           src={src}
-          alt=""
+          alt={alt}
           style={{ transform: `scale(${1 + (1 - p) * 2.6})` }}
         />
       </div>
@@ -63,7 +67,7 @@ export function RevealImage({ src, progress, kind, revealed, plate = 'dark', fra
 
   return (
     <div className={cls}>
-      <img className="reveal-img" src={src} alt="" />
+      <img className="reveal-img" src={src} alt={alt} />
     </div>
   )
 }

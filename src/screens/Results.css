@@ -108,3 +108,8 @@
 .missed-thumb img { max-width: 82%; max-height: 82%; object-fit: contain; }
 
 .missed-name { font-size: 0.9rem; line-height: 1.4; }
+
+.results-rule {
+  width: min(220px, 60%);
+  margin: 2px auto 4px;
+}

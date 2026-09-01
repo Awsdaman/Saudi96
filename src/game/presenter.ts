@@ -22,6 +22,8 @@ export interface PresenterState {
   revealed?: boolean
   score?: number
   streak?: number
+  /** أوقف المقدّم المؤقّت */
+  paused?: boolean
 }
 
 const MSG = 'saudiknowledge:presenter'
@@ -96,4 +98,39 @@ export function listenAsPresenter(onState: (s: PresenterState) => void) {
 
 export function isPresenterWindow(): boolean {
   return location.hash === '#presenter'
+}
+
+/* ── أوامر المقدّم ──────────────────────────────────────────
+   الاتجاه المعاكس: من شاشة المقدّم إلى نافذة اللعبة.
+
+   كانت شاشة المقدّم تعرض ولا تتحكّم، فيضطرّ المقدّم إلى النقر داخل
+   النافذة المعروضة على الجدار أمام الجمهور. القناة ثنائية الاتجاه
+   أصلاً — المصافحة أثبتت الطرفين — ولم يكن أحد يرسل في هذا الاتجاه. */
+
+export type HostCommand =
+  | { cmd: 'reveal' }
+  | { cmd: 'next' }
+  | { cmd: 'skip' }
+  | { cmd: 'pause' }
+
+const CMD = `${MSG}:cmd`
+
+/** تُستدعى داخل نافذة المقدّم */
+export function sendCommand(command: HostCommand) {
+  // opener عند فتحها بنافذة، و parent عند التضمين في إطار
+  const host = window.opener ?? (window.parent !== window ? window.parent : null)
+  try {
+    host?.postMessage({ type: CMD, command }, '*')
+  } catch {
+    // فُتحت مباشرةً بلا نافذة مضيفة
+  }
+}
+
+/** تُستدعى في نافذة اللعبة — الحالة كلها هناك */
+export function listenForCommands(on: (c: HostCommand) => void) {
+  const onMsg = (e: MessageEvent) => {
+    if (e.data?.type === CMD) on(e.data.command as HostCommand)
+  }
+  window.addEventListener('message', onMsg)
+  return () => window.removeEventListener('message', onMsg)
 }

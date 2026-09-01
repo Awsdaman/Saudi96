@@ -4,6 +4,7 @@ import { HowToModal } from '../components/HowToModal'
 import { ROUNDS } from '../game/content'
 import { RevealImage } from '../components/RevealImage'
 import { ScoreBar } from '../components/ScoreBar'
+import { Verdict } from '../components/Verdict'
 import type { GameState } from '../game/useGame'
 import type { Question } from '../game/types'
 import './Play.css'
@@ -23,6 +24,9 @@ export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Prop
   const timedOut = state.selected === -1
   const meta = ROUNDS.find((r) => r.id === state.roundId)
   const [howTo, setHowTo] = useState(false)
+
+  const answerText = question.options[question.answerIndex]
+  const isLast = state.index + 1 >= state.questions.length
 
   // المستمع يُركّب مرة واحدة ويقرأ من ref، وإلا التقط إغلاقاً قديماً
   // فتضيع ضغطة Enter التي تلي الإجابة مباشرةً قبل إعادة التصيير.
@@ -59,6 +63,8 @@ export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Prop
         streak={state.streak}
         timeLeft={state.timeLeft}
         totalTime={state.totalTime}
+        roundTitle={meta?.title ?? 'لعبتي'}
+        paused={state.paused}
       />
 
       {question.image && (
@@ -68,6 +74,9 @@ export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Prop
           kind={question.reveal ?? 'none'}
           revealed={done}
           plate={question.round === 'logos' ? 'light' : 'dark'}
+          /* الوصف البديل يبقى فارغاً ما دامت الصورة هي اللغز نفسه،
+             ثم يحمل الإجابة بعد الكشف — وإلا تعذّر بلوغها بلا بصر */
+          label={answerText}
           frame={question.round === 'people' ? 'portrait' : 'wide'}
         />
       )}
@@ -81,29 +90,19 @@ export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Prop
         onPick={onAnswer}
       />
 
-      {done && (
-        <div className={`verdict ${last?.correct ? 'is-correct' : 'is-wrong'}`}>
-          <div className="verdict-head">
-            <strong>
-              {last?.correct ? 'إجابة صحيحة' : timedOut ? 'نفد الوقت' : 'إجابة خاطئة'}
-            </strong>
-            {last && last.points > 0 && (
-              <span className="verdict-points">
-                <span className="ltr">+{last.points.toLocaleString('en-US')}</span>
-              </span>
-            )}
-          </div>
+      <Verdict
+        show={done}
+        correct={!!last?.correct}
+        timedOut={timedOut}
+        answer={answerText}
+        points={last?.points ?? 0}
+        explanation={question.explanation}
+        last={isLast}
+        onNext={onNext}
+      />
 
-          {question.explanation && <p className="verdict-text">{question.explanation}</p>}
-
-          {/* بلا autoFocus: لو كان الزر مركَّزاً لأطلق Enter الحدثين معاً — المستمع والنقر — فتُتخطّى نتيجة */}
-          <button className="btn btn-primary" onClick={onNext}>
-            {state.index + 1 >= state.questions.length ? 'النتيجة' : 'التالي'}
-          </button>
-        </div>
-      )}
-
-      <div className="play-foot">
+      {/* ضوابط اللاعب الفرد — تُخفى عن الشاشة المعروضة على الجدار */}
+      <div className="play-foot stage-hide">
         <button className="btn btn-quiet" onClick={onQuit}>إنهاء الجولة</button>
         {meta && (
           <button className="btn btn-quiet" onClick={() => setHowTo(true)}>كيف تلعب؟</button>

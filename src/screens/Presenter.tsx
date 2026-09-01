@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { listenAsPresenter, type PresenterState } from '../game/presenter'
+import { listenAsPresenter, sendCommand, type PresenterState } from '../game/presenter'
 import './Presenter.css'
 
 export function Presenter() {
@@ -7,12 +7,35 @@ export function Presenter() {
 
   useEffect(() => listenAsPresenter(setS), [])
 
-  if (s.kind === 'idle') {
+  const live = s.kind !== 'idle'
+
+  // اختصارات المقدّم على حاسبه: مسافة للكشف، سهم أو Enter للتالي، P للإيقاف.
+  // كانت الضوابط كلها في النافذة المعروضة على الجدار، فيضطرّ المقدّم
+  // إلى تحريك المؤشّر أمام الجمهور ليتقدّم سؤالاً.
+  useEffect(() => {
+    if (!live) return
+    function onKey(e: KeyboardEvent) {
+      const k = e.key
+      if (k === ' ') {
+        e.preventDefault()
+        sendCommand({ cmd: 'reveal' })
+      } else if (k === 'Enter' || k === 'ArrowLeft' || k === 'ArrowRight') {
+        e.preventDefault()
+        sendCommand({ cmd: 'next' })
+      } else if (k === 'p' || k === 'P') {
+        sendCommand({ cmd: 'pause' })
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [live])
+
+  if (!live) {
     return (
       <div className="pres pres-idle">
         <h1 className="pres-brand">شاشة المقدّم</h1>
         <p className="pres-hint">
-          هذه النافذة تعرض الإجابة الصحيحة لك وحدك.
+          هذه النافذة تعرض الإجابة الصحيحة لك وحدك، ومنها تُدير الجولة.
           <br />
           ابقِها على شاشتك، واعرض النافذة الأخرى على اللاعبين.
         </p>
@@ -42,9 +65,33 @@ export function Presenter() {
         <p className="pres-answer">{s.answer}</p>
       </div>
 
+      {/* لوحة القيادة — القناة ثنائية الاتجاه أصلاً، ولم يكن أحد يرسل فيها */}
+      <div className="pres-ctl">
+        <button
+          className="pres-btn"
+          onClick={() => sendCommand({ cmd: 'reveal' })}
+          disabled={s.revealed}
+        >
+          كشف الإجابة <kbd>مسافة</kbd>
+        </button>
+        <button className="pres-btn is-primary" onClick={() => sendCommand({ cmd: 'next' })}>
+          التالي <kbd>↵</kbd>
+        </button>
+        <button className="pres-btn" onClick={() => sendCommand({ cmd: 'skip' })}>
+          تخطّي
+        </button>
+        <button
+          className={`pres-btn ${s.paused ? 'is-on' : ''}`}
+          onClick={() => sendCommand({ cmd: 'pause' })}
+          aria-pressed={!!s.paused}
+        >
+          {s.paused ? 'متابعة' : 'إيقاف'} <kbd>P</kbd>
+        </button>
+      </div>
+
       {s.image && (
         <div className="pres-img">
-          <img src={s.image} alt="" />
+          <img src={s.image} alt={s.answer ?? ''} />
         </div>
       )}
 
@@ -61,7 +108,9 @@ export function Presenter() {
 
       {s.explanation && <p className="pres-explain">{s.explanation}</p>}
 
-      {s.revealed && <p className="pres-state">كُشفت الإجابة للاعبين</p>}
+      <p className="pres-state" role="status" aria-live="polite">
+        {s.paused ? 'الجولة موقوفة' : s.revealed ? 'كُشفت الإجابة للاعبين' : 'اللاعبون يجيبون…'}
+      </p>
     </div>
   )
 }

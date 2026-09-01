@@ -110,3 +110,54 @@
 }
 
 .pres-state { color: var(--gold); font-size: 0.88rem; }
+
+/* ── لوحة القيادة ──
+   شاشة المقدّم على حاسبه: كثيفة، تُشغَّل ولا تُقرأ من بعيد.
+   وهي عكس الشاشة المعروضة تماماً، التي لا تحمل ضابطاً واحداً. */
+.pres-ctl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pres-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border-radius: 10px;
+  background: var(--raised);
+  border: 1.5px solid var(--line);
+  color: var(--text);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: border-color 140ms, background 140ms, color 140ms;
+}
+
+.pres-btn:hover:not(:disabled) { border-color: var(--green-bright); }
+.pres-btn:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }
+
+.pres-btn:disabled { color: var(--dim); border-color: var(--line); }
+
+.pres-btn.is-primary {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+
+.pres-btn.is-on {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.pres-btn kbd {
+  font-family: inherit;
+  font-size: 0.72rem;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  padding: 1px 6px;
+}
+
+.pres-btn.is-primary kbd { color: #fff; border-color: rgba(255, 255, 255, 0.35); }

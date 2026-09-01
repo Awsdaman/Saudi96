@@ -32,6 +32,7 @@ Built from a research pack at `C:\Users\Aous\Downloads\saudi-game-research-pack.
 | Landmarks | 44 — 35 with a reviewed photo |
 | Regions / dishes | 13 / 13 |
 | People | 58 in 8 groups — 44 with a portrait → 102 questions |
+| Surfaces | 2 — `night` (device) and `stage` (projected); see README |
 
 `npm run validate`, `npm run lint` and `npm run build` all pass. A clean `git clone` +
 `npm install` + `npm run build` was tested end to end and produces a working `dist/`.
@@ -75,6 +76,13 @@ explicit `left`/`right` when the geometry is about the image, not the reading di
 latter two are rate-limited to death (429). Run **one** fetch script at a time. See
 README → "On Wikimedia rate limits".
 
+**5b. The stage surface must never scroll, and the lock belongs to `.play` alone.** Putting
+`overflow: hidden` on the root instead strands «ابدأ» below the fold on the pre-round screen,
+so opening the presenter window makes the game unstartable. And on the play screen the image
+must be the element that absorbs leftover height (`flex: 1 1 0`); give it a fixed `vh` or an
+`aspect-ratio` and the bottom row of answers is clipped off the wall with no way to scroll to
+it — invisible to the room and to any check that only tests *document* scroll.
+
 **6. The presenter window uses `postMessage`, not `BroadcastChannel`** (same-origin channels
 fail on `file://`), and is opened with `<a target="_blank" rel="opener">`, not
 `window.open` (popup blockers). `rel="opener"` is required — browsers sever `window.opener`
@@ -104,11 +112,16 @@ src/
                       pool sources for the custom round
     engine.ts       shuffle, scoring, streaks
     useGame.ts      round state machine
-    presenter.ts    postMessage channel to the presenter window
+    presenter.ts    postMessage channel to the presenter window — two-way:
+                    state out, host commands back
+    useSurface.ts   flips the root between the night and stage surfaces
+    useCountUp.ts   animates the score; settles on a timer because rAF
+                    is suspended while the window is hidden
     storage.ts      best scores + remembered round length in localStorage
   screens/          Home, RoundIntro, Play, Results, LogoRound, LogoResults,
                     CustomBuilder, Presenter
-  components/       AnswerGrid, RevealImage, ScoreBar, LogoCard, HowToModal, RoundIcon
+  components/       AnswerGrid, RevealImage, ScoreBar, LogoCard, HowToModal, RoundIcon,
+                    TimerRing, Verdict
   data/             entities · landmarks · regions · dishes · people · trivia (+ *-assets manifests)
 
 scripts/            fetch/convert/crop/validate pipeline — see README → "Asset pipeline"

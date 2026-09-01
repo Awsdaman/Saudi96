@@ -1,0 +1,110 @@
+/* ── على الجهاز: بطاقة تحت الخيارات ── */
+.verdict {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+  border-radius: var(--radius);
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+}
+
+.verdict.is-correct { border-color: color-mix(in srgb, var(--correct) 50%, transparent); }
+.verdict.is-wrong   { border-color: color-mix(in srgb, var(--wrong) 45%, transparent); }
+
+.verdict-word {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--correct);
+}
+.verdict.is-wrong .verdict-word { color: var(--wrong); }
+
+/* على الجهاز الإجابة مذكورة في الشبكة فوق، فتكفي هنا إشارة هادئة */
+.verdict-answer {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.verdict-points {
+  color: var(--gold);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.verdict-text {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 0.98rem;
+}
+
+/* ── على المسرح: استيلاء على الشاشة ──
+   الغرفة على بُعد أربعة أمتار لا تُلاحق لوحاً يظهر أسفل الطيّة،
+   ولا تقرأ حدّاً ملوّناً حول خيار صغير. الإجابة تُعرض بحجمها الكامل. */
+[data-surface='stage'] .verdict {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: calc(var(--u) * 1.4);
+  padding: calc(var(--u) * 6);
+  border: none;
+  border-radius: 0;
+  background: var(--bg);
+}
+
+[data-surface='stage'] .verdict.is-correct { background: var(--correct-fill); }
+[data-surface='stage'] .verdict.is-wrong   { background: var(--wrong-fill); }
+
+[data-surface='stage'] .verdict-word   { font-size: calc(var(--u) * 3.4); }
+
+[data-surface='stage'] .verdict-answer {
+  font-size: calc(var(--u) * 7.4);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  max-width: 20ch;
+  text-wrap: balance;
+}
+
+[data-surface='stage'] .verdict-points { font-size: calc(var(--u) * 3.4); }
+
+[data-surface='stage'] .verdict-text {
+  font-size: calc(var(--u) * 1.9);
+  max-width: 46ch;
+  line-height: 1.6;
+}
+
+/* ── التوقيت ──
+   «الوقفة»: ٣٥٠ ملّي بين اختيار اللاعب وظهور الحكم. في غرفة، هذه هي
+   اللحظة التي ينظر فيها الناس إلى بعضهم؛ وإلغاؤها هو سبب إحساس الجولة
+   بالرتابة لا بالسرعة — لا يوجد ترقّب ليُفرَج عنه.
+   وbackwards في fill-mode هو ما يبقيه مخفيّاً طوال التأخير. */
+.verdict { animation: verdict-in 220ms ease-out 350ms both; }
+.verdict-points { animation: verdict-rise 250ms ease-out 500ms both; }
+.verdict-text { animation: verdict-fade 300ms ease-out 550ms both; }
+.verdict-next { animation: verdict-fade 300ms ease-out 550ms both; }
+
+@keyframes verdict-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes verdict-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes verdict-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* القاعدة العامة تُصفّر المدد لا التأخيرات — وتأخيرٌ بلا مدّة
+   يظلّ انتظاراً أمام من طلب ألّا يُتحرَّك له شيء */
+@media (prefers-reduced-motion: reduce) {
+  .verdict, .verdict-points, .verdict-text, .verdict-next {
+    animation-delay: 0ms !important;
+  }
+}

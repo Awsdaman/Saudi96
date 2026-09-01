@@ -20,15 +20,24 @@ export function AnswerGrid({ options, answerIndex, selected, onPick }: Props) {
           else if (i === selected) state = 'is-wrong'
           else state = 'is-muted'
         }
+        const marked = state === 'is-correct' || state === 'is-wrong'
+
         return (
           <button
             key={opt}
-            className={`answer ${state}`}
+            className={`answer ${state} ${i === selected ? 'is-picked' : ''}`}
             onClick={() => onPick(i)}
             disabled={done}
           >
             <span className="answer-key">{i + 1}</span>
             <span className="answer-text">{opt}</span>
+            {/* لا يُعرَّف حالٌ باللون وحده — والعلامة تُقرأ من آخر الغرفة
+                حيث لا يكاد يُميَّز حدٌّ أخضر من حدٍّ أحمر */}
+            {marked && (
+              <span className="answer-mark" aria-hidden="true">
+                {state === 'is-correct' ? '✓' : '✕'}
+              </span>
+            )}
           </button>
         )
       })}
