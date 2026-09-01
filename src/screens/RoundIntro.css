@@ -1,0 +1,102 @@
+.intro {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 5vh 20px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.intro-head { text-align: center; margin-bottom: 4px; }
+
+.intro-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  color: var(--green-bright);
+  background: rgba(0, 166, 81, 0.1);
+  border: 1px solid rgba(0, 166, 81, 0.22);
+  margin-bottom: 12px;
+}
+
+.intro-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 4.6vw, 2.3rem);
+  font-weight: 700;
+}
+
+.intro-sub { color: var(--muted); margin-top: 5px; font-size: 0.95rem; }
+
+.intro-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.intro-h2 { font-size: 0.95rem; font-weight: 700; color: var(--muted); }
+
+.intro-steps {
+  margin: 0;
+  padding-inline-start: 20px;
+  display: grid;
+  gap: 9px;
+  line-height: 1.75;
+  font-size: 0.98rem;
+}
+
+.intro-steps li::marker { color: var(--green-bright); }
+
+.intro-chips { display: flex; flex-wrap: wrap; gap: 9px; }
+
+.intro-chip {
+  padding: 11px 18px;
+  border-radius: 999px;
+  background: var(--raised);
+  border: 1.5px solid var(--line);
+  font-size: 0.98rem;
+  transition: background 140ms, border-color 140ms;
+}
+
+.intro-chip:hover { border-color: var(--muted); }
+.intro-chip:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }
+
+.intro-chip.is-on {
+  background: rgba(0, 166, 81, 0.16);
+  border-color: var(--green-bright);
+  font-weight: 700;
+}
+
+.intro-note { color: var(--muted); font-size: 0.9rem; line-height: 1.75; }
+
+.intro-warn { color: var(--gold); font-size: 0.85rem; line-height: 1.7; }
+
+.btn-ghost {
+  align-self: flex-start;
+  background: transparent;
+  border: 1.5px solid var(--line);
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 400;
+}
+
+.btn-ghost:hover { border-color: var(--green-bright); }
+
+.intro-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+.intro-actions .btn-primary { align-self: auto; min-width: 140px; }
+
+/* الرابط يتنكّر في هيئة زر */
+a.btn-ghost { text-decoration: none; display: inline-block; }
+a.btn-ghost.is-live { border-color: var(--correct); color: var(--green-bright); }

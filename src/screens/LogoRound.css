@@ -1,0 +1,69 @@
+.logoround {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 4vh 20px 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.logoround-bar {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.logoround-q {
+  font-size: clamp(1.1rem, 2.6vw, 1.4rem);
+  font-weight: 700;
+  text-align: center;
+}
+
+.logoround-answer {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 3.4vw, 1.9rem);
+  font-weight: 700;
+  text-align: center;
+  color: var(--green-bright);
+  line-height: 1.4;
+  animation: rise 200ms ease-out;
+}
+
+.logoround-reveal { align-self: center; min-width: 190px; }
+
+.logoround-judge { display: flex; gap: 12px; }
+
+.btn-yes,
+.btn-no {
+  min-width: 140px;
+  border-width: 1.5px;
+  border-style: solid;
+}
+
+.btn-yes {
+  background: rgba(0, 166, 81, 0.16);
+  border-color: var(--correct);
+  color: var(--text);
+}
+.btn-yes:hover { background: rgba(0, 166, 81, 0.28); }
+
+.btn-no {
+  background: rgba(192, 57, 43, 0.12);
+  border-color: var(--wrong);
+  color: var(--text);
+}
+.btn-no:hover { background: rgba(192, 57, 43, 0.24); }
+
+.logoround-quit { margin-top: 6px; }
+
+/* زر ؟ يعيد فتح الإرشادات أثناء الجولة */
+.chip-help {
+  cursor: pointer;
+  min-width: 30px;
+  text-align: center;
+  transition: color 140ms, border-color 140ms;
+}
+
+.chip-help:hover { color: var(--text); border-color: var(--green-bright); }

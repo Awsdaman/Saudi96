@@ -1,0 +1,15 @@
+[
+  { "id": "riyadh", "nameAr": "منطقة الرياض", "shortAr": "الرياض", "capitalAr": "الرياض", "historicAr": "نجد", "noteAr": "أكثر المناطق سكاناً، وثاني أكبرها مساحة.", "image": null },
+  { "id": "makkah", "nameAr": "منطقة مكة المكرمة", "shortAr": "مكة المكرمة", "capitalAr": "مكة المكرمة", "historicAr": "الحجاز", "noteAr": "عاصمتها مكة المكرمة، لكن أكبر مدنها جدة.", "image": null },
+  { "id": "madinah", "nameAr": "منطقة المدينة المنورة", "shortAr": "المدينة المنورة", "capitalAr": "المدينة المنورة", "historicAr": "الحجاز", "noteAr": "تضم العلا والحِجر ويَنبع وخيبر.", "image": null },
+  { "id": "eastern", "nameAr": "المنطقة الشرقية", "shortAr": "الشرقية", "capitalAr": "الدمام", "historicAr": "الأحساء", "noteAr": "أكبر المناطق مساحة، وفيها واحة الأحساء.", "image": null },
+  { "id": "qassim", "nameAr": "منطقة القصيم", "shortAr": "القصيم", "capitalAr": "بريدة", "historicAr": "نجد", "noteAr": "تشتهر بالتمور وسوق بريدة للتمور.", "image": null },
+  { "id": "asir", "nameAr": "منطقة عسير", "shortAr": "عسير", "capitalAr": "أبها", "historicAr": "عسير", "noteAr": "أعلى تضاريس المملكة، وفيها جبل السودة.", "image": null },
+  { "id": "tabuk", "nameAr": "منطقة تبوك", "shortAr": "تبوك", "capitalAr": "تبوك", "historicAr": "الشمال", "noteAr": "تضم نيوم ووادي الديسة وتيماء.", "image": null },
+  { "id": "hail", "nameAr": "منطقة حائل", "shortAr": "حائل", "capitalAr": "حائل", "historicAr": "جبل شمّر", "noteAr": "فيها نقوش جُبّة والشويمس المسجلة في اليونسكو.", "image": null },
+  { "id": "northern", "nameAr": "منطقة الحدود الشمالية", "shortAr": "الحدود الشمالية", "capitalAr": "عرعر", "historicAr": "الشمال", "noteAr": "أقل المناطق سكاناً.", "image": null },
+  { "id": "jazan", "nameAr": "منطقة جازان", "shortAr": "جازان", "capitalAr": "جازان", "historicAr": "الجنوب", "noteAr": "أعلى كثافة سكانية، وفيها جزر فرسان.", "image": null },
+  { "id": "najran", "nameAr": "منطقة نجران", "shortAr": "نجران", "capitalAr": "نجران", "historicAr": "الجنوب", "noteAr": "فيها موقع الأخدود ونقوش حِمى.", "image": null },
+  { "id": "bahah", "nameAr": "منطقة الباحة", "shortAr": "الباحة", "capitalAr": "الباحة", "historicAr": "الجنوب", "noteAr": "أصغر المناطق مساحة، وفيها قرية ذي عين.", "image": null },
+  { "id": "jawf", "nameAr": "منطقة الجوف", "shortAr": "الجوف", "capitalAr": "سكاكا", "historicAr": "الشمال", "noteAr": "عاصمتها سكاكا، وفيها دومة الجندل وأعمدة الرجاجيل.", "image": null }
+]

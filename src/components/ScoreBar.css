@@ -1,0 +1,44 @@
+.scorebar { width: 100%; }
+
+.scorebar-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.chip-score { color: var(--text); }
+
+.chip-streak {
+  color: var(--gold);
+  border-color: rgba(201, 162, 39, 0.45);
+  background: rgba(201, 162, 39, 0.1);
+}
+
+.chip-time { margin-inline-start: auto; }
+.chip-time.is-low { color: var(--wrong); border-color: rgba(192, 57, 43, 0.5); }
+
+.timer-track {
+  height: 5px;
+  border-radius: 999px;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.timer-fill {
+  height: 100%;
+  background: var(--green-bright);
+  transition: width 120ms linear, background 200ms;
+}
+
+.timer-fill.is-low { background: var(--wrong); }

@@ -1,0 +1,110 @@
+.results {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 6vh 20px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.results-head { text-align: center; }
+.results-round { color: var(--muted); font-size: 0.95rem; }
+
+.results-score {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 12vw, 5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--green-bright);
+  margin: 6px 0;
+}
+
+.results-verdict { font-size: 1.15rem; font-weight: 700; }
+
+.results-record {
+  margin-top: 8px;
+  color: var(--gold);
+  font-size: 0.9rem;
+}
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+.stat {
+  padding: 18px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  text-align: center;
+}
+
+.stat-value { display: block; font-size: 1.5rem; font-weight: 700; }
+.stat-label { display: block; color: var(--muted); font-size: 0.82rem; margin-top: 4px; }
+
+.review { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+
+.review-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--line);
+  border-radius: 12px;
+}
+
+.review-row.is-correct { border-inline-start-color: var(--correct); }
+.review-row.is-wrong   { border-inline-start-color: var(--wrong); }
+
+.review-num { flex: none; color: var(--muted); font-size: 0.8rem; width: 22px; }
+.review-body { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.review-q { font-size: 0.9rem; color: var(--muted); }
+.review-a { font-size: 0.98rem; font-weight: 700; }
+
+.review-mark { flex: none; font-size: 1.05rem; }
+.review-row.is-correct .review-mark { color: var(--correct); }
+.review-row.is-wrong   .review-mark { color: var(--wrong); }
+
+.results-actions { display: flex; gap: 12px; align-items: center; justify-content: center; }
+.results-actions .btn-primary { align-self: auto; }
+
+/* ── نتائج جولة الشعار ── */
+.results-of { color: var(--muted); font-size: 0.55em; }
+
+.missed { display: flex; flex-direction: column; gap: 12px; }
+
+.missed-title { font-size: 1rem; font-weight: 700; color: var(--muted); }
+
+.missed-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.missed-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.missed-thumb {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  background: #F7F7F4;
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.missed-thumb img { max-width: 82%; max-height: 82%; object-fit: contain; }
+
+.missed-name { font-size: 0.9rem; line-height: 1.4; }

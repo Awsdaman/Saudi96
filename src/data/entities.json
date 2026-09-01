@@ -1,0 +1,1022 @@
+[
+  {
+    "id": "mofa",
+    "nameAr": "وزارة الخارجية",
+    "shortAr": "الخارجية",
+    "type": "ministry",
+    "tier": "B",
+    "site": "https://www.mofa.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/mofa.png",
+    "crop": {
+      "x": 0.6375,
+      "y": 0.315,
+      "w": 0.3625,
+      "h": 0.365
+    },
+    "logo": "assets/logos-symbol/mofa.png"
+  },
+  {
+    "id": "mof",
+    "nameAr": "وزارة المالية",
+    "shortAr": "المالية",
+    "type": "ministry",
+    "tier": "B",
+    "site": "https://www.mof.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/mof.png",
+    "crop": {
+      "x": 0.77,
+      "y": 0.33,
+      "w": 0.21,
+      "h": 0.28
+    },
+    "logo": "assets/logos-symbol/mof.png"
+  },
+  {
+    "id": "mod",
+    "nameAr": "وزارة الدفاع",
+    "shortAr": "الدفاع",
+    "type": "ministry",
+    "tier": "B",
+    "site": "https://www.mod.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/mod.png",
+    "crop": {
+      "x": 0.14,
+      "y": 0,
+      "w": 0.72,
+      "h": 0.735
+    },
+    "logo": "assets/logos-symbol/mod.png"
+  },
+  {
+    "id": "moi",
+    "nameAr": "وزارة الداخلية",
+    "shortAr": "الداخلية",
+    "type": "ministry",
+    "tier": "B",
+    "site": "https://www.moi.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/moi.png",
+    "crop": {
+      "x": 0.118,
+      "y": 0.34,
+      "w": 0.34,
+      "h": 0.342
+    },
+    "logo": "assets/logos-symbol/moi.png"
+  },
+  {
+    "id": "mong",
+    "nameAr": "وزارة الحرس الوطني",
+    "shortAr": "الحرس الوطني",
+    "type": "ministry",
+    "tier": "B",
+    "site": "https://www.sang.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/mong.png",
+    "logo": "assets/logos-symbol/mong.png"
+  },
+  {
+    "id": "moh",
+    "nameAr": "وزارة الصحة",
+    "shortAr": "الصحة",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.moh.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/moh.png",
+    "crop": {
+      "x": 0.3475,
+      "y": 0.1475,
+      "w": 0.31,
+      "h": 0.215
+    },
+    "logo": "assets/logos-symbol/moh.png"
+  },
+  {
+    "id": "mot",
+    "nameAr": "وزارة النقل والخدمات اللوجستية",
+    "shortAr": "النقل",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.mot.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/mot.png",
+    "crop": {
+      "x": 0.3825,
+      "y": 0.295,
+      "w": 0.24,
+      "h": 0.2575
+    },
+    "logo": "assets/logos-symbol/mot.png"
+  },
+  {
+    "id": "moe-edu",
+    "nameAr": "وزارة التعليم",
+    "shortAr": "التعليم",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.moe.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/moe-edu.png",
+    "crop": {
+      "x": 0,
+      "y": 0.1,
+      "w": 1,
+      "h": 0.3675
+    },
+    "logo": "assets/logos-symbol/moe-edu.png"
+  },
+  {
+    "id": "mewa",
+    "nameAr": "وزارة البيئة والمياه والزراعة",
+    "shortAr": "البيئة والمياه والزراعة",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.mewa.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/mewa.png",
+    "logo": "assets/logos-symbol/mewa.png"
+  },
+  {
+    "id": "mc",
+    "nameAr": "وزارة التجارة",
+    "shortAr": "التجارة",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://mc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/mc.png",
+    "crop": {
+      "x": 0.6375,
+      "y": 0.3225,
+      "w": 0.3575,
+      "h": 0.3575
+    },
+    "logo": "assets/logos-symbol/mc.png"
+  },
+  {
+    "id": "moenergy",
+    "nameAr": "وزارة الطاقة",
+    "shortAr": "الطاقة",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.moenergy.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/moenergy.png",
+    "crop": {
+      "x": 0.69,
+      "y": 0.35,
+      "w": 0.22,
+      "h": 0.26
+    },
+    "logo": "assets/logos-symbol/moenergy.png"
+  },
+  {
+    "id": "haj",
+    "nameAr": "وزارة الحج والعمرة",
+    "shortAr": "الحج والعمرة",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.haj.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/haj.png",
+    "logo": "assets/logos-symbol/haj.png"
+  },
+  {
+    "id": "media",
+    "nameAr": "وزارة الإعلام",
+    "shortAr": "الإعلام",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.media.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/media.png",
+    "crop": {
+      "x": 0.6125,
+      "y": 0.2875,
+      "w": 0.3875,
+      "h": 0.415
+    },
+    "logo": "assets/logos-symbol/media.png"
+  },
+  {
+    "id": "moj",
+    "nameAr": "وزارة العدل",
+    "shortAr": "العدل",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.moj.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/moj.png",
+    "crop": {
+      "x": 0.23,
+      "y": 0.08,
+      "w": 0.54,
+      "h": 0.62
+    },
+    "logo": "assets/logos-symbol/moj.png"
+  },
+  {
+    "id": "mcit",
+    "nameAr": "وزارة الاتصالات وتقنية المعلومات",
+    "shortAr": "الاتصالات وتقنية المعلومات",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.mcit.gov.sa",
+    "tierVerified": false
+  },
+  {
+    "id": "mep",
+    "nameAr": "وزارة الاقتصاد والتخطيط",
+    "shortAr": "الاقتصاد والتخطيط",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.mep.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/mep.png",
+    "crop": {
+      "x": 0.2375,
+      "y": 0.08,
+      "w": 0.525,
+      "h": 0.65
+    },
+    "logo": "assets/logos-symbol/mep.png"
+  },
+  {
+    "id": "momrah",
+    "nameAr": "وزارة الشؤون البلدية والإسكان",
+    "shortAr": "الشؤون البلدية والإسكان",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.momra.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/momrah.png",
+    "logo": "assets/logos-symbol/momrah.png"
+  },
+  {
+    "id": "hrsd",
+    "nameAr": "وزارة الموارد البشرية والتنمية الاجتماعية",
+    "shortAr": "الموارد البشرية",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.hrsd.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/hrsd.png",
+    "logo": "assets/logos-symbol/hrsd.png"
+  },
+  {
+    "id": "moia",
+    "nameAr": "وزارة الشؤون الإسلامية والدعوة والإرشاد",
+    "shortAr": "الشؤون الإسلامية",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.moia.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/moia.png",
+    "crop": {
+      "x": 0.19,
+      "y": 0.02,
+      "w": 0.62,
+      "h": 0.76
+    },
+    "logo": "assets/logos-symbol/moia.png"
+  },
+  {
+    "id": "moc",
+    "nameAr": "وزارة الثقافة",
+    "shortAr": "الثقافة",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.moc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/moc.png",
+    "crop": {
+      "x": 0.18,
+      "y": 0.19,
+      "w": 0.64,
+      "h": 0.32
+    },
+    "logo": "assets/logos-symbol/moc.png"
+  },
+  {
+    "id": "mim",
+    "nameAr": "وزارة الصناعة والثروة المعدنية",
+    "shortAr": "الصناعة والثروة المعدنية",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://www.mim.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/mim.png",
+    "logo": "assets/logos-symbol/mim.png"
+  },
+  {
+    "id": "misa",
+    "nameAr": "وزارة الاستثمار",
+    "shortAr": "الاستثمار",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://misa.gov.sa",
+    "tierVerified": false
+  },
+  {
+    "id": "mos",
+    "nameAr": "وزارة الرياضة",
+    "shortAr": "الرياضة",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://mos.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/mos.png",
+    "crop": {
+      "x": 0,
+      "y": 0.327,
+      "w": 0.365,
+      "h": 0.35
+    },
+    "logo": "assets/logos-symbol/mos.png"
+  },
+  {
+    "id": "mt",
+    "nameAr": "وزارة السياحة",
+    "shortAr": "السياحة",
+    "type": "ministry",
+    "tier": "A",
+    "site": "https://mt.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/mt.png",
+    "crop": {
+      "x": 0.1625,
+      "y": 0.055,
+      "w": 0.675,
+      "h": 0.5675
+    },
+    "logo": "assets/logos-symbol/mt.png"
+  },
+  {
+    "id": "film",
+    "nameAr": "هيئة الأفلام",
+    "shortAr": "الأفلام",
+    "type": "commission",
+    "tier": "A",
+    "site": "https://film.moc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/film.png",
+    "crop": {
+      "x": 0,
+      "y": 0.135,
+      "w": 1,
+      "h": 0.3775
+    },
+    "logo": "assets/logos-symbol/film.png"
+  },
+  {
+    "id": "music",
+    "nameAr": "هيئة الموسيقى",
+    "shortAr": "الموسيقى",
+    "type": "commission",
+    "tier": "A",
+    "site": "https://music.moc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/music.png",
+    "logo": "assets/logos-symbol/music.png"
+  },
+  {
+    "id": "heritage",
+    "nameAr": "هيئة التراث",
+    "shortAr": "التراث",
+    "type": "commission",
+    "tier": "A",
+    "site": "https://heritage.moc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/heritage.png",
+    "logo": "assets/logos-symbol/heritage.png"
+  },
+  {
+    "id": "culinary",
+    "nameAr": "هيئة فنون الطهي",
+    "shortAr": "فنون الطهي",
+    "type": "commission",
+    "tier": "A",
+    "site": "https://culinary.moc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/culinary.png",
+    "crop": {
+      "x": 0.165,
+      "y": 0.2475,
+      "w": 0.67,
+      "h": 0.2575
+    },
+    "logo": "assets/logos-symbol/culinary.png"
+  },
+  {
+    "id": "fashion",
+    "nameAr": "هيئة الأزياء",
+    "shortAr": "الأزياء",
+    "type": "commission",
+    "tier": "A",
+    "site": "https://fashion.moc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/fashion.png",
+    "crop": {
+      "x": 0.0775,
+      "y": 0.195,
+      "w": 0.845,
+      "h": 0.32
+    },
+    "logo": "assets/logos-symbol/fashion.png"
+  },
+  {
+    "id": "museums",
+    "nameAr": "هيئة المتاحف",
+    "shortAr": "المتاحف",
+    "type": "commission",
+    "tier": "A",
+    "site": "https://museums.moc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/museums.png",
+    "crop": {
+      "x": 0.02,
+      "y": 0.18,
+      "w": 0.9575,
+      "h": 0.355
+    },
+    "logo": "assets/logos-symbol/museums.png"
+  },
+  {
+    "id": "literature",
+    "nameAr": "هيئة الأدب والنشر والترجمة",
+    "shortAr": "الأدب والنشر والترجمة",
+    "type": "commission",
+    "tier": "A",
+    "site": "https://literature.moc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/literature.png",
+    "logo": "assets/logos-symbol/literature.png"
+  },
+  {
+    "id": "theater",
+    "nameAr": "هيئة المسرح والفنون الأدائية",
+    "shortAr": "المسرح والفنون الأدائية",
+    "type": "commission",
+    "tier": "A",
+    "site": "https://theater.moc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/theater.png",
+    "logo": "assets/logos-symbol/theater.png"
+  },
+  {
+    "id": "visualarts",
+    "nameAr": "هيئة الفنون البصرية",
+    "shortAr": "الفنون البصرية",
+    "type": "commission",
+    "tier": "A",
+    "site": "https://visualarts.moc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/visualarts.png",
+    "crop": {
+      "x": 0.1275,
+      "y": 0.235,
+      "w": 0.735,
+      "h": 0.28
+    },
+    "logo": "assets/logos-symbol/visualarts.png"
+  },
+  {
+    "id": "architecture",
+    "nameAr": "هيئة فنون العمارة والتصميم",
+    "shortAr": "العمارة والتصميم",
+    "type": "commission",
+    "tier": "A",
+    "site": "https://architecture.moc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/architecture.png",
+    "logo": "assets/logos-symbol/architecture.png"
+  },
+  {
+    "id": "libraries",
+    "nameAr": "هيئة المكتبات",
+    "shortAr": "المكتبات",
+    "type": "commission",
+    "tier": "A",
+    "site": "https://libraries.moc.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/libraries.png",
+    "crop": {
+      "x": 0.0975,
+      "y": 0.215,
+      "w": 0.805,
+      "h": 0.305
+    },
+    "logo": "assets/logos-symbol/libraries.png"
+  },
+  {
+    "id": "sdaia",
+    "nameAr": "الهيئة السعودية للبيانات والذكاء الاصطناعي (سدايا)",
+    "shortAr": "سدايا",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://sdaia.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/sdaia.png",
+    "crop": {
+      "x": 0.09,
+      "y": 0.35,
+      "w": 0.19,
+      "h": 0.3
+    },
+    "logo": "assets/logos-symbol/sdaia.png"
+  },
+  {
+    "id": "zatca",
+    "nameAr": "هيئة الزكاة والضريبة والجمارك",
+    "shortAr": "الزكاة والضريبة والجمارك",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://zatca.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/zatca.png",
+    "crop": {
+      "x": 0.3275,
+      "y": 0.175,
+      "w": 0.3675,
+      "h": 0.4225
+    },
+    "logo": "assets/logos-symbol/zatca.png"
+  },
+  {
+    "id": "gastat",
+    "nameAr": "الهيئة العامة للإحصاء",
+    "shortAr": "الإحصاء",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://www.stats.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/gastat.png",
+    "crop": {
+      "x": 0.7625,
+      "y": 0.3225,
+      "w": 0.2375,
+      "h": 0.2175
+    },
+    "logo": "assets/logos-symbol/gastat.png"
+  },
+  {
+    "id": "sfda",
+    "nameAr": "الهيئة العامة للغذاء والدواء",
+    "shortAr": "الغذاء والدواء",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://www.sfda.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/sfda.png",
+    "logo": "assets/logos-symbol/sfda.png"
+  },
+  {
+    "id": "gaca",
+    "nameAr": "الهيئة العامة للطيران المدني",
+    "shortAr": "الطيران المدني",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://gaca.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/gaca.png",
+    "crop": {
+      "x": 0.6525,
+      "y": 0.28,
+      "w": 0.3475,
+      "h": 0.44
+    },
+    "logo": "assets/logos-symbol/gaca.png"
+  },
+  {
+    "id": "monshaat",
+    "nameAr": "الهيئة العامة للمنشآت الصغيرة والمتوسطة (منشآت)",
+    "shortAr": "منشآت",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://www.monshaat.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/monshaat.png",
+    "logo": "assets/logos-symbol/monshaat.png"
+  },
+  {
+    "id": "pif",
+    "nameAr": "صندوق الاستثمارات العامة",
+    "shortAr": "صندوق الاستثمارات العامة",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://www.pif.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/pif.png",
+    "logo": "assets/logos-symbol/pif.png"
+  },
+  {
+    "id": "sama",
+    "nameAr": "البنك المركزي السعودي",
+    "shortAr": "البنك المركزي",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://www.sama.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/sama.png",
+    "logo": "assets/logos-symbol/sama.png"
+  },
+  {
+    "id": "tadawul",
+    "nameAr": "تداول السعودية",
+    "shortAr": "تداول",
+    "type": "company",
+    "tier": "A",
+    "site": "https://www.saudiexchange.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/tadawul.png",
+    "logo": "assets/logos-symbol/tadawul.png"
+  },
+  {
+    "id": "cma",
+    "nameAr": "هيئة السوق المالية",
+    "shortAr": "السوق المالية",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://cma.org.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/cma.png",
+    "logo": "assets/logos-symbol/cma.png"
+  },
+  {
+    "id": "mawani",
+    "nameAr": "الهيئة العامة للموانئ (موانئ)",
+    "shortAr": "موانئ",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://mawani.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/mawani.png",
+    "logo": "assets/logos-symbol/mawani.png"
+  },
+  {
+    "id": "sar",
+    "nameAr": "الخطوط الحديدية السعودية (سار)",
+    "shortAr": "سار",
+    "type": "company",
+    "tier": "A",
+    "site": "https://www.sar.com.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/sar.png",
+    "logo": "assets/logos-symbol/sar.png"
+  },
+  {
+    "id": "splonline",
+    "nameAr": "البريد السعودي (سبل)",
+    "shortAr": "سبل",
+    "type": "company",
+    "tier": "A",
+    "site": "https://splonline.com.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/splonline.png",
+    "logo": "assets/logos-symbol/splonline.png"
+  },
+  {
+    "id": "ssa",
+    "nameAr": "وكالة الفضاء السعودية",
+    "shortAr": "الفضاء السعودية",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://saudispace.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/ssa.png",
+    "logo": "assets/logos-symbol/ssa.png"
+  },
+  {
+    "id": "rcu",
+    "nameAr": "الهيئة الملكية لمحافظة العلا",
+    "shortAr": "العلا",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://www.rcu.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/rcu.png",
+    "logo": "assets/logos-symbol/rcu.png"
+  },
+  {
+    "id": "saip",
+    "nameAr": "الهيئة السعودية للملكية الفكرية",
+    "shortAr": "الملكية الفكرية",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://saip.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/saip.png",
+    "logo": "assets/logos-symbol/saip.png"
+  },
+  {
+    "id": "srca",
+    "nameAr": "هيئة الهلال الأحمر السعودي",
+    "shortAr": "الهلال الأحمر",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://www.srca.org.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/srca.png",
+    "crop": {
+      "x": 0.32,
+      "y": 0.27,
+      "w": 0.38,
+      "h": 0.4
+    },
+    "logo": "assets/logos-symbol/srca.png"
+  },
+  {
+    "id": "gosi",
+    "nameAr": "المؤسسة العامة للتأمينات الاجتماعية",
+    "shortAr": "التأمينات الاجتماعية",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://www.gosi.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/gosi.png",
+    "logo": "assets/logos-symbol/gosi.png"
+  },
+  {
+    "id": "hrdf",
+    "nameAr": "صندوق تنمية الموارد البشرية (هدف)",
+    "shortAr": "هدف",
+    "type": "authority",
+    "tier": "A",
+    "site": "https://www.hrdf.org.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/hrdf.jpg",
+    "logo": "assets/logos-symbol/hrdf.png"
+  },
+  {
+    "id": "neom",
+    "nameAr": "نيوم",
+    "shortAr": "نيوم",
+    "type": "project",
+    "tier": "A",
+    "site": "https://www.neom.com",
+    "tierVerified": false
+  },
+  {
+    "id": "qiddiya",
+    "nameAr": "القدية",
+    "shortAr": "القدية",
+    "type": "project",
+    "tier": "A",
+    "site": "https://qiddiya.com",
+    "tierVerified": false,
+    "lockup": "assets/logos/qiddiya.png",
+    "logo": "assets/logos-symbol/qiddiya.png"
+  },
+  {
+    "id": "redsea",
+    "nameAr": "البحر الأحمر الدولية",
+    "shortAr": "البحر الأحمر",
+    "type": "project",
+    "tier": "A",
+    "site": "https://www.redseaglobal.com",
+    "tierVerified": false,
+    "lockup": "assets/logos/redsea.png",
+    "crop": {
+      "x": 0,
+      "y": 0.2925,
+      "w": 0.4175,
+      "h": 0.415
+    },
+    "logo": "assets/logos-symbol/redsea.png"
+  },
+  {
+    "id": "roshn",
+    "nameAr": "روشن",
+    "shortAr": "روشن",
+    "type": "project",
+    "tier": "A",
+    "site": "https://www.roshn.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/roshn.png",
+    "crop": {
+      "x": 0.2475,
+      "y": 0.0475,
+      "w": 0.505,
+      "h": 0.4925
+    },
+    "logo": "assets/logos-symbol/roshn.png"
+  },
+  {
+    "id": "diriyah",
+    "nameAr": "الدرعية",
+    "shortAr": "الدرعية",
+    "type": "project",
+    "tier": "A",
+    "site": "https://www.diriyah.sa",
+    "tierVerified": false
+  },
+  {
+    "id": "aramco",
+    "nameAr": "أرامكو السعودية",
+    "shortAr": "أرامكو",
+    "type": "company",
+    "tier": "A",
+    "site": "https://www.aramco.com",
+    "tierVerified": false,
+    "lockup": "assets/logos/aramco.png",
+    "logo": "assets/logos-symbol/aramco.png"
+  },
+  {
+    "id": "sabic",
+    "nameAr": "سابك",
+    "shortAr": "سابك",
+    "type": "company",
+    "tier": "A",
+    "site": "https://www.sabic.com",
+    "tierVerified": false,
+    "lockup": "assets/logos/sabic.png",
+    "logo": "assets/logos-symbol/sabic.png"
+  },
+  {
+    "id": "maaden",
+    "nameAr": "معادن",
+    "shortAr": "معادن",
+    "type": "company",
+    "tier": "A",
+    "site": "https://www.maaden.com.sa",
+    "tierVerified": false
+  },
+  {
+    "id": "stc",
+    "nameAr": "الاتصالات السعودية (stc)",
+    "shortAr": "stc",
+    "type": "company",
+    "tier": "A",
+    "site": "https://www.stc.com.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/stc.png",
+    "crop": {
+      "x": 0.3625,
+      "y": 0.23,
+      "w": 0.2475,
+      "h": 0.54
+    },
+    "logo": "assets/logos-symbol/stc.png"
+  },
+  {
+    "id": "saudia",
+    "nameAr": "الخطوط الجوية السعودية",
+    "shortAr": "السعودية",
+    "type": "company",
+    "tier": "A",
+    "site": "https://www.saudia.com",
+    "tierVerified": false,
+    "lockup": "assets/logos/saudia.png",
+    "crop": {
+      "x": 0.21,
+      "y": 0.07,
+      "w": 0.58,
+      "h": 0.43
+    },
+    "logo": "assets/logos-symbol/saudia.png"
+  },
+  {
+    "id": "flynas",
+    "nameAr": "طيران ناس",
+    "shortAr": "ناس",
+    "type": "company",
+    "tier": "A",
+    "site": "https://www.flynas.com",
+    "tierVerified": false,
+    "lockup": "assets/logos/flynas.png",
+    "logo": "assets/logos-symbol/flynas.png"
+  },
+  {
+    "id": "riyadhair",
+    "nameAr": "طيران الرياض",
+    "shortAr": "طيران الرياض",
+    "type": "company",
+    "tier": "A",
+    "site": "https://www.riyadhair.com",
+    "tierVerified": false,
+    "lockup": "assets/logos/riyadhair.png",
+    "crop": {
+      "x": 0.048,
+      "y": 0.385,
+      "w": 0.125,
+      "h": 0.245
+    },
+    "logo": "assets/logos-symbol/riyadhair.png"
+  },
+  {
+    "id": "alrajhi",
+    "nameAr": "مصرف الراجحي",
+    "shortAr": "الراجحي",
+    "type": "company",
+    "tier": "A",
+    "site": "https://www.alrajhibank.com.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/alrajhi.png",
+    "crop": {
+      "x": 0.615,
+      "y": 0.3025,
+      "w": 0.385,
+      "h": 0.395
+    },
+    "logo": "assets/logos-symbol/alrajhi.png"
+  },
+  {
+    "id": "absher",
+    "nameAr": "أبشر",
+    "shortAr": "أبشر",
+    "type": "app",
+    "tier": "A",
+    "site": "https://www.absher.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/absher.png",
+    "logo": "assets/logos-symbol/absher.png"
+  },
+  {
+    "id": "tawakkalna",
+    "nameAr": "توكلنا",
+    "shortAr": "توكلنا",
+    "type": "app",
+    "tier": "A",
+    "site": "https://ta.sdaia.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/tawakkalna.png",
+    "crop": {
+      "x": 0.5625,
+      "y": 0.27,
+      "w": 0.4375,
+      "h": 0.46
+    },
+    "logo": "assets/logos-symbol/tawakkalna.png"
+  },
+  {
+    "id": "nafath",
+    "nameAr": "نفاذ",
+    "shortAr": "نفاذ",
+    "type": "app",
+    "tier": "A",
+    "site": "https://www.iam.gov.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/nafath.png",
+    "logo": "assets/logos-symbol/nafath.png"
+  },
+  {
+    "id": "alhilal",
+    "nameAr": "نادي الهلال",
+    "shortAr": "الهلال",
+    "type": "club",
+    "tier": "A",
+    "site": "https://www.alhilal.com",
+    "tierVerified": false,
+    "lockup": "assets/logos/alhilal.png",
+    "logo": "assets/logos-symbol/alhilal.png"
+  },
+  {
+    "id": "alnassr",
+    "nameAr": "نادي النصر",
+    "shortAr": "النصر",
+    "type": "club",
+    "tier": "A",
+    "site": "https://www.alnassr.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/alnassr.png",
+    "crop": {
+      "x": 0.2,
+      "y": 0.18,
+      "w": 0.6,
+      "h": 0.6
+    },
+    "logo": "assets/logos-symbol/alnassr.png"
+  },
+  {
+    "id": "alittihad",
+    "nameAr": "نادي الاتحاد",
+    "shortAr": "الاتحاد",
+    "type": "club",
+    "tier": "A",
+    "site": "https://www.ittihadclub.sa",
+    "tierVerified": false,
+    "lockup": "assets/logos/alittihad.png",
+    "logo": "assets/logos-symbol/alittihad.png"
+  },
+  {
+    "id": "alahli",
+    "nameAr": "نادي الأهلي",
+    "shortAr": "الأهلي",
+    "type": "club",
+    "tier": "A",
+    "site": "https://www.alahli.com",
+    "tierVerified": false,
+    "lockup": "assets/logos/alahli.png",
+    "crop": {
+      "x": 0.27,
+      "y": 0.13,
+      "w": 0.46,
+      "h": 0.3
+    },
+    "logo": "assets/logos-symbol/alahli.png"
+  }
+]

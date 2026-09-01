@@ -1,0 +1,43 @@
+.reveal {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 42vh;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.reveal-clip { overflow: hidden; }
+
+.reveal-img {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  max-width: 82%;
+  max-height: 82%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: opacity 120ms linear, filter 120ms linear, transform 120ms linear;
+}
+
+/* الظل: يُطفأ اللون تماماً فيبقى الشكل وحده */
+.reveal-shadow { filter: brightness(0) contrast(2); }
+
+.reveal-dark { background: var(--surface); }
+
+/* صور الأشخاص طولية: إطار 3:4 يكبّر الوجه بدل هدر عرض 4:3 */
+.reveal-portrait {
+  aspect-ratio: 3 / 4;
+  height: min(46vh, 400px);
+  width: auto;
+  max-height: none;
+  margin-inline: auto;
+}
+.reveal-portrait .reveal-img { max-width: 94%; max-height: 94%; }
+
+/* لوح فاتح للشعارات — أغلبها مصمَّم على خلفية بيضاء */
+.reveal-light { background: #F7F7F4; }

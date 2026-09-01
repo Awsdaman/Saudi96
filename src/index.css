@@ -1,0 +1,140 @@
+/* ── خطوط ثمانية: كل الأوزان ── */
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('../fonts/thmanyahsans-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('../fonts/thmanyahsans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('../fonts/thmanyahsans-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('../fonts/thmanyahsans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('../fonts/thmanyahsans-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Serif Display';
+  src: url('../fonts/thmanyahserifdisplay-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Serif Display';
+  src: url('../fonts/thmanyahserifdisplay-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Serif Display';
+  src: url('../fonts/thmanyahserifdisplay-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Serif Display';
+  src: url('../fonts/thmanyahserifdisplay-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Serif Display';
+  src: url('../fonts/thmanyahserifdisplay-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --green:        #006C35;
+  --green-bright: #00A651;
+  --green-dim:    #0a3d22;
+  --gold:         #C9A227;
+  --sand:         #E8DCC4;
+
+  --bg:      #0B1410;
+  --surface: #132019;
+  --raised:  #1B2C22;
+  --line:    #2A4034;
+
+  --text:   #F2F5F0;
+  --muted:  #8FA398;
+
+  --correct: #00A651;
+  --wrong:   #C0392B;
+
+  --radius: 16px;
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+
+  --font: 'Thmanyah Sans', 'Segoe UI', 'Tahoma', sans-serif;
+  /* للعناوين الكبيرة وأرقام النتيجة */
+  --font-display: 'Thmanyah Serif Display', 'Thmanyah Sans', 'Segoe UI', serif;
+
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(1100px 700px at 78% -12%, rgba(0, 166, 81, 0.14), transparent 62%),
+    radial-gradient(760px 520px at 12% 108%, rgba(201, 162, 39, 0.09), transparent 60%),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  /* الأرقام الغربية (0-9) هي المعتاد في واجهات السعودية */
+  font-variant-numeric: lining-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+button:disabled { cursor: default; }
+
+h1, h2, h3, p { margin: 0; }
+
+/* الأرقام والرموز اللاتينية داخل نص عربي — تمنع انقلاب الترتيب */
+.ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

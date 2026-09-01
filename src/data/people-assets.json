@@ -1,0 +1,310 @@
+[
+  {
+    "id": "mbs",
+    "nameAr": "الأمير محمد بن سلمان",
+    "file": "assets/people/mbs.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/%D8%A7%D9%84%D8%B5%D9%88%D8%B1%D8%A9_%D8%A7%D9%84%D8%B1%D8%B3%D9%85%D9%8A%D8%A9_%D9%84%D9%84%D8%A3%D9%85%D9%8A%D8%B1_%D9%85%D8%AD%D9%85%D8%AF_%D8%A8%D9%86_%D8%B3%D9%84%D9%85%D8%A7%D9%86_%D8%A8%D9%86_%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D8%B9%D8%B2%D9%8A%D8%B2_%D8%A2%D9%84_%D8%B3%D8%B9%D9%88%D8%AF_%28%D9%85%D9%82%D8%B5%D9%88%D8%B5%D8%A9%29.jpg/960px-%D8%A7%D9%84%D8%B5%D9%88%D8%B1%D8%A9_%D8%A7%D9%84%D8%B1%D8%B3%D9%85%D9%8A%D8%A9_%D9%84%D9%84%D8%A3%D9%85%D9%8A%D8%B1_%D9%85%D8%AD%D9%85%D8%AF_%D8%A8%D9%86_%D8%B3%D9%84%D9%85%D8%A7%D9%86_%D8%A8%D9%86_%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D8%B9%D8%B2%D9%8A%D8%B2_%D8%A2%D9%84_%D8%B3%D8%B9%D9%88%D8%AF_%28%D9%85%D9%82%D8%B5%D9%88%D8%B5%D8%A9%29.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "kbs",
+    "nameAr": "الأمير خالد بن سلمان",
+    "file": "assets/people/kbs.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Khalid_bin_Salman_Al_Saud_2025_%28cropped%29.jpg/960px-Khalid_bin_Salman_Al_Saud_2025_%28cropped%29.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "abs-energy",
+    "nameAr": "الأمير عبدالعزيز بن سلمان",
+    "file": "assets/people/abs-energy.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/27/Abdulaziz_bin_Salman_bin_Abdulaziz_Al_Saud_%282021%29_%28cropped%29.jpg/960px-Abdulaziz_bin_Salman_bin_Abdulaziz_Al_Saud_%282021%29_%28cropped%29.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "abdulaziz-saud",
+    "nameAr": "الأمير عبدالعزيز بن سعود",
+    "file": "assets/people/abdulaziz-saud.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2e/%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D8%B9%D8%B2%D9%8A%D8%B2_%D8%A8%D9%86_%D8%B3%D8%B9%D9%88%D8%AF_%D8%A8%D9%86_%D9%86%D8%A7%D9%8A%D9%81_%D8%A8%D9%86_%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D8%B9%D8%B2%D9%8A%D8%B2.jpg/960px-%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D8%B9%D8%B2%D9%8A%D8%B2_%D8%A8%D9%86_%D8%B3%D8%B9%D9%88%D8%AF_%D8%A8%D9%86_%D9%86%D8%A7%D9%8A%D9%81_%D8%A8%D9%86_%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D8%B9%D8%B2%D9%8A%D8%B2.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "abdullah-bandar",
+    "nameAr": "الأمير عبدالله بن بندر",
+    "file": "assets/people/abdullah-bandar.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D9%84%D9%87_%D8%A8%D9%86_%D8%A8%D9%86%D8%AF%D8%B1.jpg/960px-%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D9%84%D9%87_%D8%A8%D9%86_%D8%A8%D9%86%D8%AF%D8%B1.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "faisal-farhan",
+    "nameAr": "الأمير فيصل بن فرحان",
+    "file": "assets/people/faisal-farhan.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1d/Fumio_Kishida_and_Faisal_bin_Farhan_Al_Saud_20220719_%282%29_%28cropped%29.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "aljadaan",
+    "nameAr": "محمد الجدعان",
+    "file": "assets/people/aljadaan.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Mohammed_al-Jadaan_at_2018_World_Economic_Forum_2023.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "alibrahim",
+    "nameAr": "فيصل الإبراهيم",
+    "file": "assets/people/alibrahim.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/%D9%81%D9%8A%D8%B5%D9%84_%D8%A7%D9%84%D8%A5%D8%A8%D8%B1%D8%A7%D9%87%D9%8A%D9%85.jpg/960px-%D9%81%D9%8A%D8%B5%D9%84_%D8%A7%D9%84%D8%A5%D8%A8%D8%B1%D8%A7%D9%87%D9%8A%D9%85.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "alqasabi",
+    "nameAr": "ماجد القصبي",
+    "file": "assets/people/alqasabi.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f8/%D9%85%D8%A7%D8%AC%D8%AF_%D8%A8%D9%86_%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D9%84%D9%87_%D8%A7%D9%84%D9%82%D8%B5%D8%A8%D9%8A.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "albenyan",
+    "nameAr": "يوسف البنيان",
+    "file": "assets/people/albenyan.png",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/7/75/Yousef_Al-Benyan_%28born_1962%29_at_World_Economic_Forum_Growth_Summit_2023.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "aljalajel",
+    "nameAr": "فهد الجلاجل",
+    "file": "assets/people/aljalajel.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Minister-Fahad.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "alrabiah",
+    "nameAr": "توفيق الربيعة",
+    "file": "assets/people/alrabiah.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/%D8%AA%D9%88%D9%81%D9%8A%D9%82_%D8%A7%D9%84%D8%B1%D8%A8%D9%8A%D8%B9%D8%A9.jpg/960px-%D8%AA%D9%88%D9%81%D9%8A%D9%82_%D8%A7%D9%84%D8%B1%D8%A8%D9%8A%D8%B9%D8%A9.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "alhogail",
+    "nameAr": "ماجد الحقيل",
+    "file": "assets/people/alhogail.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/3/38/%D9%88%D8%B2%D9%8A%D8%B1_%D8%A7%D9%84%D8%A3%D8%B3%D9%83%D8%A7%D9%86_%D8%A7%D9%84%D8%A3%D8%B3%D8%AA%D8%A7%D8%B0_%D9%85%D8%A7%D8%AC%D8%AF_%D8%A7%D9%84%D8%AD%D9%82%D9%8A%D9%84.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "alsamaani",
+    "nameAr": "وليد الصمعاني",
+    "file": "assets/people/alsamaani.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b4/Waleed_Alsamaani.jpg/960px-Waleed_Alsamaani.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "aljasser",
+    "nameAr": "صالح الجاسر",
+    "file": "assets/people/aljasser.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/%D8%B5%D8%A7%D9%84%D8%AD_%D8%A7%D9%84%D8%AC%D8%A7%D8%B3%D8%B1.jpg/960px-%D8%B5%D8%A7%D9%84%D8%AD_%D8%A7%D9%84%D8%AC%D8%A7%D8%B3%D8%B1.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "alsaif",
+    "nameAr": "فهد آل سيف",
+    "file": "assets/people/alsaif.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/%D9%81%D9%87%D8%AF_%D8%A2%D9%84_%D8%B3%DB%8C%D9%81.jpg/960px-%D9%81%D9%87%D8%AF_%D8%A2%D9%84_%D8%B3%DB%8C%D9%81.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "alrajhi-min",
+    "nameAr": "أحمد الراجحي",
+    "file": "assets/people/alrajhi-min.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/21/%D8%A3%D8%AD%D9%85%D8%AF_%D8%B3%D9%84%D9%8A%D9%85%D8%A7%D9%86_%D8%A7%D9%84%D8%B1%D8%A7%D8%AC%D8%AD%D9%8A.jpg/960px-%D8%A3%D8%AD%D9%85%D8%AF_%D8%B3%D9%84%D9%8A%D9%85%D8%A7%D9%86_%D8%A7%D9%84%D8%B1%D8%A7%D8%AC%D8%AD%D9%8A.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "alkhateeb",
+    "nameAr": "أحمد الخطيب",
+    "file": "assets/people/alkhateeb.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fd/AK_photo_1_%28main_photo%29.jpg/960px-AK_photo_1_%28main_photo%29.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "king-abdulaziz",
+    "nameAr": "الملك عبدالعزيز آل سعود",
+    "file": "assets/people/king-abdulaziz.png",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/Ibn_Saud.png/960px-Ibn_Saud.png?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "king-saud",
+    "nameAr": "الملك سعود بن عبدالعزيز",
+    "file": "assets/people/king-saud.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/ar/8/8e/Gfdg.JPG?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "king-faisal",
+    "nameAr": "الملك فيصل بن عبدالعزيز",
+    "file": "assets/people/king-faisal.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e7/King_Faisal_bin_Abdulaziz.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "king-khalid",
+    "nameAr": "الملك خالد بن عبدالعزيز",
+    "file": "assets/people/king-khalid.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/8/83/Khalid_II_of_Saudi_Arabia_portrait.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "king-fahd",
+    "nameAr": "الملك فهد بن عبدالعزيز",
+    "file": "assets/people/king-fahd.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Fahd_of_Saudi_Arabia_Portrait.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "king-abdullah",
+    "nameAr": "الملك عبدالله بن عبدالعزيز",
+    "file": "assets/people/king-abdullah.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d5/King_Abdullah_bin_Abdul_al-Saud_January_2007.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "king-salman",
+    "nameAr": "الملك سلمان بن عبدالعزيز",
+    "file": "assets/people/king-salman.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/%D8%A7%D9%84%D8%B5%D9%88%D8%B1%D8%A9_%D8%A7%D9%84%D8%B1%D8%B3%D9%85%D9%8A%D8%A9_%D9%84%D8%AE%D8%A7%D8%AF%D9%85_%D8%A7%D9%84%D8%AD%D8%B1%D9%85%D9%8A%D9%86_%D8%A7%D9%84%D8%B4%D8%B1%D9%8A%D9%81%D9%8A%D9%86_%D8%A7%D9%84%D9%85%D9%84%D9%83_%D8%B3%D9%84%D9%85%D8%A7%D9%86_%D8%A8%D9%86_%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D8%B9%D8%B2%D9%8A%D8%B2_%D8%A2%D9%84_%D8%B3%D8%B9%D9%88%D8%AF.jpg/960px-%D8%A7%D9%84%D8%B5%D9%88%D8%B1%D8%A9_%D8%A7%D9%84%D8%B1%D8%B3%D9%85%D9%8A%D8%A9_%D9%84%D8%AE%D8%A7%D8%AF%D9%85_%D8%A7%D9%84%D8%AD%D8%B1%D9%85%D9%8A%D9%86_%D8%A7%D9%84%D8%B4%D8%B1%D9%8A%D9%81%D9%8A%D9%86_%D8%A7%D9%84%D9%85%D9%84%D9%83_%D8%B3%D9%84%D9%85%D8%A7%D9%86_%D8%A8%D9%86_%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D8%B9%D8%B2%D9%8A%D8%B2_%D8%A2%D9%84_%D8%B3%D8%B9%D9%88%D8%AF.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "gov-riyadh",
+    "nameAr": "الأمير فيصل بن بندر بن عبدالعزيز",
+    "file": "assets/people/gov-riyadh.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/5/59/Faisal_bin_Bandar_bin_Abdulaziz.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "gov-makkah",
+    "nameAr": "الأمير خالد الفيصل",
+    "file": "assets/people/gov-makkah.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/1/14/Khalid_al_Faisal.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "gov-madinah",
+    "nameAr": "الأمير سلمان بن سلطان بن عبدالعزيز",
+    "file": "assets/people/gov-madinah.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c5/Salman_bin_Sultan_bin_Abdulaziz_Al_Saud.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "gov-qassim",
+    "nameAr": "الأمير فيصل بن مشعل بن سعود",
+    "file": "assets/people/gov-qassim.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Prince_Faisal_bin_Mishal_Al_Saud_Portrait_2026.jpg/960px-Prince_Faisal_bin_Mishal_Al_Saud_Portrait_2026.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "gov-asir",
+    "nameAr": "الأمير تركي بن طلال بن عبدالعزيز",
+    "file": "assets/people/gov-asir.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/Prince-Turki_bin_Talal_bin_Al_Saud.jpg/960px-Prince-Turki_bin_Talal_bin_Al_Saud.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "gov-northern",
+    "nameAr": "الأمير فيصل بن خالد بن سلطان",
+    "file": "assets/people/gov-northern.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/ar/6/6f/%D9%81%D9%8A%D8%B5%D9%84_%D8%A8%D9%86_%D8%AE%D8%A7%D9%84%D8%AF_%D8%A8%D9%86_%D8%B3%D9%84%D8%B7%D8%A7%D9%86_%D8%A2%D9%84_%D8%B3%D8%B9%D9%88%D8%AF.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "sultan-bin-salman",
+    "nameAr": "الأمير سلطان بن سلمان",
+    "file": "assets/people/sultan-bin-salman.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/9/94/Sultan_Salman_Al-Saud.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "rayyanah",
+    "nameAr": "ريانة برناوي",
+    "file": "assets/people/rayyanah.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c7/Rayyanah_Barnawi_%28cropped%29.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "ali-alqarni",
+    "nameAr": "علي القرني",
+    "file": "assets/people/ali-alqarni.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/7/77/Ali_AlQarni_%28cropped%29.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "majed-abdullah",
+    "nameAr": "ماجد عبدالله",
+    "file": "assets/people/majed-abdullah.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/c/cf/Majed_abdullah_%D9%85%D8%A7%D8%AC%D8%AF_%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D9%84%D9%87.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "salem-aldawsari",
+    "nameAr": "سالم الدوسري",
+    "file": "assets/people/salem-aldawsari.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fd/Salem_Al-Dawsari_%28Saudi_Arabia_v_Uruguay%2C_June_2026%29_%28cropped%29.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "alqahtani",
+    "nameAr": "ياسر القحطاني",
+    "file": "assets/people/alqahtani.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/2/2a/Yasser_Al-Qahtani_2010.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "mohammed-abdu",
+    "nameAr": "محمد عبده",
+    "file": "assets/people/mohammed-abdu.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fd/Mohammed_Abdu.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "talal-maddah",
+    "nameAr": "طلال مداح",
+    "file": "assets/people/talal-maddah.png",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/3/37/%D8%A7%D9%84%D9%81%D9%86%D8%A7%D9%86_%D8%B7%D9%84%D8%A7%D9%84_%D9%85%D8%AF%D8%A7%D8%AD.png?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "abadi-aljohar",
+    "nameAr": "عبادي الجوهر",
+    "file": "assets/people/abadi-aljohar.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/4/44/Abadi_Al-Johar.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "amin-nasser",
+    "nameAr": "أمين الناصر",
+    "file": "assets/people/amin-nasser.png",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1c/Amin_Hassan_Nasser_at_WEF_Special_Meeting_on_Global_Collaboration%2C_Growth_and_Energy_for_Development%2C_2024.png?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "yasir-alrumayyan",
+    "nameAr": "ياسر الرميان",
+    "file": "assets/people/yasir-alrumayyan.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/Yasir_Al-Rumayyan_Argentina_v_Spain_19_July_2026-285.jpg/960px-Yasir_Al-Rumayyan_Argentina_v_Spain_19_July_2026-285.jpg?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail"
+  },
+  {
+    "id": "khamis-ramthan",
+    "nameAr": "خميس بن رمثان",
+    "file": "assets/people/khamis-ramthan.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://upload.wikimedia.org/wikipedia/ar/c/c4/Khamis_Ibn_Rimthan.JPG?utm_source=ar.wikipedia.org&utm_campaign=api&utm_content=thumbnail_unscaled"
+  },
+  {
+    "id": "owairan",
+    "nameAr": "سعيد العويران",
+    "file": "assets/people/owairan.jpg",
+    "source": "ar.wikipedia",
+    "sourceUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Saeed_Al-Owairan_at_the_2025_RSFF.jpg/960px-Saeed_Al-Owairan_at_the_2025_RSFF.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail"
+  }
+]

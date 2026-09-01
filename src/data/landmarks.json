@@ -1,0 +1,354 @@
+[
+  {
+    "id": "hegra",
+    "nameAr": "الحِجر (مدائن صالح)",
+    "regionAr": "المدينة المنورة",
+    "category": "unesco",
+    "noteAr": "العاصمة الجنوبية للأنباط، وفيها 111 واجهة مقبرة منحوتة في الصخر. أول موقع سعودي يُسجَّل في اليونسكو عام 2008.",
+    "image": "assets/landmarks/hegra.jpg"
+  },
+  {
+    "id": "turaif",
+    "nameAr": "حي الطريف بالدرعية",
+    "regionAr": "الرياض",
+    "category": "unesco",
+    "noteAr": "عاصمة الدولة السعودية الأولى، بعمارة نجدية من الطين. سُجِّل عام 2010.",
+    "image": "assets/landmarks/turaif.jpg"
+  },
+  {
+    "id": "albalad",
+    "nameAr": "جدة التاريخية (البلد)",
+    "regionAr": "مكة المكرمة",
+    "category": "unesco",
+    "noteAr": "بوابة مكة، ببيوت الحجر البحري والرواشين الخشبية. سُجِّل عام 2014.",
+    "image": "assets/landmarks/albalad.jpg"
+  },
+  {
+    "id": "jubbah",
+    "nameAr": "الفن الصخري في حائل",
+    "regionAr": "حائل",
+    "category": "unesco",
+    "noteAr": "نقوش جُبّة والشويمس على جبل أم سنمان. سُجِّل عام 2015.",
+    "image": "assets/landmarks/jubbah.jpg"
+  },
+  {
+    "id": "alahsa",
+    "nameAr": "واحة الأحساء",
+    "regionAr": "الشرقية",
+    "category": "unesco",
+    "noteAr": "أكبر واحة في العالم، بنحو 2.3 مليون نخلة.",
+    "image": "assets/landmarks/alahsa.jpg"
+  },
+  {
+    "id": "hima",
+    "nameAr": "منطقة حِمى الثقافية",
+    "regionAr": "نجران",
+    "category": "unesco",
+    "noteAr": "نقوش وكتابات على طريق قوافل قديم.",
+    "image": "assets/landmarks/hima.jpg"
+  },
+  {
+    "id": "uruq",
+    "nameAr": "محمية عروق بني معارض",
+    "regionAr": "الرياض",
+    "category": "unesco",
+    "noteAr": "أول موقع طبيعي سعودي في اليونسكو (2023)، وفيه القطيع الحر الوحيد من المها العربي في العالم.",
+    "image": "assets/landmarks/uruq.jpg"
+  },
+  {
+    "id": "alfaw",
+    "nameAr": "قرية الفاو الأثرية",
+    "regionAr": "الرياض",
+    "category": "unesco",
+    "noteAr": "عاصمة مملكة كِندة في وادي الدواسر. سُجِّلت عام 2024.",
+    "image": null
+  },
+  {
+    "id": "haram",
+    "nameAr": "المسجد الحرام",
+    "regionAr": "مكة المكرمة",
+    "category": "religious",
+    "noteAr": "أكبر مسجد في العالم، وتتوسطه الكعبة المشرفة قبلة المسلمين.",
+    "image": "assets/landmarks/haram.jpg"
+  },
+  {
+    "id": "nabawi",
+    "nameAr": "المسجد النبوي",
+    "regionAr": "المدينة المنورة",
+    "category": "religious",
+    "noteAr": "بناه النبي ﷺ، وفيه قبره والقبة الخضراء.",
+    "image": "assets/landmarks/nabawi.jpg"
+  },
+  {
+    "id": "quba",
+    "nameAr": "مسجد قباء",
+    "regionAr": "المدينة المنورة",
+    "category": "religious",
+    "noteAr": "أول مسجد بُني في الإسلام.",
+    "image": "assets/landmarks/quba.jpg"
+  },
+  {
+    "id": "qiblatayn",
+    "nameAr": "مسجد القبلتين",
+    "regionAr": "المدينة المنورة",
+    "category": "religious",
+    "noteAr": "حيث تحوّلت القبلة من بيت المقدس إلى الكعبة.",
+    "image": "assets/landmarks/qiblatayn.jpg"
+  },
+  {
+    "id": "nour",
+    "nameAr": "جبل النور",
+    "regionAr": "مكة المكرمة",
+    "category": "religious",
+    "noteAr": "فيه غار حراء حيث نزل الوحي أول مرة.",
+    "image": "assets/landmarks/nour.jpg"
+  },
+  {
+    "id": "masmak",
+    "nameAr": "قصر المصمك",
+    "regionAr": "الرياض",
+    "category": "historic",
+    "noteAr": "حصن من الطين واللبن، استعاد منه الملك عبدالعزيز الرياض عام 1902.",
+    "image": "assets/landmarks/masmak.jpg"
+  },
+  {
+    "id": "murabba",
+    "nameAr": "قصر المربع",
+    "regionAr": "الرياض",
+    "category": "historic",
+    "noteAr": "قصر الملك عبدالعزيز ضمن مركز الملك عبدالعزيز التاريخي.",
+    "image": null
+  },
+  {
+    "id": "rijal",
+    "nameAr": "قرية رجال ألمع",
+    "regionAr": "عسير",
+    "category": "historic",
+    "noteAr": "قرية تراثية من الحجر والكوارتز، تشتهر بفن القط العسيري.",
+    "image": "assets/landmarks/rijal.jpg"
+  },
+  {
+    "id": "dheeayn",
+    "nameAr": "قرية ذي عين الأثرية",
+    "regionAr": "الباحة",
+    "category": "historic",
+    "noteAr": "القرية الرخامية، مبنية على نتوء من الكوارتز الأبيض.",
+    "image": "assets/landmarks/dheeayn.jpg"
+  },
+  {
+    "id": "dumat",
+    "nameAr": "دومة الجندل وقلعة مارد",
+    "regionAr": "الجوف",
+    "category": "historic",
+    "noteAr": "بلدة واحة قديمة، وفيها مسجد عمر.",
+    "image": "assets/landmarks/dumat.jpg"
+  },
+  {
+    "id": "rajajil",
+    "nameAr": "أعمدة الرجاجيل",
+    "regionAr": "الجوف",
+    "category": "historic",
+    "noteAr": "أحجار قائمة عمرها نحو 6000 سنة، تُلقَّب بستونهنج الجزيرة العربية.",
+    "image": null
+  },
+  {
+    "id": "ushaiger",
+    "nameAr": "قرية أشيقر التراثية",
+    "regionAr": "الرياض",
+    "category": "historic",
+    "noteAr": "بلدة نجدية مرمّمة من الطين.",
+    "image": "assets/landmarks/ushaiger.jpg"
+  },
+  {
+    "id": "tarout",
+    "nameAr": "قلعة تاروت",
+    "regionAr": "الشرقية",
+    "category": "historic",
+    "noteAr": "من أقدم المواقع المأهولة في المنطقة.",
+    "image": "assets/landmarks/tarout.jpg"
+  },
+  {
+    "id": "shubra",
+    "nameAr": "قصر شبرا",
+    "regionAr": "مكة المكرمة",
+    "category": "historic",
+    "noteAr": "في الطائف، وفيه تُوفي الملك عبدالعزيز عام 1953.",
+    "image": "assets/landmarks/shubra.jpg"
+  },
+  {
+    "id": "tayma",
+    "nameAr": "تيماء",
+    "regionAr": "تبوك",
+    "category": "historic",
+    "noteAr": "من أقدم الواحات المأهولة في الجزيرة، وفيها بئر هدّاج.",
+    "image": "assets/landmarks/tayma.jpg"
+  },
+  {
+    "id": "edge",
+    "nameAr": "حافة العالم (جبل فِهرين)",
+    "regionAr": "الرياض",
+    "category": "natural",
+    "noteAr": "منحدرات جبل طويق الصخرية على نحو 90 كم شمال غرب الرياض.",
+    "image": "assets/landmarks/edge.jpg"
+  },
+  {
+    "id": "elephant",
+    "nameAr": "صخرة الفيل (جبل الفيل)",
+    "regionAr": "المدينة المنورة",
+    "category": "natural",
+    "noteAr": "تكوين رملي طبيعي في العلا على هيئة فيل.",
+    "image": "assets/landmarks/elephant.jpg"
+  },
+  {
+    "id": "disah",
+    "nameAr": "وادي الديسة",
+    "regionAr": "تبوك",
+    "category": "natural",
+    "noteAr": "وادٍ مليء بالنخيل بين أعمدة رملية شاهقة.",
+    "image": "assets/landmarks/disah.jpg"
+  },
+  {
+    "id": "qarah",
+    "nameAr": "جبل القارة",
+    "regionAr": "الشرقية",
+    "category": "natural",
+    "noteAr": "في الأحساء، بكهوف وممرات باردة.",
+    "image": null
+  },
+  {
+    "id": "lajab",
+    "nameAr": "وادي لجب",
+    "regionAr": "جازان",
+    "category": "natural",
+    "noteAr": "شِعب ضيق أخضر تجري فيه المياه.",
+    "image": "assets/landmarks/lajab.jpg"
+  },
+  {
+    "id": "farasan",
+    "nameAr": "جزر فرسان",
+    "regionAr": "جازان",
+    "category": "natural",
+    "noteAr": "أرخبيل محمي في البحر الأحمر، بشعاب مرجانية وغزال عربي.",
+    "image": "assets/landmarks/farasan.jpg"
+  },
+  {
+    "id": "fifa",
+    "nameAr": "جبال فيفاء",
+    "regionAr": "جازان",
+    "category": "natural",
+    "noteAr": "قمم مدرّجة كثيراً ما تعلو فوق السحاب.",
+    "image": null
+  },
+  {
+    "id": "khaybar",
+    "nameAr": "حرة خيبر",
+    "regionAr": "المدينة المنورة",
+    "category": "natural",
+    "noteAr": "حقل بركاني فيه مخروط جبل البيضاء الأبيض والأسود.",
+    "image": "assets/landmarks/khaybar.jpg"
+  },
+  {
+    "id": "sawda",
+    "nameAr": "جبل السودة",
+    "regionAr": "عسير",
+    "category": "natural",
+    "noteAr": "أعلى قمة في المملكة رسمياً عند 3015 متراً.",
+    "image": "assets/landmarks/sawda.jpg"
+  },
+  {
+    "id": "kingdomcentre",
+    "nameAr": "برج المملكة",
+    "regionAr": "الرياض",
+    "category": "modern",
+    "noteAr": "نحو 302 متر، بقمته القوس المقلوب والجسر المعلّق.",
+    "image": "assets/landmarks/kingdomcentre.jpeg"
+  },
+  {
+    "id": "faisaliah",
+    "nameAr": "برج الفيصلية",
+    "regionAr": "الرياض",
+    "category": "modern",
+    "noteAr": "هرمي الشكل بكرة زجاجية، وأول ناطحة سحاب في المملكة.",
+    "image": "assets/landmarks/faisaliah.jpg"
+  },
+  {
+    "id": "abrajalbait",
+    "nameAr": "أبراج البيت (برج الساعة)",
+    "regionAr": "مكة المكرمة",
+    "category": "modern",
+    "noteAr": "مجمع من سبعة أبراج بجوار المسجد الحرام، وبرج الساعة نحو 601 متر.",
+    "image": "assets/landmarks/abrajalbait.jpg"
+  },
+  {
+    "id": "fountain",
+    "nameAr": "نافورة الملك فهد",
+    "regionAr": "مكة المكرمة",
+    "category": "modern",
+    "noteAr": "في جدة، أطول نافورة من نوعها في العالم.",
+    "image": "assets/landmarks/fountain.jpg"
+  },
+  {
+    "id": "ithra",
+    "nameAr": "مركز الملك عبدالعزيز الثقافي العالمي (إثراء)",
+    "regionAr": "الشرقية",
+    "category": "modern",
+    "noteAr": "في الظهران، من تصميم سنوهيتا، بُني بجوار بئر الدمام رقم 7.",
+    "image": null
+  },
+  {
+    "id": "maraya",
+    "nameAr": "مرايا",
+    "regionAr": "المدينة المنورة",
+    "category": "modern",
+    "noteAr": "قاعة حفلات في العلا مكسوّة بالمرايا، وأكبر مبنى مرآوي في العالم.",
+    "image": null
+  },
+  {
+    "id": "kafd",
+    "nameAr": "مركز الملك عبدالله المالي",
+    "regionAr": "الرياض",
+    "category": "modern",
+    "noteAr": "حي أعمال بمحطة مترو من تصميم زها حديد.",
+    "image": "assets/landmarks/kafd.jpg"
+  },
+  {
+    "id": "causeway",
+    "nameAr": "جسر الملك فهد",
+    "regionAr": "الشرقية",
+    "category": "modern",
+    "noteAr": "طريق بطول 25 كم يربط المملكة بالبحرين، افتُتح عام 1986.",
+    "image": "assets/landmarks/causeway.jpg"
+  },
+  {
+    "id": "mukaab",
+    "nameAr": "المكعب (المربع الجديد)",
+    "regionAr": "الرياض",
+    "category": "modern",
+    "noteAr": "مبنى مكعّب معْلَم في قلب وسط مدينة جديد.",
+    "image": "assets/landmarks/mukaab.png"
+  },
+  {
+    "id": "moi-building",
+    "nameAr": "مبنى وزارة الداخلية",
+    "regionAr": "الرياض",
+    "category": "architecture",
+    "noteAr": "هرم مقلوب تعلوه قبة، ارتفاعه 55 متراً، اكتمل عام 1992، ويُلقَّب بالصحن الطائر.",
+    "image": "assets/landmarks/moi-building.jpg"
+  },
+  {
+    "id": "mofa-building",
+    "nameAr": "مبنى وزارة الخارجية",
+    "regionAr": "الرياض",
+    "category": "architecture",
+    "noteAr": "من تصميم هنينغ لارسن، وحاز جائزة الآغا خان للعمارة.",
+    "image": null
+  },
+  {
+    "id": "national-museum",
+    "nameAr": "المتحف الوطني السعودي",
+    "regionAr": "الرياض",
+    "category": "architecture",
+    "noteAr": "افتُتح عام 1999 ضمن مركز الملك عبدالعزيز التاريخي.",
+    "image": null
+  }
+]

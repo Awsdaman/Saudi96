@@ -1,0 +1,112 @@
+.pres {
+  min-height: 100dvh;
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 26px 22px 50px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.pres-idle { justify-content: center; align-items: center; text-align: center; }
+
+.pres-brand {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  color: var(--green-bright);
+}
+
+.pres-hint { color: var(--muted); line-height: 1.9; }
+.pres-wait { color: var(--gold); margin-top: 18px; }
+
+.pres-bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.pres-round { font-weight: 700; color: var(--text); }
+.pres-score { margin-inline-start: auto; color: var(--gold); }
+
+.pres-q { font-size: 1.15rem; line-height: 1.7; color: var(--muted); }
+
+/* الإجابة هي غرض هذه الشاشة كلها، فتأخذ أوضح تنسيق */
+.pres-answer-wrap {
+  background: rgba(0, 166, 81, 0.13);
+  border: 2px solid var(--correct);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+}
+
+.pres-label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--green-bright);
+  margin-bottom: 6px;
+}
+
+.pres-answer {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4.5vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.pres-img {
+  display: grid;
+  place-items: center;
+  background: #F7F7F4;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px;
+  max-height: 210px;
+}
+
+.pres-img img { max-width: 100%; max-height: 190px; object-fit: contain; }
+
+.pres-options { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+
+.pres-options li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 13px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.pres-options li.is-correct {
+  border-color: var(--correct);
+  background: rgba(0, 166, 81, 0.12);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.pres-num {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.07);
+  font-size: 0.75rem;
+}
+
+.pres-explain {
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 0.95rem;
+  border-inline-start: 3px solid var(--line);
+  padding-inline-start: 12px;
+}
+
+.pres-state { color: var(--gold); font-size: 0.88rem; }
