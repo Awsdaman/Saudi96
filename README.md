@@ -19,6 +19,24 @@ npm run build
 
 Then double-click **`dist/index.html`**.
 
+### On another machine
+
+The repo does not carry `dist/` — it is rebuilt from source. On the other machine, with
+**Node 20 or newer** installed (built on Node 24):
+
+```bash
+git clone <repo-url> SaudiKnowledge
+cd SaudiKnowledge
+npm install
+npm run build
+```
+
+Then open `dist/index.html`. Nothing else is needed — no server, no network, no API key;
+the whole game including every image is on disk.
+
+If that machine has no Node at all, build here and copy the `dist/` folder across by USB or
+cloud drive. It is fully self-contained and opens the same way.
+
 Note the root `index.html` is Vite's *source* template — it points at `/src/main.tsx` and
 shows a blank page if opened directly. Always open the one inside `dist/`.
 
@@ -32,9 +50,10 @@ Three build settings exist specifically so `file://` works, and all three are re
   in `<head>` — without `defer` the bundle runs before `<div id="root">` exists and the page
   stays blank. The script fails the build if `defer` is ever missing.
 
-## The six tiles
+## The seven tiles
 
-The home screen is the title, then six square tiles in a 3×2 grid (2 columns on narrow screens).
+The home screen is the title, then seven square tiles in a 4+3 grid (3 columns below 980px,
+2 on narrow screens).
 
 | Tile | What it asks | Format |
 |---|---|---|
@@ -43,7 +62,7 @@ The home screen is the title, then six square tiles in a 3×2 grid (2 columns on
 | خمّن المنطقة | Regional capitals and scenes | Multiple choice |
 | خمّن الطبق | The 13 official regional dishes | Multiple choice |
 | أسئلة معرفية | 285 questions across 13 categories | Multiple choice |
-| خمّن الشخصية | Identify a minister, or name the post they hold | Multiple choice |
+| خمّن الشخصية | Identify a king, minister, governor or notable figure — or name their post, region, reign or claim to fame | Multiple choice |
 | لعبتي | Pick any mix of categories and build your own round | Multiple choice |
 
 Only the logo round *requires* images. The others generate text questions when an image is
