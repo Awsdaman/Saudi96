@@ -30,10 +30,16 @@ Then double-click **`dist/index.html`**.
 The repository is public and Pages is live at
 **<https://awsdaman.github.io/Saudi96/>** — no server, no install, just the link.
 
-The workflow passes `enablement: true`, so it provisions Pages itself; there is no setting to
-touch. Note that Pages cannot be enabled on a *private* repository on the free plan — the
-first four runs of this workflow failed at `configure-pages` for exactly that reason while
-the repo was still private, with every build step before it passing.
+The workflow builds `main` and force-pushes `dist/` to the **`gh-pages`** branch, which is
+what Pages serves. It runs `validate` and `lint` first, so a broken content edit fails the
+deploy instead of shipping.
+
+It does *not* use `actions/deploy-pages`. That path calls the Pages REST API to create the
+site, and the workflow token is refused there — `Resource not accessible by integration` —
+because this repository's Actions token is read-only by default. Pushing a `gh-pages` branch
+to a public repository enables Pages without touching that API at all. (Before the repo was
+public, the same step failed for a different reason: Pages is disabled outright on private
+repos on the free plan.)
 
 Once enabled the game is at `https://<user>.github.io/Saudi96/` and needs no further setup:
 

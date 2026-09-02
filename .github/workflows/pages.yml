@@ -5,24 +5,25 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# GITHUB_TOKEN يحتاج صلاحية الكتابة على Pages، والـid-token للنشر الموثّق
+# الدفع إلى فرع gh-pages يحتاج الكتابة على المحتوى وحده.
+# لا صلاحيات pages/id-token هنا: مسار actions/deploy-pages يستدعي
+# واجهة Pages لإنشاء الموقع، ورمزُ سير العمل لا يملكها في هذا
+# المستودع — «Resource not accessible by integration». وفرعُ
+# gh-pages في مستودع عام يُفعّل Pages من تلقائه بلا تلك الواجهة.
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
-# نشرٌ واحد في كل وقت؛ ولا يُلغى الجاري كي لا يبقى الموقع نصفَ منشور
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -30,27 +31,21 @@ jobs:
       # ci لا install: يلتزم بـpackage-lock.json حرفياً
       - run: npm ci
 
-      # فحص المحتوى قبل البناء — روابط مكسورة وصور مفقودة ومجالات أرقام معكوسة
+      # فحص المحتوى قبل البناء — صور مفقودة ومراجع مكسورة ومجالات أرقام معكوسة
       - run: npm run validate
       - run: npm run lint
       - run: npm run build
 
-      # enablement يُفعّل Pages بنفسه في أول تشغيل إن سمحت الخطة،
-      # فلا يبقى إلا اختيار المصدر مرّة واحدة في إعدادات المستودع
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: دفع dist إلى فرع gh-pages
+        run: |
+          set -e
+          cd dist
+          touch .nojekyll
+          git init -q -b gh-pages
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "نشر ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
