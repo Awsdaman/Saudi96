@@ -9,6 +9,7 @@ import {
 } from './game/presenter'
 import { saveBest } from './game/storage'
 import { useGame } from './game/useGame'
+import { useRoundTheme } from './game/useRoundTheme'
 import { useSurface } from './game/useSurface'
 import type { Entity, Question, RoundId } from './game/types'
 import { Credits } from './screens/Credits'
@@ -45,6 +46,17 @@ function Game() {
 
   // اتّصال شاشة المقدّم يعني أن هذه النافذة صارت معروضة على الجدار
   useSurface()
+
+  // لون الجولة النشطة: التعليمات تلوَّن باختيار المستخدم على الرئيسية،
+  // واللعب والنتيجة بجولةٍ حقيقية وحدها — «لعبتي» تُعرَّف بعنوانها
+  // المميَّز لأن معرّفها الداخلي «trivia» وعاءٌ لا هوية.
+  const isCustomRound = state.title === 'لعبتي'
+  const themeRoundId =
+    view === 'intro' ? introRound
+    : view === 'logos' || view === 'logoResults' ? 'logos'
+    : (state.phase === 'playing' || state.phase === 'results') && !isCustomRound ? state.roundId
+    : null
+  useRoundTheme(themeRoundId)
 
   useEffect(() => watchPresenterHandshake(), [])
 

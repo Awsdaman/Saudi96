@@ -34,64 +34,71 @@ export function RoundIntro({ meta, poolSize, onStart, onBack }: Props) {
 
   return (
     <div className="intro">
-      <header className="intro-head">
-        <span className="intro-icon"><RoundIcon round={meta.id} /></span>
-        <h1 className="intro-title">{meta.title}</h1>
-        <p className="intro-sub">{meta.subtitle}</p>
-      </header>
+      {/* المربّع الكبير — رقعة القيمة المستعارة للجولة، على غرار
+          الرئيسية؛ فارغةٌ بلا نسيج حين لا هوية مستعارة («لعبتي») */}
+      <div className="intro-badge" aria-hidden="true">
+        <RoundIcon round={meta.id} />
+      </div>
 
-      <section className="intro-card">
-        <h2 className="intro-h2">كيف تلعب</h2>
-        <ol className="intro-steps">
-          {meta.howTo.map((step) => <li key={step}>{step}</li>)}
-        </ol>
-      </section>
+      <div className="intro-body">
+        <header className="intro-head">
+          <h1 className="intro-title">{meta.title}</h1>
+          <p className="intro-sub">{meta.subtitle}</p>
+        </header>
 
-      <section className="intro-card">
-        <h2 className="intro-h2">كم سؤال؟</h2>
-        <div className="intro-chips">
-          {options.map((n) => (
+        <section className="intro-card">
+          <h2 className="intro-h2">كيف تلعب</h2>
+          <ol className="intro-steps">
+            {meta.howTo.map((step) => <li key={step}>{step}</li>)}
+          </ol>
+        </section>
+
+        <section className="intro-card">
+          <h2 className="intro-h2">كم سؤال؟</h2>
+          <div className="intro-chips">
+            {options.map((n) => (
+              <button
+                key={n}
+                className={`intro-chip ${count === n ? 'is-on' : ''}`}
+                onClick={() => setCount(n)}
+                aria-pressed={count === n}
+              >
+                <span className="ltr">{n}</span>
+              </button>
+            ))}
             <button
-              key={n}
-              className={`intro-chip ${count === n ? 'is-on' : ''}`}
-              onClick={() => setCount(n)}
-              aria-pressed={count === n}
+              className={`intro-chip ${count === poolSize ? 'is-on' : ''}`}
+              onClick={() => setCount(poolSize)}
+              aria-pressed={count === poolSize}
             >
-              <span className="ltr">{n}</span>
+              الكل (<span className="ltr">{poolSize}</span>)
             </button>
-          ))}
-          <button
-            className={`intro-chip ${count === poolSize ? 'is-on' : ''}`}
-            onClick={() => setCount(poolSize)}
-            aria-pressed={count === poolSize}
+          </div>
+        </section>
+
+        <section className="intro-card">
+          <h2 className="intro-h2">تقدّم اللعبة لمجموعة؟</h2>
+          <p className="intro-note">
+            افتح شاشة المقدّم في نافذة ثانية — تعرض لك الإجابة الصحيحة وحدك.
+            ضعها على شاشتك واعرض هذه النافذة على اللاعبين.
+          </p>
+          {/* رابط لا زر: نقرة الرابط بـ target=_blank لا يحجبها مانع النوافذ المنبثقة.
+              و rel="opener" ضروري لأن المتصفحات تقطع window.opener افتراضياً،
+              وبقطعه تفشل المصافحة التي تلتقط بها النافذة الأم مقبض شاشة المقدّم. */}
+          <a
+            className={`btn btn-ghost ${presenterOpen ? 'is-live' : ''}`}
+            href="#presenter"
+            target="_blank"
+            rel="opener"
           >
-            الكل (<span className="ltr">{poolSize}</span>)
-          </button>
+            {presenterOpen ? 'شاشة المقدّم متصلة ✓' : 'افتح شاشة المقدّم'}
+          </a>
+        </section>
+
+        <div className="intro-actions">
+          <button className="btn btn-primary" onClick={start}>ابدأ</button>
+          <button className="btn btn-quiet" onClick={onBack}>رجوع</button>
         </div>
-      </section>
-
-      <section className="intro-card">
-        <h2 className="intro-h2">تقدّم اللعبة لمجموعة؟</h2>
-        <p className="intro-note">
-          افتح شاشة المقدّم في نافذة ثانية — تعرض لك الإجابة الصحيحة وحدك.
-          ضعها على شاشتك واعرض هذه النافذة على اللاعبين.
-        </p>
-        {/* رابط لا زر: نقرة الرابط بـ target=_blank لا يحجبها مانع النوافذ المنبثقة.
-            و rel="opener" ضروري لأن المتصفحات تقطع window.opener افتراضياً،
-            وبقطعه تفشل المصافحة التي تلتقط بها النافذة الأم مقبض شاشة المقدّم. */}
-        <a
-          className={`btn btn-ghost ${presenterOpen ? 'is-live' : ''}`}
-          href="#presenter"
-          target="_blank"
-          rel="opener"
-        >
-          {presenterOpen ? 'شاشة المقدّم متصلة ✓' : 'افتح شاشة المقدّم'}
-        </a>
-      </section>
-
-      <div className="intro-actions">
-        <button className="btn btn-primary" onClick={start}>ابدأ</button>
-        <button className="btn btn-quiet" onClick={onBack}>رجوع</button>
       </div>
     </div>
   )

@@ -70,6 +70,27 @@
   font-display: swap;
 }
 
+/* تسجيل --green-bright/--sadu/--green كخصائص مكتوبة (لا نصّاً مبهماً)
+   ضروريٌّ لصحّة التحوّلات (transition) عليها: بلا هذا، حين يُغيَّر
+   المتغيّر من JS بعد الرسم الأول (useRoundTheme)، تستمرّ خاصياتٌ مثل
+   border-color في قراءة القيمة الافتراضية المخبوءة عند أول رسم بدل
+   القيمة الحيّة عند كل :hover — عطلٌ لوحظ تحديداً في حدود الخيارات. */
+@property --green-bright {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #2FD07B;
+}
+@property --sadu {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #2FD07B;
+}
+@property --green {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #006C35;
+}
+
 /* ── السطحان ─────────────────────────────────────────────────
    سطحان لا نمطان. الفرق بينهما ليس ذوقاً بل مسافة نظر:
 
@@ -146,6 +167,22 @@
 
   color-scheme: light;
 }
+
+/* لون الجولة النشطة — انظر useRoundTheme.ts. جولةٌ واحدة نشطة دائماً،
+   فمتغيّرٌ واحد يكفي، ويقرأه كل مكوّنٍ يستعمل --green-bright أصلاً
+   (الحلقة، الخيارات، شريط النقاط، رقم النتيجة) بلا حاجة لمسّ ملفٍّ فيها.
+   لكل جولة قيمتان لأن اللون الرسمي صُمِّم لخلفية بيضاء؛ الليل يحتاج
+   أفتح، فتُختار القيمة المناسبة للسطح الحالي هنا، لا في JS. */
+[data-surface='night'] { --green-bright: var(--round-night, #2FD07B); }
+[data-surface='stage'] { --green-bright: var(--round-stage, #00512A); }
+/* نسيج السدو يتبع اللون نفسه أثناء الجولة — شريط التقدّم وفاصل
+   النتيجة يصيران بلون الجولة بدل لونٍ ثابت يخالفها */
+[data-surface='night'] { --sadu: var(--round-night, #2FD07B); }
+[data-surface='stage'] { --sadu: var(--round-stage, #9E2B25); }
+/* زرّ الفعل الرئيسي («ابدأ»، «جولة أخرى») يحمل خلفيةً صلبة تحت نصٍّ
+   أبيض، فيحتاج القيمة الأغمق المخصَّصة أصلاً لخلفية المسرح البيضاء —
+   وهي نفسها تجتاز 4.5:1 مع نصٍّ أبيض على السطحين معاً */
+:root { --green: var(--round-stage, #006C35); }
 
 :root {
   --font: 'Thmanyah Sans', 'Segoe UI', 'Tahoma', sans-serif;

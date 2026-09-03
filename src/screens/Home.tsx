@@ -1,5 +1,8 @@
+import type { CSSProperties } from 'react'
+import { useState } from 'react'
 import { RoundIcon } from '../components/RoundIcon'
 import { ROUNDS, poolFor } from '../game/content'
+import { DEFAULT_ICON_TILE, iconTileUrl, ROUND_THEME } from '../game/roundTheme'
 import { loadBest } from '../game/storage'
 import type { RoundId } from '../game/types'
 import './Home.css'
@@ -10,7 +13,7 @@ interface Props {
   onCredits: () => void
 }
 
-interface Tile {
+interface Row {
   key: RoundId | 'custom'
   title: string
   subtitle: string
@@ -19,7 +22,11 @@ interface Tile {
 }
 
 export function Home({ onPick, onCustom, onCredits }: Props) {
-  const tiles: Tile[] = ROUNDS.map((r) => ({
+  // معاينة السيف الكبير: الصف الذي تحت المؤشر أو التركيز، أو الافتراضي إن لم يكن شيء
+  const [previewId, setPreviewId] = useState<RoundId | null>(null)
+  const heroSrc = (previewId && iconTileUrl(previewId)) || DEFAULT_ICON_TILE
+
+  const rows: Row[] = ROUNDS.map((r) => ({
     key: r.id,
     title: r.title,
     subtitle: r.subtitle,
@@ -27,8 +34,8 @@ export function Home({ onPick, onCustom, onCredits }: Props) {
     best: loadBest(r.id),
   }))
 
-  // البطاقة السادسة: يبني اللاعب جولته بنفسه من تصنيفات البنك
-  tiles.push({
+  // الصفّ الأخير: يبني اللاعب جولته بنفسه من تصنيفات البنك
+  rows.push({
     key: 'custom',
     title: 'لعبتي',
     subtitle: 'اختر التصنيفات وابنِ جولتك',
@@ -36,34 +43,47 @@ export function Home({ onPick, onCustom, onCredits }: Props) {
     best: loadBest('custom'),
   })
 
-  const renderTile = (t: Tile) => {
-    const empty = t.count === 0
+  const renderRow = (r: Row) => {
+    const empty = r.count === 0
+    // كل جولةٍ حقيقية تستعير لوناً ونسيجاً من قيم هوية اليوم الوطني؛
+    // «لعبتي» تبقى بلا هوية مستعارة فلا مقياس CSS يُضبط لها.
+    const theme = r.key === 'custom' ? undefined : ROUND_THEME[r.key as RoundId]
+    const style = theme
+      ? ({ '--rc-night': theme.night, '--rc-stage': theme.stage } as CSSProperties)
+      : undefined
+    const preview = () => !empty && r.key !== 'custom' && setPreviewId(r.key as RoundId)
+    const clearPreview = () => setPreviewId(null)
     return (
       <button
-        key={t.key}
-        className={`tile ${empty ? 'is-empty' : ''}`}
-        onClick={() => (empty ? undefined : t.key === 'custom' ? onCustom() : onPick(t.key as RoundId))}
+        key={r.key}
+        className={`blade ${empty ? 'is-empty' : ''}`}
+        style={style}
+        onClick={() => (empty ? undefined : r.key === 'custom' ? onCustom() : onPick(r.key as RoundId))}
+        onMouseEnter={preview}
+        onMouseLeave={clearPreview}
+        onFocus={preview}
+        onBlur={clearPreview}
         disabled={empty}
       >
-        <span className="tile-icon">
-          <RoundIcon round={t.key} />
+        <span className="blade-icon"><RoundIcon round={r.key} /></span>
+        <span className="blade-body">
+          <span className="blade-title">{r.title}</span>
+          <span className="blade-sub">{r.subtitle}</span>
         </span>
-        <span className="tile-title">{t.title}</span>
-        <span className="tile-sub">{t.subtitle}</span>
-        <span className="tile-meta">
+        <span className="blade-meta">
           {empty ? (
-            <span className="tile-warn">بانتظار جلب الصور</span>
-          ) : t.count === null ? (
-            t.best > 0 ? (
-              <>أفضل نتيجة <span className="ltr">{t.best.toLocaleString('en-US')}</span></>
+            <span className="blade-warn">بانتظار جلب الصور</span>
+          ) : r.count === null ? (
+            r.best > 0 ? (
+              <>أفضل <span className="ltr">{r.best.toLocaleString('en-US')}</span></>
             ) : (
               'ابدأ من هنا'
             )
           ) : (
             <>
-              <span className="ltr">{t.count}</span> سؤال
-              {t.best > 0 && (
-                <> · أفضل <span className="ltr">{t.best.toLocaleString('en-US')}</span></>
+              <span className="ltr">{r.count}</span> سؤال
+              {r.best > 0 && (
+                <><br />أفضل <span className="ltr">{r.best.toLocaleString('en-US')}</span></>
               )}
             </>
           )}
@@ -74,18 +94,25 @@ export function Home({ onPick, onCustom, onCredits }: Props) {
 
   return (
     <div className="home">
-      <header className="home-head">
-        <h1 className="home-title">هل تعرف السعودية؟</h1>
-        <p className="home-sub">خمّن الشعارات والمعالم والمناطق والأطباق</p>
-      </header>
+      <div className="home-hero" aria-hidden="true">
+        {/* إعادة تصيير الصورة بمفتاحٍ جديد تُشغِّل حركة الدخول عند كل تبديل */}
+        <img key={heroSrc} className="home-hero-img" src={heroSrc} alt="" />
+      </div>
 
-      <div className="tile-grid">{tiles.map(renderTile)}</div>
+      <div className="home-list">
+        <header className="home-head">
+          <h1 className="home-title">هل تعرف السعودية؟</h1>
+          <p className="home-sub">سبع جولات · <span className="ltr">570</span> سؤالاً</p>
+        </header>
 
-      {/* الصور من ويكيميديا وأكثرها تشترط نسبها إلى أصحابها،
-          فيلزم أن يكون إلى القائمة سبيلٌ من حيث تُعرض */}
-      <button className="home-credits stage-hide" onClick={onCredits}>
-        مصادر الصور
-      </button>
+        <nav className="blades">{rows.map(renderRow)}</nav>
+
+        {/* الصور من ويكيميديا وأكثرها تشترط نسبها إلى أصحابها،
+            فيلزم أن يكون إلى القائمة سبيلٌ من حيث تُعرض */}
+        <button className="home-credits stage-hide" onClick={onCredits}>
+          مصادر الصور
+        </button>
+      </div>
     </div>
   )
 }

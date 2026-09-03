@@ -5,9 +5,10 @@
   max-height: 42vh;
   display: grid;
   place-items: center;
-  border: 1px solid var(--line);
+  border: 2px solid color-mix(in srgb, var(--green-bright) 55%, var(--line));
   border-radius: var(--radius);
   overflow: hidden;
+  box-shadow: var(--shadow);
 }
 
 .reveal-clip { overflow: hidden; }

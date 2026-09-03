@@ -10,6 +10,8 @@
 }
 
 .answer {
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -18,15 +20,38 @@
   min-height: 64px;
   background: var(--raised);
   border: 1.5px solid var(--line);
+  border-inline-end: 4px solid var(--line);
   border-radius: 14px;
   font-size: 1.05rem;
   line-height: 1.45;
-  transition: background 140ms, border-color 140ms, transform 140ms, color 140ms;
+  /* بلا border-color هنا عمداً: تحوّلها حين تُقرأ قيمتها من متغيّرٍ
+     يُغيَّر لاحقاً على الجذر (لون الجولة) لم يكن يُعاد تقييمه صحيحاً
+     عند كل :hover في هذا المتصفّح — قفزةٌ فوريّة أوثق من انسيابٍ معطّل */
+  transition: background 140ms, transform 140ms, color 140ms;
 }
+
+/* بريقٌ يعبر البطاقة عند لمسها — الحركة نفسها في كل مكانٍ باللعبة
+   يستعير هويةً: نصال الرئيسية، شارة التعليمات، وهذه البطاقات */
+.answer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(100deg, transparent 32%, color-mix(in srgb, var(--green-bright) 45%, transparent) 48%, transparent 64%);
+  transform: translateX(-130%);
+  transition: transform 480ms ease-out;
+  pointer-events: none;
+}
+
+.answer:hover:not(:disabled)::before,
+.answer:focus-visible::before { transform: translateX(130%); }
+
+.answer > * { position: relative; z-index: 1; }
 
 .answer:hover:not(:disabled) {
   background: color-mix(in srgb, var(--green-bright) 12%, var(--raised));
   border-color: var(--green-bright);
+  border-inline-end-color: var(--green-bright);
   transform: translateY(-2px);
 }
 
@@ -66,12 +91,14 @@
 .answer.is-correct {
   background: var(--correct-fill);
   border-color: var(--correct);
+  border-inline-end-color: var(--correct);
 }
 .answer.is-correct .answer-mark { color: var(--correct); }
 
 .answer.is-wrong {
   background: var(--wrong-fill);
   border-color: var(--wrong);
+  border-inline-end-color: var(--wrong);
 }
 .answer.is-wrong .answer-mark { color: var(--wrong); }
 

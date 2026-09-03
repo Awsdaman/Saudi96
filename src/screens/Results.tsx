@@ -25,7 +25,17 @@ export function Results({ state, isRecord, onReplay, onHome }: Props) {
     <div className="results">
       <header className="results-head">
         <p className="results-round">{round?.title}</p>
-        <h1 className="results-score ltr">{state.score.toLocaleString('en-US')}</h1>
+        <div className="results-orbit">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <circle className="orbit-track" cx="50" cy="50" r="46" pathLength="100" />
+            <circle
+              className="orbit-value"
+              cx="50" cy="50" r="46" pathLength="100"
+              style={{ strokeDasharray: `${pct} 100` }}
+            />
+          </svg>
+          <h1 className="results-score ltr">{state.score.toLocaleString('en-US')}</h1>
+        </div>
         <p className="results-verdict">{verdict}</p>
         {isRecord && <p className="results-record">رقم قياسي جديد</p>}
       </header>

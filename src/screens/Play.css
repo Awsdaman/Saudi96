@@ -20,7 +20,8 @@
   font-size: 1rem;
   font-weight: 700;
   border: 1.5px solid transparent;
-  transition: background 150ms, border-color 150ms, transform 150ms;
+  /* بلا border-color هنا عمداً — انظر التعليق نفسه في AnswerGrid.css */
+  transition: background 150ms, transform 150ms;
 }
 
 .btn:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }

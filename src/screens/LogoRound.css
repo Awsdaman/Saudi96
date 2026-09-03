@@ -63,7 +63,8 @@
   cursor: pointer;
   min-width: 30px;
   text-align: center;
-  transition: color 140ms, border-color 140ms;
+  /* بلا border-color هنا عمداً — انظر التعليق نفسه في AnswerGrid.css */
+  transition: color 140ms;
 }
 
 .chip-help:hover { color: var(--text); border-color: var(--green-bright); }
