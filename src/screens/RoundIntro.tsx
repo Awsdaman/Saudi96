@@ -63,7 +63,8 @@ export function RoundIntro({ meta, poolSize, onStart, onBack }: Props) {
                 onClick={() => setCount(n)}
                 aria-pressed={count === n}
               >
-                <span className="ltr">{n}</span>
+                <span className="chip-dot" aria-hidden="true" />
+                <span className="chip-label"><span className="ltr">{n}</span> سؤال</span>
               </button>
             ))}
             <button
@@ -71,7 +72,8 @@ export function RoundIntro({ meta, poolSize, onStart, onBack }: Props) {
               onClick={() => setCount(poolSize)}
               aria-pressed={count === poolSize}
             >
-              الكل (<span className="ltr">{poolSize}</span>)
+              <span className="chip-dot" aria-hidden="true" />
+              <span className="chip-label">الكل (<span className="ltr">{poolSize}</span>)</span>
             </button>
           </div>
         </section>

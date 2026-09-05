@@ -55,17 +55,47 @@ export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Prop
   }, [])
 
   return (
-    <div className="play">
-      <ScoreBar
-        index={state.index}
-        total={state.questions.length}
-        score={state.score}
-        streak={state.streak}
-        timeLeft={state.timeLeft}
-        totalTime={state.totalTime}
-        roundTitle={state.title}
-        paused={state.paused}
-      />
+    <div className={`play ${question.image ? 'has-image' : ''}`}>
+      <div className="ask">
+        <ScoreBar
+          index={state.index}
+          total={state.questions.length}
+          score={state.score}
+          streak={state.streak}
+          timeLeft={state.timeLeft}
+          totalTime={state.totalTime}
+          roundTitle={state.title}
+          paused={state.paused}
+        />
+
+        <h2 className="prompt">{question.prompt}</h2>
+
+        <AnswerGrid
+          options={question.options}
+          answerIndex={question.answerIndex}
+          selected={state.selected}
+          onPick={onAnswer}
+        />
+
+        <Verdict
+          show={done}
+          correct={!!last?.correct}
+          timedOut={timedOut}
+          answer={answerText}
+          points={last?.points ?? 0}
+          explanation={question.explanation}
+          last={isLast}
+          onNext={onNext}
+        />
+
+        {/* ضوابط اللاعب الفرد — تُخفى عن الشاشة المعروضة على الجدار */}
+        <div className="play-foot stage-hide">
+          <button className="btn btn-quiet" onClick={onQuit}>إنهاء الجولة</button>
+          {meta && (
+            <button className="btn btn-quiet" onClick={() => setHowTo(true)}>كيف تلعب؟</button>
+          )}
+        </div>
+      </div>
 
       {question.image && (
         <RevealImage
@@ -80,34 +110,6 @@ export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Prop
           frame={question.round === 'people' ? 'portrait' : 'wide'}
         />
       )}
-
-      <h2 className="prompt">{question.prompt}</h2>
-
-      <AnswerGrid
-        options={question.options}
-        answerIndex={question.answerIndex}
-        selected={state.selected}
-        onPick={onAnswer}
-      />
-
-      <Verdict
-        show={done}
-        correct={!!last?.correct}
-        timedOut={timedOut}
-        answer={answerText}
-        points={last?.points ?? 0}
-        explanation={question.explanation}
-        last={isLast}
-        onNext={onNext}
-      />
-
-      {/* ضوابط اللاعب الفرد — تُخفى عن الشاشة المعروضة على الجدار */}
-      <div className="play-foot stage-hide">
-        <button className="btn btn-quiet" onClick={onQuit}>إنهاء الجولة</button>
-        {meta && (
-          <button className="btn btn-quiet" onClick={() => setHowTo(true)}>كيف تلعب؟</button>
-        )}
-      </div>
 
       {howTo && meta && (
         <HowToModal title={meta.title} steps={meta.howTo} onClose={() => setHowTo(false)} />

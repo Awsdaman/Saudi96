@@ -9,21 +9,25 @@
   .answers { grid-template-columns: 1fr; }
 }
 
+/* لون الجولة هنا بالذات — خلفية بطاقة الخيار نفسها — لا خلف الشاشة
+   كلّها؛ --green-bright يحمل لون الجولة أثناء اللعب (useRoundTheme) */
 .answer {
   position: relative;
   overflow: hidden;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   text-align: right;
-  padding: 16px 18px;
-  min-height: 64px;
-  background: var(--raised);
+  padding: 22px 24px;
+  min-height: 76px;
+  background: color-mix(in srgb, var(--green-bright) 18%, var(--raised));
   border: 1.5px solid var(--line);
   border-inline-end: 4px solid var(--line);
   border-radius: 14px;
-  font-size: 1.05rem;
+  font-size: 1.2rem;
+  font-weight: 500;
   line-height: 1.45;
+  box-shadow: 0 3px 14px -6px rgba(0, 0, 0, 0.55);
   /* بلا border-color هنا عمداً: تحوّلها حين تُقرأ قيمتها من متغيّرٍ
      يُغيَّر لاحقاً على الجذر (لون الجولة) لم يكن يُعاد تقييمه صحيحاً
      عند كل :hover في هذا المتصفّح — قفزةٌ فوريّة أوثق من انسيابٍ معطّل */
@@ -49,7 +53,7 @@
 .answer > * { position: relative; z-index: 1; }
 
 .answer:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--green-bright) 12%, var(--raised));
+  background: color-mix(in srgb, var(--green-bright) 30%, var(--raised));
   border-color: var(--green-bright);
   border-inline-end-color: var(--green-bright);
   transform: translateY(-2px);

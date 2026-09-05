@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react'
 import { useState } from 'react'
 import { RoundIcon } from '../components/RoundIcon'
 import { ROUNDS, poolFor } from '../game/content'
-import { DEFAULT_ICON_TILE, iconTileUrl, ROUND_THEME } from '../game/roundTheme'
+import { DEFAULT_ICON_TILE, iconTileUrl, ROUND_THEME, tapestryUrl } from '../game/roundTheme'
 import { loadBest } from '../game/storage'
 import type { RoundId } from '../game/types'
 import './Home.css'
@@ -25,6 +25,11 @@ export function Home({ onPick, onCustom, onCredits }: Props) {
   // معاينة السيف الكبير: الصف الذي تحت المؤشر أو التركيز، أو الافتراضي إن لم يكن شيء
   const [previewId, setPreviewId] = useState<RoundId | null>(null)
   const heroSrc = (previewId && iconTileUrl(previewId)) || DEFAULT_ICON_TILE
+  // إطار المربّع الكبير يستعير لون الجولة المعاينة — بلا معاينةٍ يبقى محايداً
+  const previewTheme = previewId ? ROUND_THEME[previewId] : undefined
+  const heroStyle = previewTheme
+    ? ({ '--rc-night': previewTheme.night, '--rc-stage': previewTheme.stage } as CSSProperties)
+    : undefined
 
   const rows: Row[] = ROUNDS.map((r) => ({
     key: r.id,
@@ -48,15 +53,20 @@ export function Home({ onPick, onCustom, onCredits }: Props) {
     // كل جولةٍ حقيقية تستعير لوناً ونسيجاً من قيم هوية اليوم الوطني؛
     // «لعبتي» تبقى بلا هوية مستعارة فلا مقياس CSS يُضبط لها.
     const theme = r.key === 'custom' ? undefined : ROUND_THEME[r.key as RoundId]
+    const carpet = theme ? tapestryUrl(r.key as RoundId) : null
     const style = theme
-      ? ({ '--rc-night': theme.night, '--rc-stage': theme.stage } as CSSProperties)
+      ? ({
+          '--rc-night': theme.night,
+          '--rc-stage': theme.stage,
+          ...(carpet ? { '--rc-carpet': `url(${carpet})` } : {}),
+        } as CSSProperties)
       : undefined
     const preview = () => !empty && r.key !== 'custom' && setPreviewId(r.key as RoundId)
     const clearPreview = () => setPreviewId(null)
     return (
       <button
         key={r.key}
-        className={`blade ${empty ? 'is-empty' : ''}`}
+        className={`topic-card ${empty ? 'is-empty' : ''}`}
         style={style}
         onClick={() => (empty ? undefined : r.key === 'custom' ? onCustom() : onPick(r.key as RoundId))}
         onMouseEnter={preview}
@@ -65,54 +75,47 @@ export function Home({ onPick, onCustom, onCredits }: Props) {
         onBlur={clearPreview}
         disabled={empty}
       >
-        <span className="blade-icon"><RoundIcon round={r.key} /></span>
-        <span className="blade-body">
-          <span className="blade-title">{r.title}</span>
-          <span className="blade-sub">{r.subtitle}</span>
-        </span>
-        <span className="blade-meta">
-          {empty ? (
-            <span className="blade-warn">بانتظار جلب الصور</span>
-          ) : r.count === null ? (
-            r.best > 0 ? (
-              <>أفضل <span className="ltr">{r.best.toLocaleString('en-US')}</span></>
+        <span className="topic-card-top">
+          <span className="topic-icon"><RoundIcon round={r.key} /></span>
+          <span className="topic-count">
+            {empty ? (
+              <span className="topic-warn">قريباً</span>
+            ) : r.count === null ? (
+              'مخصّصة'
             ) : (
-              'ابدأ من هنا'
-            )
-          ) : (
-            <>
-              <span className="ltr">{r.count}</span> سؤال
-              {r.best > 0 && (
-                <><br />أفضل <span className="ltr">{r.best.toLocaleString('en-US')}</span></>
-              )}
-            </>
-          )}
+              <><span className="ltr">{r.count}</span> سؤال</>
+            )}
+          </span>
         </span>
+        <span className="topic-title">{r.title}</span>
+        <span className="topic-desc">{r.subtitle}</span>
+        {r.best > 0 && (
+          <span className="topic-best">أفضل <span className="ltr">{r.best.toLocaleString('en-US')}</span></span>
+        )}
       </button>
     )
   }
 
   return (
     <div className="home">
-      <div className="home-hero" aria-hidden="true">
-        {/* إعادة تصيير الصورة بمفتاحٍ جديد تُشغِّل حركة الدخول عند كل تبديل */}
-        <img key={heroSrc} className="home-hero-img" src={heroSrc} alt="" />
-      </div>
-
-      <div className="home-list">
+      <div className="home-top">
         <header className="home-head">
           <h1 className="home-title">هل تعرف السعودية؟</h1>
-          <p className="home-sub">سبع جولات · <span className="ltr">570</span> سؤالاً</p>
         </header>
 
-        <nav className="blades">{rows.map(renderRow)}</nav>
-
-        {/* الصور من ويكيميديا وأكثرها تشترط نسبها إلى أصحابها،
-            فيلزم أن يكون إلى القائمة سبيلٌ من حيث تُعرض */}
-        <button className="home-credits stage-hide" onClick={onCredits}>
-          مصادر الصور
-        </button>
+        <div className="home-hero" style={heroStyle} aria-hidden="true">
+          {/* إعادة تصيير الصورة بمفتاحٍ جديد تُشغِّل حركة الدخول عند كل تبديل */}
+          <img key={heroSrc} className="home-hero-img" src={heroSrc} alt="" />
+        </div>
       </div>
+
+      <nav className="topic-grid">{rows.map(renderRow)}</nav>
+
+      {/* الصور من ويكيميديا وأكثرها تشترط نسبها إلى أصحابها،
+          فيلزم أن يكون إلى القائمة سبيلٌ من حيث تُعرض */}
+      <button className="home-credits stage-hide" onClick={onCredits}>
+        مصادر الصور
+      </button>
     </div>
   )
 }

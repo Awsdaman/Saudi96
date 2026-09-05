@@ -1,10 +1,37 @@
+/* الأرضية: غسلٌ هادئ من لون الجولة يملأ الشاشة كلّها — لا عمود
+   المحتوى وحده، وإلا بقي طرفا الشاشة الواسعة أسودين لا صلة لهما
+   بالجولة. طبقةٌ ثابتة خلف كل شيء (::before) بلا نسيجٍ يزاحم القراءة؛
+   لون الجولة الأوضح يبقى في مكانه الصحيح: خلفية بطاقات الخيارات
+   نفسها (AnswerGrid.css). */
 .play {
+  position: relative;
+  z-index: 0;
   max-width: 780px;
   margin: 0 auto;
   padding: 28px 20px 60px;
+  /* هوية الجولة تصل إلى كل ما يقرأ هذه المتغيّرات — بطاقات الخيارات،
+     رقائق شريط النقاط، مسار التقدّم — بدل أن تبقى حبيسة نقطةٍ صغيرة */
+  --surface: color-mix(in srgb, var(--green-bright) 9%, var(--surface-0));
+  --raised: color-mix(in srgb, var(--green-bright) 14%, var(--raised-0));
+  --line: color-mix(in srgb, var(--green-bright) 32%, var(--line-0));
+}
+
+.play::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--green-bright) 8%, var(--bg));
+}
+
+/* عمود اللعب: الشريط، السؤال، الخيارات، الحكم — كتلةٌ واحدة تتوسّط
+   المساحة المتاحة بدل أن تلتصق بأعلى الشاشة */
+.ask {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 20px;
+  min-height: calc(100dvh - 88px);
 }
 
 .prompt {
@@ -53,6 +80,32 @@
   margin-top: 8px;
 }
 
+/* ── سؤالٌ بصورة، على شاشة الجهاز ─────────────────────────
+   عمودان: السؤال والخيارات جهةً، وإطار الصورة جهةً أخرى — من
+   تخطيط «واجهتي المخصّصة» في demos/my-customized.html، بدل عمودٍ
+   واحدٍ يُنزل الصورة فوق كل شيء. عمودٌ واحد يبقى دون صورة أو في
+   الشاشة الضيّقة، حيث لا مكان لعمودين معاً. */
+@media (min-width: 760px) {
+  .play.has-image {
+    max-width: 1120px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+    align-items: center;
+    gap: 44px;
+  }
+  .play.has-image .ask { min-height: 0; }
+  .play.has-image .prompt { text-align: start; }
+  .play.has-image .reveal {
+    max-height: none;
+    aspect-ratio: 4 / 3;
+    align-self: center;
+  }
+  .play.has-image .reveal-portrait {
+    height: min(60vh, 520px);
+    margin-inline: 0;
+  }
+}
+
 /* ── المسرح ───────────────────────────────────────────────
    الشاشة كلها، بلا تمرير. أربعة عناصر: الجولة، الصورة، السؤال،
    الخيارات. وحين يضيق المكان يتكفّل --u بتصغير الخط بدل أن
@@ -60,12 +113,16 @@
 [data-surface='stage'] .play {
   max-width: none;
   height: 100dvh;
+  display: flex;
+  flex-direction: column;
   /* هوامش ضيّقة عمداً: كل بكسل يُوفَّر هنا يذهب إلى الصورة،
      وهي السؤال نفسه في جولات المعالم والأطباق والمناطق */
   padding: calc(var(--u) * 2.2);
   gap: calc(var(--u) * 1.4);
   overflow: hidden;
 }
+
+[data-surface='stage'] .ask { min-height: 0; gap: calc(var(--u) * 1.4); }
 
 [data-surface='stage'] .prompt {
   font-family: var(--font-display);
@@ -110,32 +167,24 @@
 [data-surface='stage'] .play:has(.reveal-portrait) {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 0.66fr);
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  grid-template-areas:
-    'bar     bar'
-    'prompt  img'
-    'answers img';
+  grid-template-areas: 'ask img';
   column-gap: calc(var(--u) * 2.6);
+  align-items: stretch;
 }
 
-[data-surface='stage'] .play:has(.reveal-portrait) > .scorebar { grid-area: bar; }
+[data-surface='stage'] .play:has(.reveal-portrait) > .ask {
+  grid-area: ask;
+  justify-content: center;
+}
 
 [data-surface='stage'] .play:has(.reveal-portrait) > .reveal {
   grid-area: img;
   align-self: stretch;
 }
 
-[data-surface='stage'] .play:has(.reveal-portrait) > .prompt {
-  grid-area: prompt;
-  align-self: end;
-  margin: 0 0 calc(var(--u) * 2);
-}
-
 /* عمودٌ واحد: العمودان في نصف العرض يكسران أسماءً كـ«الأمير
    عبدالعزيز بن سعود» على سطرين، والصفّ الواحد أهدأ في القراءة */
-[data-surface='stage'] .play:has(.reveal-portrait) > .answers {
-  grid-area: answers;
-  align-self: start;
+[data-surface='stage'] .play:has(.reveal-portrait) .answers {
   grid-template-columns: 1fr;
 }
 [data-surface='stage'] .btn {

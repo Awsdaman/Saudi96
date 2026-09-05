@@ -115,6 +115,13 @@
   --surface: #152220;
   --raised:  #1E2F27;
   --line:    #2A4034;
+  /* أسماء ثابتة (لا تُعاد كتابتها) لهذه القيم نفسها — تلجأ إليها
+     شاشة اللعب حين تطعّم --surface/--raised/--line بلون الجولة،
+     فتتفادى إعادة تعريف كل متغيّر بدلالة نفسه (حلقة CSS باطلة تُسقط
+     القيمة إلى شفّافة، لا إلى القيمة الموروثة كما قد يُظنّ) */
+  --surface-0: var(--surface);
+  --raised-0:  var(--raised);
+  --line-0:    var(--line);
 
   --text:   #F2F5F0;
   --muted:  #A3B7AB;
@@ -147,6 +154,9 @@
   --surface: #FFFFFF;
   --raised:  #FFFFFF;
   --line:    #DAD2C2;
+  --surface-0: var(--surface);
+  --raised-0:  var(--raised);
+  --line-0:    var(--line);
 
   --text:   #111C16;
   --muted:  #41544A;
