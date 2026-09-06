@@ -1,16 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { ROUNDS, poolFor } from './game/content'
-import {
-  isPresenterWindow,
-  listenForCommands,
-  sendToPresenter,
-  watchPresenterHandshake,
-  type PresenterState,
-} from './game/presenter'
 import { saveBest } from './game/storage'
 import { useGame } from './game/useGame'
 import { useRoundTheme } from './game/useRoundTheme'
-import { useSurface } from './game/useSurface'
 import type { Entity, Question, RoundId } from './game/types'
 import { Credits } from './screens/Credits'
 import { CustomBuilder } from './screens/CustomBuilder'
@@ -18,79 +10,37 @@ import { Home } from './screens/Home'
 import { LogoResults } from './screens/LogoResults'
 import { LogoRound } from './screens/LogoRound'
 import { Play } from './screens/Play'
-import { Presenter } from './screens/Presenter'
 import { Results } from './screens/Results'
-import { RoundIntro } from './screens/RoundIntro'
 
 /** ثوانٍ افتراضية للجولة المخصّصة */
 const CUSTOM_SECONDS = 22
 
-type View = 'home' | 'intro' | 'custom' | 'logos' | 'logoResults' | 'credits'
+type View = 'home' | 'custom' | 'logos' | 'logoResults' | 'credits'
 
 interface LogoOutcome { known: number; total: number; missed: Entity[] }
 
 export default function App() {
-  // نافذة المقدّم تعرض المكوّن الخاص بها وحده
-  if (isPresenterWindow()) return <Presenter />
   return <Game />
 }
 
 function Game() {
-  const { state, question, reveal, start, answer, next, pause, home } = useGame()
+  const { state, question, reveal, start, answer, next, home } = useGame()
   const [view, setView] = useState<View>('home')
-  const [introRound, setIntroRound] = useState<RoundId | null>(null)
   const [logoCount, setLogoCount] = useState(12)
   const [isRecord, setIsRecord] = useState(false)
   const [logoOutcome, setLogoOutcome] = useState<LogoOutcome | null>(null)
   const lastCustom = useRef<{ pool: Question[]; count: number } | null>(null)
 
-  // اتّصال شاشة المقدّم يعني أن هذه النافذة صارت معروضة على الجدار
-  useSurface()
-
-  // لون الجولة النشطة: التعليمات تلوَّن باختيار المستخدم على الرئيسية،
-  // واللعب والنتيجة بجولةٍ حقيقية وحدها — «لعبتي» تُعرَّف بعنوانها
-  // المميَّز لأن معرّفها الداخلي «trivia» وعاءٌ لا هوية.
+  // لون الجولة النشطة: اللعب والنتيجة بجولةٍ حقيقية وحدها — «لعبتي»
+  // تُعرَّف بعنوانها المميَّز لأن معرّفها الداخلي «trivia» وعاءٌ لا هوية.
   const isCustomRound = state.title === 'لعبتي'
   const themeRoundId =
-    view === 'intro' ? introRound
-    : view === 'logos' || view === 'logoResults' ? 'logos'
+    view === 'logos' || view === 'logoResults' ? 'logos'
     : (state.phase === 'playing' || state.phase === 'results') && !isCustomRound ? state.roundId
     : null
   useRoundTheme(themeRoundId)
 
-  useEffect(() => watchPresenterHandshake(), [])
-
-  // ── بثّ الحالة إلى شاشة المقدّم ──
-  useEffect(() => {
-    if (state.phase === 'playing' && question) {
-      sendToPresenter({
-        kind: 'mcq',
-        roundTitle: state.title,
-        index: state.index,
-        total: state.questions.length,
-        prompt: question.prompt,
-        options: question.options,
-        answerIndex: question.answerIndex,
-        answer: question.options[question.answerIndex],
-        explanation: question.explanation,
-        image: question.image,
-        revealed: state.selected !== null,
-        score: state.score,
-        streak: state.streak,
-        paused: state.paused,
-      })
-    } else if (view === 'home' && state.phase === 'home') {
-      sendToPresenter({ kind: 'idle' })
-    }
-  }, [state.phase, state.index, state.selected, state.score, question, state.roundId, state.title, state.questions.length, state.streak, state.paused, view])
-
-  function beginRound(id: RoundId) {
-    setIntroRound(id)
-    setView('intro')
-  }
-
-  function startFromIntro(count: number) {
-    const id = introRound!
+  function beginRound(id: RoundId, count: number) {
     setIsRecord(false)
     if (id === 'logos') {
       setLogoCount(count)
@@ -121,36 +71,10 @@ function Game() {
     next()
   }
 
-  // أوامر شاشة المقدّم تُنفَّذ هنا لأن الحالة كلها في هذه النافذة.
-  // المستمع يُركّب مرة واحدة ويقرأ من ref، وإلا التقط إغلاقاً قديماً
-  // فنفّذ الأمر على سؤال سابق.
-  const cmd = useRef({ handleNext, answer, pause, done: state.selected !== null })
-  useEffect(() => {
-    cmd.current = { handleNext, answer, pause, done: state.selected !== null }
-  })
-
-  useEffect(
-    () =>
-      listenForCommands((c) => {
-        const cur = cmd.current
-        if (c.cmd === 'next') cur.handleNext()
-        else if (c.cmd === 'pause') cur.pause()
-        // الكشف بلا إجابة = لم تعرفها الغرفة، فلا نقاط
-        else if (c.cmd === 'reveal') { if (!cur.done) cur.answer(-1) }
-        else if (c.cmd === 'skip') {
-          if (!cur.done) cur.answer(-1)
-          cur.handleNext()
-        }
-      }),
-    [],
-  )
-
   function goHome() {
     home()
     setLogoOutcome(null)
-    setIntroRound(null)
     setView('home')
-    sendToPresenter({ kind: 'idle' })
   }
 
   // ── جولة الشعار ──
@@ -158,12 +82,10 @@ function Game() {
     return (
       <LogoRound
         count={logoCount}
-        onCard={(s: PresenterState) => sendToPresenter(s)}
         onFinish={(known, total, missed) => {
           setIsRecord(saveBest('logos', known))
           setLogoOutcome({ known, total, missed })
           setView('logoResults')
-          sendToPresenter({ kind: 'idle' })
         }}
         onQuit={goHome}
       />
@@ -211,17 +133,6 @@ function Game() {
     )
   }
 
-  if (view === 'intro' && introRound) {
-    return (
-      <RoundIntro
-        meta={ROUNDS.find((r) => r.id === introRound)!}
-        poolSize={poolFor(introRound).length}
-        onStart={startFromIntro}
-        onBack={goHome}
-      />
-    )
-  }
-
   if (view === 'custom') {
     return <CustomBuilder onStart={beginCustom} onBack={goHome} />
   }
@@ -232,7 +143,7 @@ function Game() {
 
   return (
     <Home
-      onPick={beginRound}
+      onStart={beginRound}
       onCustom={() => setView('custom')}
       onCredits={() => setView('credits')}
     />

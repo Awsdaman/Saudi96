@@ -3,18 +3,16 @@ import { HowToModal } from '../components/HowToModal'
 import { LogoCard } from '../components/LogoCard'
 import { ROUNDS, logoCards } from '../game/content'
 import { shuffle } from '../game/engine'
-import type { PresenterState } from '../game/presenter'
 import type { Entity } from '../game/types'
 import './LogoRound.css'
 
 interface Props {
   count: number
-  onCard: (s: PresenterState) => void
   onFinish: (known: number, total: number, missed: Entity[]) => void
   onQuit: () => void
 }
 
-export function LogoRound({ count, onCard, onFinish, onQuit }: Props) {
+export function LogoRound({ count, onFinish, onQuit }: Props) {
   const cards = useMemo(() => shuffle(logoCards()).slice(0, count), [count])
   const meta = ROUNDS.find((r) => r.id === 'logos')!
   const [howTo, setHowTo] = useState(false)
@@ -25,22 +23,6 @@ export function LogoRound({ count, onCard, onFinish, onQuit }: Props) {
 
   const entity = cards[index]
   const isLast = index + 1 >= cards.length
-
-  // شاشة المقدّم ترى اسم الجهة دائماً، حتى قبل أن يكشفه اللاعب
-  useEffect(() => {
-    if (!entity) return
-    onCard({
-      kind: 'logo',
-      roundTitle: meta.title,
-      index,
-      total: cards.length,
-      prompt: 'لأي جهة هذا الشعار؟',
-      answer: entity.nameAr,
-      image: entity.lockup,
-      revealed,
-      score: known,
-    })
-  }, [entity, index, revealed, known, cards.length, meta.title, onCard])
 
   function next(gotIt: boolean) {
     if (gotIt) setKnown((k) => k + 1)

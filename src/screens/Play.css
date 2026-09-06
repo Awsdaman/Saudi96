@@ -1,8 +1,8 @@
-/* الأرضية: غسلٌ هادئ من لون الجولة يملأ الشاشة كلّها — لا عمود
-   المحتوى وحده، وإلا بقي طرفا الشاشة الواسعة أسودين لا صلة لهما
-   بالجولة. طبقةٌ ثابتة خلف كل شيء (::before) بلا نسيجٍ يزاحم القراءة؛
-   لون الجولة الأوضح يبقى في مكانه الصحيح: خلفية بطاقات الخيارات
-   نفسها (AnswerGrid.css). */
+/* الأرضية: مشهد الهوية الرسمي (جبل ونخلة وإطار سدو، من دليل العلامة)
+   يملأ الشاشة كلّها خلف كل شيء — ثابتٌ لا يتغيّر بين الجولات، وغسلٌ
+   خفيف من لون الجولة فوقه يمنحه هويتها دون أن يطمس تفاصيله. لون
+   الجولة الأوضح يبقى في مكانه الصحيح: خلفية بطاقات الخيارات نفسها
+   (AnswerGrid.css). */
 .play {
   position: relative;
   z-index: 0;
@@ -21,7 +21,14 @@
   position: fixed;
   inset: 0;
   z-index: -1;
-  background: color-mix(in srgb, var(--green-bright) 8%, var(--bg));
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--bg) 35%, transparent), color-mix(in srgb, var(--bg) 35%, transparent)),
+    linear-gradient(color-mix(in srgb, var(--green-bright) 16%, transparent), color-mix(in srgb, var(--green-bright) 16%, transparent)),
+    url('assets/identity/play-bg.jpg');
+  background-size: cover, cover, cover;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
 }
 
 /* عمود اللعب: الشريط، السؤال، الخيارات، الحكم — كتلةٌ واحدة تتوسّط
@@ -104,98 +111,4 @@
     height: min(60vh, 520px);
     margin-inline: 0;
   }
-}
-
-/* ── المسرح ───────────────────────────────────────────────
-   الشاشة كلها، بلا تمرير. أربعة عناصر: الجولة، الصورة، السؤال،
-   الخيارات. وحين يضيق المكان يتكفّل --u بتصغير الخط بدل أن
-   يفيض المحتوى تحت الحافة حيث لا يراه أحد. */
-[data-surface='stage'] .play {
-  max-width: none;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  /* هوامش ضيّقة عمداً: كل بكسل يُوفَّر هنا يذهب إلى الصورة،
-     وهي السؤال نفسه في جولات المعالم والأطباق والمناطق */
-  padding: calc(var(--u) * 2.2);
-  gap: calc(var(--u) * 1.4);
-  overflow: hidden;
-}
-
-[data-surface='stage'] .ask { min-height: 0; gap: calc(var(--u) * 1.4); }
-
-[data-surface='stage'] .prompt {
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: calc(var(--u) * 4.2);
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-  text-wrap: balance;
-  /* يتوسّط ما بقي بين الصورة والخيارات */
-  margin: auto 0;
-}
-
-/* الكشف التدريجي هو أميز ما في اللعبة — فيأخذ على المسرح
-   نصيبه من الشاشة بدل أن يقع حيث اتّفق */
-[data-surface='stage'] .reveal {
-  /* الصورة هي ما يمتصّ الفائض: كل ما عداها يأخذ مقاسه الطبيعي
-     ثم تأخذ هي ما بقي. بنسبةٍ ثابتة أو ارتفاعٍ بالـvh يتجاوز
-     المجموعُ ارتفاعَ الشاشة فيُقتصّ صفّ الخيارات الأخير —
-     والجمهور لا يرى أنّ خياراً سقط، ولا سبيل إلى تمريره. */
-  flex: 1 1 0;
-  min-height: 0;
-  width: 100%;
-  max-height: none;
-  aspect-ratio: auto;
-  margin: 0;
-}
-
-/* الإطار الطولي يخصّ الشاشة الصغيرة وحدها: مقاسٌ ثابت هنا
-   يعيد المشكلة التي حُلّت أعلاه — صفُّ خياراتٍ يسقط تحت الحافة */
-[data-surface='stage'] .reveal-portrait {
-  height: auto;
-  width: 100%;
-  margin-inline: 0;
-  min-height: 0;
-}
-
-/* ————— صورة طولية على المسرح: عمودان بدل صفٍّ واحد —————
-   الصورة الطولية في إطارٍ يمتدّ عرض الشاشة تترك أربعة أخماسه
-   فارغة، ويبقى الوجه في حدود ٢٥٥ بكسل — وهذا لا يُعرَف من آخر
-   المجلس. وضعُها في عمودٍ يمتدّ ارتفاع الشاشة يصرف العرضَ
-   الضائع إلى الارتفاع فيتضاعف الوجه، والسؤال كلّه وجه. */
-[data-surface='stage'] .play:has(.reveal-portrait) {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.66fr);
-  grid-template-areas: 'ask img';
-  column-gap: calc(var(--u) * 2.6);
-  align-items: stretch;
-}
-
-[data-surface='stage'] .play:has(.reveal-portrait) > .ask {
-  grid-area: ask;
-  justify-content: center;
-}
-
-[data-surface='stage'] .play:has(.reveal-portrait) > .reveal {
-  grid-area: img;
-  align-self: stretch;
-}
-
-/* عمودٌ واحد: العمودان في نصف العرض يكسران أسماءً كـ«الأمير
-   عبدالعزيز بن سعود» على سطرين، والصفّ الواحد أهدأ في القراءة */
-[data-surface='stage'] .play:has(.reveal-portrait) .answers {
-  grid-template-columns: 1fr;
-}
-[data-surface='stage'] .btn {
-  padding: calc(var(--u) * 1.1) calc(var(--u) * 2.2);
-  border-radius: calc(var(--u) * 1);
-  font-size: calc(var(--u) * 1.8);
-}
-
-/* الزرّ الوحيد الباقي على الشاشة المعروضة: التقدّم يجب أن يعمل
-   حتى لو لم تُفتح شاشة المقدّم بعد */
-[data-surface='stage'] .verdict-next {
-  align-self: center;
-  margin-top: calc(var(--u) * 1.2);
 }

@@ -25,18 +25,6 @@ export function RevealImage({ src, progress, kind, revealed, plate = 'dark', lab
   // فارغ ما دامت الصورة هي اللغز: وصفها قبل الكشف يُفسده
   const alt = revealed && label ? label : ''
 
-  if (kind === 'silhouette') {
-    // الظل أولاً: الشكل وحده بلا لون. ثم يذوب اللون تدريجياً.
-    // من عرف الجهة من ظلّ رمزها استحق النقاط كاملةً.
-    const colorIn = Math.max(0, (p - 0.45) / 0.55)
-    return (
-      <div className={cls}>
-        <img className="reveal-img reveal-shadow" src={src} alt="" style={{ opacity: 1 - colorIn }} />
-        <img className="reveal-img" src={src} alt={alt} style={{ opacity: colorIn }} />
-      </div>
-    )
-  }
-
   if (kind === 'blur') {
     // للشعارات المبنية على الرمز الوطني: الاسم مضبَّب، واللون والتكوين هما الدليل.
     return (

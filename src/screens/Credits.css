@@ -81,6 +81,3 @@
 .credits a:hover { text-decoration: underline; }
 
 .credits a:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }
-
-/* على الشاشة المعروضة لا مكان لهذه الصفحة — المقدّم يفتحها على جهازه */
-[data-surface='stage'] .credits { max-width: 70ch; }

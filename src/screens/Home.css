@@ -1,24 +1,37 @@
-/* الرئيسية: عنوانٌ ومربّع معاينة أعلى الصفحة، وشبكة بطاقات الجولات
-   تحتهما بعرض الصفحة كاملاً — من مرجع «نتّص» (شبكة مواضيع بأيقونة
-   وعددٍ ووصف)، بدل قائمة نصالٍ رفيعة عمودية. */
+/* الرئيسية: صفحةٌ واحدة تجمع اختيار الموضوع وإعداد الجولة معاً —
+   لا صفحة تعليماتٍ منفصلة بعدها. لوحة إعدادٍ ثابتة يساراً (معاينة،
+   عنوان، طول الجولة، زرّ البدء) وشبكة بطاقات المواضيع يميناً؛
+   يفتح اختيار بطاقةٍ لوحة الإعداد فوراً بجانبها. من مرجع «نتّص». */
 .home {
+  position: relative;
+  z-index: 0;
   min-height: 100dvh;
-  max-width: 1080px;
+  max-width: 1180px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 3.4vh, 32px);
-  padding: clamp(20px, 4vh, 48px) clamp(20px, 4vw, 64px);
+  gap: clamp(20px, 3vh, 28px);
+  padding: clamp(20px, 4vh, 44px) clamp(20px, 4vw, 64px);
 }
 
-.home-top {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: clamp(20px, 4vw, 48px);
+/* مشهد الهوية الرسمي نفسه خلف شاشة اللعب (Play.css) — هنا بلون
+   العلامة الافتراضي، إذ لا جولة نشطة بعد تُلوّنه بهويتها */
+.home::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--bg) 35%, transparent), color-mix(in srgb, var(--bg) 35%, transparent)),
+    linear-gradient(color-mix(in srgb, var(--green-bright) 16%, transparent), color-mix(in srgb, var(--green-bright) 16%, transparent)),
+    url('assets/identity/play-bg.jpg');
+  background-size: cover, cover, cover;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
 }
 
-.home-head { text-align: start; min-width: 0; }
+.home-head { text-align: start; }
 
 .home-title {
   font-family: var(--font-display);
@@ -29,25 +42,48 @@
   color: var(--text);
 }
 
-/* ── مربّع المعاينة ── */
-/* رقعة الأيقونة تستعير لون الجولة المعاينة لإطارها وتوهّجها —
-   بلا معاينةٍ يبقى الإطار محايداً كأيّ حافّة في الواجهة */
-[data-surface='night'] .home-hero { --rc: var(--rc-night); }
-[data-surface='stage'] .home-hero { --rc: var(--rc-stage); }
+.home-lede {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+  max-width: 60ch;
+}
 
-.home-hero {
-  flex: none;
-  aspect-ratio: 1 / 1;
-  width: clamp(96px, 14vw, 148px);
-  border-radius: 18px;
+.home-body {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+  align-items: start;
+  gap: clamp(20px, 3vw, 32px);
+}
+
+/* ── لوحة الإعداد ── */
+.setup-panel {
+  position: sticky;
+  top: clamp(20px, 4vh, 44px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* رقعة المعاينة تستعير لون الجولة المعاينة أو المختارة لإطارها وتوهّجها */
+.setup-hero {
+  aspect-ratio: 16 / 10;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: var(--shadow), 0 0 0 1px color-mix(in srgb, var(--rc, var(--line)) 55%, transparent),
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--rc, var(--line)) 55%, transparent),
     0 0 32px -10px color-mix(in srgb, var(--rc, transparent) 70%, transparent);
   border: 1px solid color-mix(in srgb, var(--rc, var(--line)) 70%, var(--line));
   transition: box-shadow 220ms, border-color 220ms;
+  margin-bottom: 4px;
 }
 
-.home-hero-img {
+.setup-hero-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -60,18 +96,96 @@
   to   { opacity: 1; transform: none; }
 }
 
-/* ── شبكة بطاقات الجولات ── */
+.setup-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.setup-sub { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+.setup-block { display: flex; flex-direction: column; gap: 9px; margin-top: 6px; }
+
+.setup-h3 { font-size: 0.85rem; font-weight: 700; color: var(--muted); }
+
+/* صفوفٌ كاملة العرض — كلٌّ منها زرّ اختيارٍ واحد، نقطته تملأ حين
+   يكون هو المختار. من مرجع اختيار مدّة الجولة في «نتّص» */
+.setup-chips { display: flex; flex-direction: column; gap: 8px; }
+
+.setup-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 12px;
+  background: var(--raised);
+  border: 1.5px solid var(--line);
+  font-size: 0.95rem;
+  text-align: start;
+  /* بلا border-color هنا عمداً — انظر التعليق نفسه في AnswerGrid.css */
+  transition: background 140ms;
+}
+
+.setup-chip:hover { border-color: var(--muted); }
+.setup-chip:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }
+
+.chip-dot {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 1.5px solid var(--muted);
+  transition: border-color 140ms;
+}
+
+.chip-dot::after {
+  content: '';
+  display: block;
+  margin: 2.5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green-bright);
+  transform: scale(0);
+  transition: transform 140ms;
+}
+
+.chip-label { flex: 1; }
+
+.setup-chip.is-on { border-color: var(--green-bright); font-weight: 700; }
+.setup-chip.is-on .chip-dot { border-color: var(--green-bright); }
+.setup-chip.is-on .chip-dot::after { transform: scale(1); }
+
+.setup-start { margin-top: 4px; width: 100%; justify-content: center; }
+
+.setup-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.btn-link {
+  color: var(--muted);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  padding: 4px 2px;
+}
+
+.btn-link:hover { color: var(--text); }
+.btn-link:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }
+
+/* ── شبكة بطاقات المواضيع ── */
 .topic-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 14px;
+  align-content: start;
 }
 
-/* كل جولةٍ حقيقية تستعير لوناً من قيم هوية اليوم الوطني حسب سطحها
-   الحالي — الليل يحتاج أفتح، والمسرح يستعمل اللون الرسمي كما هو */
-[data-surface='night'] .topic-card { --rc: var(--rc-night); }
-[data-surface='stage'] .topic-card { --rc: var(--rc-stage); }
-
+/* كل جولةٍ حقيقية تستعير لوناً من قيم هوية اليوم الوطني */
 .topic-card {
   position: relative;
   overflow: hidden;
@@ -108,7 +222,8 @@
 }
 
 .topic-card:hover::before,
-.topic-card:focus-visible::before { opacity: 1; }
+.topic-card:focus-visible::before,
+.topic-card.is-selected::before { opacity: 1; }
 
 /* بريقٌ يعبر البطاقة كضوءٍ ينزلق على معدن، عند لمسها وحدها */
 .topic-card::after {
@@ -126,15 +241,34 @@
 .topic-card:focus-visible::after { transform: translateX(130%); }
 
 .topic-card:hover:not(:disabled),
-.topic-card:focus-visible {
+.topic-card:focus-visible,
+.topic-card.is-selected {
   border-color: var(--rc, var(--green-bright));
-  transform: translateY(-2px);
   box-shadow: var(--shadow);
 }
+
+.topic-card:hover:not(:disabled),
+.topic-card:focus-visible { transform: translateY(-2px); }
 
 .topic-card:focus-visible { outline: 2px solid var(--rc, var(--green-bright)); outline-offset: 2px; }
 
 .topic-card.is-empty { opacity: 0.5; }
+
+.topic-check {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  inset-inline-end: 14px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--rc, var(--green-bright));
+  color: #06140c;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
 
 .topic-card-top {
   display: flex;
@@ -191,8 +325,9 @@
 .home-credits:hover { color: var(--text); }
 .home-credits:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }
 
-/* ── شاشات ضيّقة: عمودٌ واحد، ومربّع المعاينة يختفي ── */
-@media (max-width: 640px) {
-  .home-hero { display: none; }
+/* ── شاشات ضيّقة: عمودٌ واحد، ولوحة الإعداد تعلو الشبكة بدل جانبها ── */
+@media (max-width: 780px) {
+  .home-body { grid-template-columns: 1fr; }
+  .setup-panel { position: static; }
   .topic-grid { grid-template-columns: 1fr; }
 }

@@ -4,11 +4,6 @@
   height: 34px;
 }
 
-[data-surface='stage'] .ring {
-  width: calc(var(--u) * 4.2);
-  height: calc(var(--u) * 4.2);
-}
-
 .ring circle {
   fill: none;
   stroke-width: 3.5;

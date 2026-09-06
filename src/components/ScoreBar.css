@@ -35,11 +35,6 @@
   background: color-mix(in srgb, var(--gold) 10%, transparent);
 }
 
-.chip-paused {
-  color: var(--gold);
-  border-color: color-mix(in srgb, var(--gold) 50%, transparent);
-}
-
 .round-track {
   height: 10px;
   border-radius: 999px;
@@ -50,35 +45,4 @@
 .round-track .sadu {
   transition: width 320ms ease-out;
   min-width: 2px;
-}
-
-/* ── المسرح ──
-   لا رقائق ولا حدود: أربعة أشياء فقط تُقرأ من أربعة أمتار. */
-[data-surface='stage'] .scorebar-row {
-  gap: calc(var(--u) * 2);
-  margin-bottom: calc(var(--u) * 1.4);
-  flex-wrap: nowrap;
-}
-
-[data-surface='stage'] .sb-round {
-  font-size: calc(var(--u) * 2.1);
-  letter-spacing: -0.01em;
-}
-
-[data-surface='stage'] .chip {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: calc(var(--u) * 1.6);
-}
-
-[data-surface='stage'] .chip-score {
-  font-size: calc(var(--u) * 2.4);
-  font-weight: 700;
-  color: var(--gold);
-}
-
-[data-surface='stage'] .round-track {
-  height: calc(var(--u) * 0.9);
-  background: color-mix(in srgb, var(--text) 8%, transparent);
 }

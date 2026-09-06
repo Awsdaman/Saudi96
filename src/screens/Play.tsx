@@ -65,7 +65,6 @@ export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Prop
           timeLeft={state.timeLeft}
           totalTime={state.totalTime}
           roundTitle={state.title}
-          paused={state.paused}
         />
 
         <h2 className="prompt">{question.prompt}</h2>
@@ -88,8 +87,7 @@ export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Prop
           onNext={onNext}
         />
 
-        {/* ضوابط اللاعب الفرد — تُخفى عن الشاشة المعروضة على الجدار */}
-        <div className="play-foot stage-hide">
+        <div className="play-foot">
           <button className="btn btn-quiet" onClick={onQuit}>إنهاء الجولة</button>
           {meta && (
             <button className="btn btn-quiet" onClick={() => setHowTo(true)}>كيف تلعب؟</button>

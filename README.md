@@ -44,8 +44,7 @@ repos on the free plan.)
 Once enabled the game is at `https://<user>.github.io/Saudi96/` and needs no further setup:
 
 - `base: './'` makes every URL relative, so the project subpath (`/Saudi96/`) just works.
-- Screens are hash routes (`#presenter`), so no 404 fallback or rewrite rule is needed.
-- Both windows share one https origin, so the presenter handshake works as it does on disk.
+- The whole app is one screen with no routes, so no 404 fallback or rewrite rule is needed.
 
 The deployed site is about 32 MB — `scripts/postbuild.mjs` drops
 `assets/logos-source` (the 25 MB of pre-crop originals) from `dist/`, since nothing reads it
@@ -82,46 +81,22 @@ Three build settings exist specifically so `file://` works, and all three are re
   in `<head>` — without `defer` the bundle runs before `<div id="root">` exists and the page
   stays blank. The script fails the build if `defer` is ever missing.
 
-## Two surfaces — device and stage
+## The home screen
 
-The game renders in one of two visual surfaces, switched by a single attribute on the root
-element (`useSurface.ts`):
-
-| | `data-surface="night"` | `data-surface="stage"` |
-|---|---|---|
-| When | nobody is watching but you | the presenter window is connected |
-| Ground | dark green, near-black | warm off-white `#F5F0E6` |
-| Sizing | `px` / `clamp()` | the stage unit `--u` |
-| Host controls | on screen | hidden (`.stage-hide`) |
-
-**Why light on the projector.** A projector cannot emit black — it can only *withhold*
-light, and the screen's own reflectance fills the gap. A dark UI therefore spends the lamp
-on nothing and washes out the moment anyone turns a lamp on, which in a majlis they will.
-The light surface puts the lamp behind the content instead.
-
-**The stage unit.** `--u: min(1vw, 1.78vh)` — derived from whichever axis is scarcer, so
-the same layout holds on a 16:9 projector and a 4:3 one without a second set of rules.
-Everything on the stage surface is sized in `--u`, so nothing is tuned to one screen.
-
-**Nothing on the stage surface may scroll.** Nobody can reach the wall to swipe it. `.play`
-is `height: 100dvh; overflow: hidden`, and the image is the element that absorbs whatever
-height is left (`flex: 1 1 0`) — a fixed `vh` height or an `aspect-ratio` on the image makes
-the column overflow and silently clips a row of answers off the bottom of the wall.
-
-The no-scroll lock belongs to `.play` **only**. Locking it at the root instead strands the
-«ابدأ» button below the fold on the pre-round screen, and the round can no longer be started
-at all once the presenter connects.
+One page: a title, a topic grid of seven cards, and a setup panel that appears beside the
+grid once a card is picked (round length, a «كيف تلعب؟» link, and «ابدأ الجولة»). Picking a
+round starts play directly — there is no separate pre-round page. Each card carries its own
+round colour and Sadu tapestry pattern (`src/game/roundTheme.ts`, `useRoundTheme.ts`), which
+also tints the whole Play screen (`--green-bright`, `--round-carpet`) while that round runs.
 
 **Portrait photos get two columns.** A portrait in a full-width frame leaves four fifths of
-it empty and holds the face to roughly a third of the screen height. On the stage surface
-`.play:has(.reveal-portrait)` becomes a grid — image down one side at full height, prompt
-and answers stacked down the other — which spends the wasted width on the face instead
-(measured: 255px tall → 561px at 1280×720, 633px at 1024×768).
+it empty and holds the face to roughly a third of the frame's height. `.play.has-image`
+switches to a two-column grid on wider screens — image down one side, prompt and answers
+down the other — which spends the width on the face instead of empty margin.
 
-## The seven tiles
+## The seven rounds
 
-The home screen is the title, then seven square tiles in a 4+3 grid (3 columns below 980px,
-2 on narrow screens).
+The topic grid on the home screen has seven cards (2 columns, 1 on narrow screens).
 
 | Tile | What it asks | Format |
 |---|---|---|
@@ -136,51 +111,19 @@ The home screen is the title, then seven square tiles in a 4+3 grid (3 columns b
 Only the logo round *requires* images. The others generate text questions when an image is
 missing, so the game stays playable while assets are still being gathered.
 
-### Before every round
+### Setting up a round
 
-Clicking a tile opens a pre-round screen (`RoundIntro`) rather than starting immediately:
+Picking a topic card opens the setup panel beside the grid instead of a separate page:
 
-- **كيف تلعب** — per-round instructions, from `howTo` in `ROUNDS` (`src/game/content.ts`).
-  Also reachable mid-round via the «كيف تلعب؟» button, which opens the same text in `HowToModal`.
-- **كم سؤال؟** — 5 / 10 / 15 / 20 / الكل. Choices above the pool size are hidden, so a
-  13-question round offers only 5 / 10 / الكل (13). The last choice per round is remembered
-  in `localStorage`.
-- **شاشة المقدّم** — see below.
+- **كم سؤال؟** — 5 / 10 / 15 / 20 / الكل, styled as radio rows with a filled dot. Choices
+  above the pool size are hidden, so a 13-question round offers only 5 / 10 / الكل (13). The
+  last choice per round is remembered in `localStorage`.
+- **كيف تلعب؟** — per-round instructions, from `howTo` in `ROUNDS` (`src/game/content.ts`),
+  opened in `HowToModal`. Also reachable mid-round via the same button.
 
-### شاشة المقدّم — the presenter window
-
-For hosting a game in front of an audience: a second window showing **the correct answer**,
-the options with the right one marked, the explanation, progress and score. Put it on your
-laptop; put the main window on the projector.
-
-Two implementation details that are load-bearing:
-
-- **`postMessage`, not `BroadcastChannel`.** The game usually runs from disk (`file://`),
-  where every document gets an opaque origin — so any same-origin channel silently fails.
-  `postMessage` works across origins by design.
-- **A link with `target="_blank"`, not `window.open`.** Popup blockers stop the second and
-  allow the first. Because a link gives back no window handle, the presenter window
-  announces itself (`:ready`) on load and the main window captures the handle from
-  `event.source`. This is why the link carries `rel="opener"` — browsers now sever
-  `window.opener` on `target="_blank"` by default, which would break that handshake.
-
-The presenter view is the same app at `#presenter` (`isPresenterWindow()` in `App.tsx`), so
-it needs no separate build entry and works from `file://` too.
-
-**It is also the host's console, not just a monitor.** The transport was already
-bidirectional, so the presenter window sends commands back (`sendCommand` / `listenForCommands`
-in `presenter.ts`) and the host drives the round from the laptop without reaching for the
-projected window:
-
-| Key | Button | Does |
-|---|---|---|
-| `Space` | كشف الإجابة | reveals the answer to the room |
-| `Enter` · `←` · `→` | التالي | next question |
-| — | تخطّي | reveal and advance in one go |
-| `P` | إيقاف | pauses the timer — for the argument that always breaks out |
-
-Pause is real game state (`paused` in `useGame`), so the countdown stops rather than the
-screen merely freezing.
+There used to be a separate presenter window for hosting in front of a group (a second
+screen showing the answer, with its own remote-control commands); it was removed to keep
+the game a single self-contained screen.
 
 ### لعبتي — the custom round
 
@@ -234,28 +177,21 @@ Two details that matter if you adjust a crop:
 Values live in `scripts/crops.json`; `node scripts/link-crops.mjs` writes them into
 `entities.json`.
 
-## Older note on tiers
+## Tiers: symbol-only vs. shared emblem
 
 Roughly **58 Saudi government entities share the national emblem** (crossed swords + palm).
 Cropping to "just the symbol" would produce dozens of identical puzzles, so entities are
 tiered in `src/data/entities.json`:
 
-- **Tier A** — has a unique symbol. Mechanic: silhouette → colour → full mark.
-- **Tier B** — emblem-based. Mechanic: full lockup with the Arabic wordmark blurred, clearing over time.
-
-**Right now every logo uses the Tier B (blur) mechanic**, because what the pipeline could
-fetch are full lockups *with the name written in them* — showing one unblurred gives the
-answer away. The blur starts unreadable and clears as the timer runs, so colour and
-composition are the clues and answering early scores more.
-
-To unlock the Tier A silhouette mechanic you need **symbol-only** marks. Those exist, but
-only on each entity's own brand-identity page (e.g.
-[Ministry of Industry](https://www.mim.gov.sa/en/media-center/brand-identity), whose icon
-is shaped like the map of Saudi Arabia, or
-[Ministry of Energy](https://www.moenergy.gov.sa/en/digital-documents/visual-identity),
-which ships a `MoE_Logos.zip`). Drop a symbol-only file into `public/assets/logos/`, set
-the entity's `logo` field to its path, and that entity switches to silhouette automatically —
-`src/game/content.ts` already branches on it.
+- **Tier A** — has a unique symbol, hand-cropped to its own file with no wordmark in it
+  (see "Where the symbols come from" above). Shown **as-is, immediately** — cropping already
+  removed the name, so there is nothing left to hide and no reason to obscure the shape
+  first. An earlier version faded it in from a black silhouette; that only made an
+  already-fair guess harder for no benefit, since the icon itself never gave the answer
+  away, and was removed.
+- **Tier B** — emblem-based, no separate symbol exists. Shown as the **full lockup with the
+  Arabic wordmark blurred**, clearing as the timer runs — colour and composition are the
+  clues, since the wordmark is the only part that would otherwise give the answer away.
 
 ## Asset pipeline
 

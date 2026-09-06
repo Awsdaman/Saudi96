@@ -17,9 +17,9 @@ plan that allows Pages on private repos. Until then the game runs from `npm run 
 ## What this is
 
 **هل تعرف السعودية؟** — an Arabic-only, fully RTL Saudi knowledge quiz game. It runs on the
-user's own PC and is played **on a projector in a majlis**, not on a phone. That single fact
-drives every UI decision: big type, big images, readable from across a room, and a separate
-presenter window so the host can see the answer while the players cannot.
+user's own PC, played as a single self-contained screen — pick a topic card, set the round
+length, and go. (An earlier version had a separate presenter window for hosting a group;
+it was removed to keep the game one screen.)
 
 Not published, no backend, no network at runtime. All content is JSON on disk, all images
 are local files, scores live in `localStorage`.
@@ -38,7 +38,6 @@ Built from a research pack (`saudi-game-research-pack.md`, kept outside the repo
 | Landmarks | 44 — 35 with a reviewed photo |
 | Regions / dishes | 13 / 13 |
 | People | 58 in 8 groups — 44 with a portrait → 102 questions |
-| Surfaces | 2 — `night` (device) and `stage` (projected); see README |
 
 `npm run validate`, `npm run lint` and `npm run build` all pass. A clean `git clone` +
 `npm install` + `npm run build` was tested end to end and produces a working `dist/`.
@@ -82,25 +81,12 @@ explicit `left`/`right` when the geometry is about the image, not the reading di
 latter two are rate-limited to death (429). Run **one** fetch script at a time. See
 README → "On Wikimedia rate limits".
 
-**5b. The stage surface must never scroll, and the lock belongs to `.play` alone.** Putting
-`overflow: hidden` on the root instead strands «ابدأ» below the fold on the pre-round screen,
-so opening the presenter window makes the game unstartable. And on the play screen the image
-must be the element that absorbs leftover height (`flex: 1 1 0`); give it a fixed `vh` or an
-`aspect-ratio` and the bottom row of answers is clipped off the wall with no way to scroll to
-it — invisible to the room and to any check that only tests *document* scroll.
-
-**6. The presenter window uses `postMessage`, not `BroadcastChannel`** (same-origin channels
-fail on `file://`), and is opened with `<a target="_blank" rel="opener">`, not
-`window.open` (popup blockers). `rel="opener"` is required — browsers sever `window.opener`
-by default. The handshake captures the window handle from `e.source` because an anchor
-gives no handle back.
-
-**7. Rejected images are recorded, not just deleted.** `scripts/rejected.json`,
+**6. Rejected images are recorded, not just deleted.** `scripts/rejected.json`,
 `rejected-landmarks.json` record *why* an image was wrong, so a later pass cannot silently
 re-download it. `scripts/manual-symbols.json` locks the user's hand-crops against being
 overwritten by `make-symbols.mjs`.
 
-**8. Every fetched image gets eyeballed before it counts as done.** Nine wrong images got
+**7. Every fetched image gets eyeballed before it counts as done.** Nine wrong images got
 through automated checks and were caught only on a contact sheet — a minister's photo filed
 as a ministry logo, a map filed as a giga-project, a photo of Oman filed as a Saudi
 mountain. The two failure modes are *a plausible photo of the wrong thing* and *a real
@@ -118,14 +104,13 @@ src/
                       pool sources for the custom round
     engine.ts       shuffle, scoring, streaks
     useGame.ts      round state machine
-    presenter.ts    postMessage channel to the presenter window — two-way:
-                    state out, host commands back
-    useSurface.ts   flips the root between the night and stage surfaces
+    roundTheme.ts   per-round colour + Sadu tapestry identity
+    useRoundTheme.ts applies the active round's colour/tapestry to the root
     useCountUp.ts   animates the score; settles on a timer because rAF
                     is suspended while the window is hidden
     storage.ts      best scores + remembered round length in localStorage
-  screens/          Home, RoundIntro, Play, Results, LogoRound, LogoResults,
-                    CustomBuilder, Presenter
+  screens/          Home (topic grid + round setup, merged), Play, Results,
+                    LogoRound, LogoResults, CustomBuilder
   components/       AnswerGrid, RevealImage, ScoreBar, LogoCard, HowToModal, RoundIcon,
                     TimerRing, Verdict
   data/             entities · landmarks · regions · dishes · people · trivia (+ *-assets manifests)

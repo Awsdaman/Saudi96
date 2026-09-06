@@ -70,9 +70,11 @@ function entityDifficulty(e: Entity): Difficulty {
 export function logoQuestions(): Question[] {
   const withLogos = entities.filter((e) => e.logo || e.lockup)
   return withLogos.map((e) => {
-    // الفئة أ: يُقصّ الرمز وحده ويُكشف من الظل.
-    // الفئة ب: شعارها مبني على الرمز الوطني المشترك، فيُعرض الشعار كاملاً
-    //          مع تضبيب الاسم — اللون والخط والتكوين هي الدليل.
+    // الفئة أ: الرمز المقصوص وحده يُعرض كما هو — بلا اسمٍ يكشف الإجابة،
+    // فلا حاجة لتعتيمه أولاً؛ تعمية رمزٍ لا نص فيه تُصعِّب التخمين
+    // بلا داعٍ بدل أن تحميه. الفئة ب: شعارها مبني على الرمز الوطني
+    // المشترك فيُعرض الشعار كاملاً مع تضبيب الاسم — اللون والخط
+    // والتكوين هي الدليل، والاسم وحده ما يلزم إخفاؤه.
     const useSymbol = e.tier === 'A' && !!e.logo
     const samePool = entities.filter((x) => x.type === e.type)
     const pool = samePool.length >= 4 ? samePool : entities
@@ -81,7 +83,7 @@ export function logoQuestions(): Question[] {
       round: 'logos' as const,
       prompt: 'ما الجهة صاحبة هذا الشعار؟',
       image: useSymbol ? e.logo! : (e.lockup ?? e.logo!),
-      reveal: useSymbol ? ('silhouette' as const) : ('blur' as const),
+      reveal: useSymbol ? ('none' as const) : ('blur' as const),
       difficulty: entityDifficulty(e),
       category: e.type,
       sourceUrl: e.site,

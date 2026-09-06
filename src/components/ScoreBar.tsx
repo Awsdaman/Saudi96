@@ -9,13 +9,11 @@ interface Props {
   streak: number
   timeLeft: number
   totalTime: number
-  /** يظهر على المسرح وحده: الغرفة تحتاج أن تعرف أيّ جولة تُلعب */
   roundTitle?: string
-  paused?: boolean
 }
 
 export function ScoreBar({
-  index, total, score, streak, timeLeft, totalTime, roundTitle, paused,
+  index, total, score, streak, timeLeft, totalTime, roundTitle,
 }: Props) {
   const shown = useCountUp(score)
   const done = index + 1
@@ -31,15 +29,11 @@ export function ScoreBar({
           سؤال <span className="ltr">{done}</span> من <span className="ltr">{total}</span>
         </span>
 
-        {/* السلسلة والوقت الرقمي يخصّان اللاعب الفرد؛ على الجدار
-            يزاحمان السؤال ولا يضيفان للغرفة شيئاً */}
         {streak >= 2 && (
-          <span className="chip chip-streak stage-hide">
+          <span className="chip chip-streak">
             سلسلة <span className="ltr">{streak}</span>
           </span>
         )}
-
-        {paused && <span className="chip chip-paused">موقوفة</span>}
 
         <span className="chip chip-score">
           <span className="ltr">{shown.toLocaleString('en-US')}</span> نقطة
