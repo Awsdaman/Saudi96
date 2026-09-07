@@ -1,4 +1,6 @@
 .logoround {
+  position: relative;
+  z-index: 0;
   max-width: 700px;
   margin: 0 auto;
   padding: 4vh 20px 60px;
@@ -6,6 +8,22 @@
   flex-direction: column;
   align-items: center;
   gap: 20px;
+}
+
+/* نفس مشهد الرئيسية بلا استثناء — انظر التعليق نفسه في Home.css */
+.logoround::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--bg) 35%, transparent), color-mix(in srgb, var(--bg) 35%, transparent)),
+    linear-gradient(color-mix(in srgb, var(--green-bright) 16%, transparent), color-mix(in srgb, var(--green-bright) 16%, transparent)),
+    url('assets/identity/play-bg.jpg');
+  background-size: cover, cover, min(1400px, 100%) auto;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
 }
 
 .logoround-bar {

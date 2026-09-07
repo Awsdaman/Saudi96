@@ -26,7 +26,9 @@
     linear-gradient(color-mix(in srgb, var(--bg) 35%, transparent), color-mix(in srgb, var(--bg) 35%, transparent)),
     linear-gradient(color-mix(in srgb, var(--green-bright) 16%, transparent), color-mix(in srgb, var(--green-bright) 16%, transparent)),
     url('assets/identity/play-bg.jpg');
-  background-size: cover, cover, cover;
+  /* لا تُكبَّر الرقعة فوق دقّتها الحقيقية (1400px) — انظر التعليق
+     نفسه في Play.css */
+  background-size: cover, cover, min(1400px, 100%) auto;
   background-position: center, center, center;
   background-repeat: no-repeat, no-repeat, no-repeat;
 }
