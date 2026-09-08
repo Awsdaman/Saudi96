@@ -12,16 +12,14 @@ import './Play.css'
 interface Props {
   state: GameState
   question: Question
-  reveal: number
   onAnswer: (i: number) => void
   onNext: () => void
   onQuit: () => void
 }
 
-export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Props) {
+export function Play({ state, question, onAnswer, onNext, onQuit }: Props) {
   const done = state.selected !== null
   const last = state.records[state.records.length - 1]
-  const timedOut = state.selected === -1
   const meta = ROUNDS.find((r) => r.id === state.roundId)
   const [howTo, setHowTo] = useState(false)
 
@@ -62,8 +60,6 @@ export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Prop
           total={state.questions.length}
           score={state.score}
           streak={state.streak}
-          timeLeft={state.timeLeft}
-          totalTime={state.totalTime}
           roundTitle={state.title}
         />
 
@@ -79,7 +75,6 @@ export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Prop
         <Verdict
           show={done}
           correct={!!last?.correct}
-          timedOut={timedOut}
           answer={answerText}
           points={last?.points ?? 0}
           explanation={question.explanation}
@@ -97,8 +92,8 @@ export function Play({ state, question, reveal, onAnswer, onNext, onQuit }: Prop
 
       {question.image && (
         <RevealImage
+          key={question.id}
           src={question.image}
-          progress={reveal}
           kind={question.reveal ?? 'none'}
           revealed={done}
           plate={question.round === 'logos' ? 'light' : 'dark'}

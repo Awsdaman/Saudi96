@@ -60,6 +60,25 @@
 
 .chip-pick.is-on .chip-count { color: var(--green-bright); background: rgba(0, 166, 81, 0.16); }
 
+/* رقاقة العدد المخصَّص: نفس الهيئة، لكنها <span> لا زرّاً —
+   الحقل داخلها هو ما يُنقر ويُحرَّر */
+.chip-pick-custom { cursor: text; }
+
+.chip-count-input {
+  width: 3.6em;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.chip-count-input:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 1px; }
+
 .builder-foot {
   display: flex;
   flex-direction: column;

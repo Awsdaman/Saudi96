@@ -13,26 +13,9 @@ export function streakMultiplier(streak: number): number {
   return 1 + Math.min(streak, MAX_STREAK_BONUS) * 0.1
 }
 
-/**
- * النقاط النهائية للإجابة الصحيحة.
- * السرعة تُكافأ لأن الصورة تنكشف تدريجياً مع الوقت —
- * فمن يخمّن الشعار من ظلّه وحده يستحق أكثر ممن انتظر ظهوره كاملاً.
- */
-export function scoreAnswer(
-  difficulty: Difficulty,
-  timeLeft: number,
-  totalTime: number,
-  streak: number,
-): number {
-  const base = basePoints(difficulty)
-  const speedBonus = base * (Math.max(timeLeft, 0) / totalTime) * 0.5
-  return Math.round((base + speedBonus) * streakMultiplier(streak))
-}
-
-/** نسبة الكشف عن الصورة: 0 = مخفية تماماً · 1 = ظاهرة كاملة */
-export function revealProgress(timeLeft: number, totalTime: number): number {
-  if (totalTime <= 0) return 1
-  return Math.min(1, Math.max(0, 1 - timeLeft / totalTime))
+/** النقاط النهائية للإجابة الصحيحة: أساسها الصعوبة، ومضاعف السلسلة فوقه. */
+export function scoreAnswer(difficulty: Difficulty, streak: number): number {
+  return Math.round(basePoints(difficulty) * streakMultiplier(streak))
 }
 
 /** خلط عشوائي (Fisher–Yates) — لا يعدّل المصفوفة الأصلية */

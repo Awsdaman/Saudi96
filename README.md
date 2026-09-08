@@ -190,8 +190,10 @@ tiered in `src/data/entities.json`:
   already-fair guess harder for no benefit, since the icon itself never gave the answer
   away, and was removed.
 - **Tier B** — emblem-based, no separate symbol exists. Shown as the **full lockup with the
-  Arabic wordmark blurred**, clearing as the timer runs — colour and composition are the
-  clues, since the wordmark is the only part that would otherwise give the answer away.
+  Arabic wordmark blurred**, clearing over a fixed few seconds after the question appears
+  (a self-playing CSS animation, not tied to any game timer — there isn't one) — colour and
+  composition are the clues, since the wordmark is the only part that would otherwise give
+  the answer away.
 
 ## Asset pipeline
 

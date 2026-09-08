@@ -3,8 +3,6 @@ import './Verdict.css'
 interface Props {
   show: boolean
   correct: boolean
-  /** نفد الوقت دون إجابة */
-  timedOut: boolean
   /** نصّ الإجابة الصحيحة */
   answer: string
   points: number
@@ -27,7 +25,7 @@ interface Props {
  * تُكلّف مئة وسبعة وعشرين كيلوبايت في حزمة تُفتح من القرص.
  */
 export function Verdict({
-  show, correct, timedOut, answer, points, explanation, last, onNext,
+  show, correct, answer, points, explanation, last, onNext,
 }: Props) {
   if (!show) return null
 
@@ -39,7 +37,7 @@ export function Verdict({
       aria-live="polite"
     >
       <strong className="verdict-word">
-        {correct ? 'إجابة صحيحة' : timedOut ? 'نفد الوقت' : 'إجابة خاطئة'}
+        {correct ? 'إجابة صحيحة' : 'إجابة خاطئة'}
       </strong>
 
       <p className="verdict-answer">{answer}</p>

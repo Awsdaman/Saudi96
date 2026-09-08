@@ -12,9 +12,6 @@ import { LogoRound } from './screens/LogoRound'
 import { Play } from './screens/Play'
 import { Results } from './screens/Results'
 
-/** ثوانٍ افتراضية للجولة المخصّصة */
-const CUSTOM_SECONDS = 22
-
 type View = 'home' | 'custom' | 'logos' | 'logoResults' | 'credits'
 
 interface LogoOutcome { known: number; total: number; missed: Entity[] }
@@ -24,7 +21,7 @@ export default function App() {
 }
 
 function Game() {
-  const { state, question, reveal, start, answer, next, home } = useGame()
+  const { state, question, start, answer, next, home } = useGame()
   const [view, setView] = useState<View>('home')
   const [logoCount, setLogoCount] = useState(12)
   const [isRecord, setIsRecord] = useState(false)
@@ -52,7 +49,7 @@ function Game() {
     // بدء جولةٍ عادية يُبطل «لعبتي» السابقة، وإلا أعاد زرّ «جولة أخرى»
     // في شاشة النتيجة تلك الجولةَ المخصّصة بدل الجولة التي انتهت للتوّ
     lastCustom.current = null
-    start(id, meta.title, poolFor(id), count, meta.seconds)
+    start(id, meta.title, poolFor(id), count)
   }
 
   function beginCustom(pool: Question[], count: number) {
@@ -60,7 +57,7 @@ function Game() {
     setIsRecord(false)
     setView('home')
     // معرّف الأسئلة المعرفية وعاءٌ لا أكثر — والعنوان يُمرَّر صريحاً
-    start('trivia', 'لعبتي', pool, count, CUSTOM_SECONDS)
+    start('trivia', 'لعبتي', pool, count)
   }
 
   // الانتقال إلى النتائج يمرّ دائماً عبر next، فهنا تُحفظ النتيجة —
@@ -112,8 +109,7 @@ function Game() {
         onReplay={() => {
           const c = lastCustom.current
           if (c) beginCustom(c.pool, c.count)
-          else start(state.roundId!, state.title, poolFor(state.roundId!), state.questions.length,
-            ROUNDS.find((r) => r.id === state.roundId)!.seconds)
+          else start(state.roundId!, state.title, poolFor(state.roundId!), state.questions.length)
         }}
         onHome={goHome}
       />
@@ -125,7 +121,6 @@ function Game() {
       <Play
         state={state}
         question={question}
-        reveal={reveal}
         onAnswer={answer}
         onNext={handleNext}
         onQuit={goHome}

@@ -159,6 +159,30 @@
 .setup-chip.is-on .chip-dot { border-color: var(--green-bright); }
 .setup-chip.is-on .chip-dot::after { transform: scale(1); }
 
+/* صفّ العدد المخصَّص: نفس هيئة الصفوف الجاهزة، لكنه <div> لا زرّاً —
+   الحقل داخله هو ما يُنقر ويُحرَّر */
+.setup-chip-custom { cursor: text; }
+
+.setup-count-input {
+  flex: none;
+  width: 4.5em;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.setup-count-input:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 1px; }
+
+/* أسهم الزيادة/النقصان الافتراضية أكبر من أن تلائم رقاقةً بهذا الحجم */
+.setup-count-input::-webkit-inner-spin-button,
+.setup-count-input::-webkit-outer-spin-button { margin-inline-start: 4px; }
+
 .setup-start { margin-top: 4px; width: 100%; justify-content: center; }
 
 .setup-foot {

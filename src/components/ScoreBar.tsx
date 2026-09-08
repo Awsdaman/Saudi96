@@ -1,4 +1,3 @@
-import { TimerRing } from './TimerRing'
 import { useCountUp } from '../game/useCountUp'
 import './ScoreBar.css'
 
@@ -7,13 +6,11 @@ interface Props {
   total: number
   score: number
   streak: number
-  timeLeft: number
-  totalTime: number
   roundTitle?: string
 }
 
 export function ScoreBar({
-  index, total, score, streak, timeLeft, totalTime, roundTitle,
+  index, total, score, streak, roundTitle,
 }: Props) {
   const shown = useCountUp(score)
   const done = index + 1
@@ -21,8 +18,6 @@ export function ScoreBar({
   return (
     <div className="scorebar">
       <div className="scorebar-row">
-        <TimerRing left={timeLeft} totalTime={totalTime} />
-
         {roundTitle && <span className="sb-round">{roundTitle}</span>}
 
         <span className="chip sb-prog">

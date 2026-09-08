@@ -25,6 +25,22 @@
   transition: opacity 120ms linear, filter 120ms linear, transform 120ms linear;
 }
 
+/* حركتا الكشف الذاتيتان: بلا مؤقّت لعبةٍ يقودهما، بمدّةٍ ثابتة تبدأ
+   من جديد عند كل سؤال (key={src} في RevealImage.tsx يعيد تركيب
+   العنصر). تتوقّفان فوراً إن أجاب اللاعب قبل انتهائهما — انظر التعليق
+   في RevealImage.tsx. */
+@keyframes reveal-zoom-out {
+  from { transform: scale(3.6); }
+  to   { transform: scale(1); }
+}
+.reveal-zoom-anim { animation: reveal-zoom-out 3.2s cubic-bezier(0.2, 0.7, 0.3, 1) both; }
+
+@keyframes reveal-blur-clear {
+  from { filter: blur(28px); }
+  to   { filter: blur(0); }
+}
+.reveal-blur-anim { animation: reveal-blur-clear 3s ease-out both; }
+
 .reveal-dark { background: var(--surface); }
 
 /* صور الأشخاص طولية: إطار 3:4 يكبّر الوجه بدل هدر عرض 4:3 */
@@ -39,3 +55,68 @@
 
 /* لوح فاتح للشعارات — أغلبها مصمَّم على خلفية بيضاء */
 .reveal-light { background: #F7F7F4; }
+
+/* زرّ الحجم الكامل — زاوية الإطار، فوق الصورة لا داخل مساحتها */
+.reveal-expand {
+  position: absolute;
+  z-index: 2;
+  bottom: 10px;
+  inset-inline-end: 10px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: color-mix(in srgb, black 55%, transparent);
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  backdrop-filter: blur(4px);
+  transition: background 140ms, transform 140ms;
+}
+.reveal-expand:hover { background: color-mix(in srgb, black 70%, transparent); transform: scale(1.06); }
+.reveal-expand:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }
+
+/* الصورة بالحجم الكامل — طبقة فوق كل شيء، تُغلَق بالنقر خارجها أو بالزرّ */
+.reveal-lightbox-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(5, 10, 8, 0.85);
+  animation: fade 140ms ease-out;
+  cursor: zoom-out;
+}
+
+.reveal-lightbox-img {
+  max-width: min(92vw, 1100px);
+  max-height: 88vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  cursor: default;
+  animation: rise 180ms ease-out;
+}
+
+.reveal-lightbox-close {
+  position: fixed;
+  top: 18px;
+  inset-inline-end: 18px;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, black 55%, transparent);
+  color: #fff;
+  font-size: 1.1rem;
+}
+.reveal-lightbox-close:hover { background: color-mix(in srgb, black 75%, transparent); }
+.reveal-lightbox-close:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }
+
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }

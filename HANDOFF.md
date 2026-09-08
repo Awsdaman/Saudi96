@@ -112,7 +112,7 @@ src/
   screens/          Home (topic grid + round setup, merged), Play, Results,
                     LogoRound, LogoResults, CustomBuilder
   components/       AnswerGrid, RevealImage, ScoreBar, LogoCard, HowToModal, RoundIcon,
-                    TimerRing, Verdict
+                    Verdict
   data/             entities · landmarks · regions · dishes · people · trivia (+ *-assets manifests)
 
 scripts/            fetch/convert/crop/validate pipeline — see README → "Asset pipeline"

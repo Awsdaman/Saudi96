@@ -14,9 +14,38 @@ export function CustomBuilder({ onStart, onBack }: Props) {
   const sources = useMemo(() => poolSources(), [])
   const [picked, setPicked] = useState<Set<string>>(new Set())
   const [length, setLength] = useState(15)
+  // العدد المخصَّص: اللاعب يكتب رقمه بدل الاختيار من القائمة الجاهزة.
+  // نصّ الحقل منفصلٌ عن length نفسه — انظر التعليق نفسه في Home.tsx.
+  const [customMode, setCustomMode] = useState(false)
+  const [customText, setCustomText] = useState('15')
 
   const available = useMemo(() => poolFromSources([...picked]).length, [picked])
   const groups = ['جولات', 'فئات الشخصيات', 'تصنيفات معرفية'] as const
+  const maxAvailable = Math.max(1, available)
+
+  function pickCustom() {
+    setCustomMode(true)
+    setCustomText(String(length))
+  }
+
+  function editCustomLength(raw: string) {
+    setCustomText(raw)
+    if (raw.trim() === '') return
+    const n = Number(raw)
+    if (!Number.isFinite(n)) return
+    setLength(Math.max(1, Math.min(maxAvailable, Math.trunc(n))))
+  }
+
+  // يقرأ القيمة المعروضة فعلياً (raw) لا length من الحالة — انظر
+  // التعليق نفسه على commitCustomCount في Home.tsx
+  function commitCustomLength(raw: string) {
+    const n = Number(raw)
+    const clamped = raw.trim() !== '' && Number.isFinite(n)
+      ? Math.max(1, Math.min(maxAvailable, Math.trunc(n)))
+      : length
+    setLength(clamped)
+    setCustomText(String(clamped))
+  }
 
   function toggle(id: string) {
     setPicked((prev) => {
@@ -68,13 +97,35 @@ export function CustomBuilder({ onStart, onBack }: Props) {
           {LENGTHS.map((n) => (
             <button
               key={n}
-              className={`chip-pick ${length === n ? 'is-on' : ''}`}
-              onClick={() => setLength(n)}
-              aria-pressed={length === n}
+              className={`chip-pick ${!customMode && length === n ? 'is-on' : ''}`}
+              onClick={() => { setCustomMode(false); setLength(n) }}
+              aria-pressed={!customMode && length === n}
             >
               <span className="ltr">{n}</span>
             </button>
           ))}
+
+          {customMode ? (
+            <span className="chip-pick chip-pick-custom is-on">
+              <span>عدد الأسئلة</span>
+              <input
+                type="number"
+                className="chip-count-input ltr"
+                min={1}
+                max={maxAvailable}
+                value={customText}
+                onChange={(e) => editCustomLength(e.target.value)}
+                onBlur={(e) => commitCustomLength(e.target.value)}
+                // Enter يؤكّد الرقم بدل الانتظار حتى يُغادر الحقل
+                onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur() }}
+                autoFocus
+              />
+            </span>
+          ) : (
+            <button className="chip-pick" onClick={pickCustom}>
+              <span>اختر العدد المناسب لك</span>
+            </button>
+          )}
         </div>
       </section>
 

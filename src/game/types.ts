@@ -65,8 +65,6 @@ export interface RoundMeta {
   title: string
   subtitle: string
   icon: string
-  /** ثوان لكل سؤال */
-  seconds: number
   /** خطوات «كيف تلعب» — تظهر قبل الجولة وعند الضغط على ؟ */
   howTo: string[]
 }

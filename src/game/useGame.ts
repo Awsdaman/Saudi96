@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useReducer, useRef } from 'react'
-import { buildRound, revealProgress, scoreAnswer } from './engine'
+import { useCallback, useReducer } from 'react'
+import { buildRound, scoreAnswer } from './engine'
 import type { Question, RoundId } from './types'
-
-const TICK_MS = 100
 
 export interface AnswerRecord {
   question: Question
-  /** -1 يعني نفاد الوقت دون إجابة */
   selected: number
   correct: boolean
   points: number
@@ -27,8 +24,6 @@ export interface GameState {
   score: number
   streak: number
   bestStreak: number
-  timeLeft: number
-  totalTime: number
   records: AnswerRecord[]
 }
 
@@ -42,14 +37,11 @@ const initial: GameState = {
   score: 0,
   streak: 0,
   bestStreak: 0,
-  timeLeft: 0,
-  totalTime: 0,
   records: [],
 }
 
 type Action =
-  | { type: 'start'; roundId: RoundId; title: string; pool: readonly Question[]; count: number; seconds: number }
-  | { type: 'tick'; delta: number }
+  | { type: 'start'; roundId: RoundId; title: string; pool: readonly Question[]; count: number }
   | { type: 'answer'; choice: number }
   | { type: 'next' }
   | { type: 'home' }
@@ -64,26 +56,6 @@ function reducer(state: GameState, action: Action): GameState {
         roundId: action.roundId,
         title: action.title,
         questions,
-        timeLeft: action.seconds,
-        totalTime: action.seconds,
-      }
-    }
-
-    case 'tick': {
-      // المؤقّت يعمل فقط أثناء انتظار الإجابة
-      if (state.phase !== 'playing' || state.selected !== null) return state
-      const timeLeft = state.timeLeft - action.delta
-      if (timeLeft > 0) return { ...state, timeLeft }
-      // نفاد الوقت = إجابة خاطئة تكسر السلسلة
-      return {
-        ...state,
-        timeLeft: 0,
-        selected: -1,
-        streak: 0,
-        records: [
-          ...state.records,
-          { question: state.questions[state.index], selected: -1, correct: false, points: 0 },
-        ],
       }
     }
 
@@ -91,9 +63,7 @@ function reducer(state: GameState, action: Action): GameState {
       if (state.phase !== 'playing' || state.selected !== null) return state
       const question = state.questions[state.index]
       const correct = action.choice === question.answerIndex
-      const points = correct
-        ? scoreAnswer(question.difficulty, state.timeLeft, state.totalTime, state.streak)
-        : 0
+      const points = correct ? scoreAnswer(question.difficulty, state.streak) : 0
       const streak = correct ? state.streak + 1 : 0
       return {
         ...state,
@@ -108,7 +78,7 @@ function reducer(state: GameState, action: Action): GameState {
     case 'next': {
       const index = state.index + 1
       if (index >= state.questions.length) return { ...state, phase: 'results' }
-      return { ...state, index, selected: null, timeLeft: state.totalTime }
+      return { ...state, index, selected: null }
     }
 
     case 'home':
@@ -122,25 +92,9 @@ function reducer(state: GameState, action: Action): GameState {
 export function useGame() {
   const [state, dispatch] = useReducer(reducer, initial)
 
-  // مؤقّت واحد يعمل طوال الجولة
-  const running = state.phase === 'playing' && state.selected === null
-  const lastRef = useRef(0)
-
-  useEffect(() => {
-    if (!running) return
-    lastRef.current = performance.now()
-    const id = setInterval(() => {
-      const now = performance.now()
-      const delta = (now - lastRef.current) / 1000
-      lastRef.current = now
-      dispatch({ type: 'tick', delta })
-    }, TICK_MS)
-    return () => clearInterval(id)
-  }, [running])
-
   const start = useCallback(
-    (roundId: RoundId, title: string, pool: readonly Question[], count: number, seconds: number) =>
-      dispatch({ type: 'start', roundId, title, pool, count, seconds }),
+    (roundId: RoundId, title: string, pool: readonly Question[], count: number) =>
+      dispatch({ type: 'start', roundId, title, pool, count }),
     [],
   )
   const answer = useCallback((choice: number) => dispatch({ type: 'answer', choice }), [])
@@ -148,7 +102,6 @@ export function useGame() {
   const home = useCallback(() => dispatch({ type: 'home' }), [])
 
   const question = state.questions[state.index] as Question | undefined
-  const reveal = revealProgress(state.timeLeft, state.totalTime)
 
-  return { state, question, reveal, start, answer, next, home }
+  return { state, question, start, answer, next, home }
 }

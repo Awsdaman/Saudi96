@@ -29,6 +29,11 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
   const [previewId, setPreviewId] = useState<RoundId | null>(null)
   const [selectedId, setSelectedId] = useState<RoundId | null>(null)
   const [count, setCount] = useState(0)
+  // العدد المخصَّص: اللاعب يكتب رقمه بدل الاختيار من القائمة الجاهزة.
+  // نصّ الحقل منفصلٌ عن count نفسه، وإلا فُرِض «١» على كل مسحةٍ يخليها
+  // اللاعب فارغة قبل كتابة رقمٍ جديد — يعاند محاولة الكتابة أصلاً.
+  const [customMode, setCustomMode] = useState(false)
+  const [customText, setCustomText] = useState('')
   const [howTo, setHowTo] = useState(false)
 
   const shownId = previewId ?? selectedId
@@ -44,11 +49,48 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
   // جديدة؛ عدد الأسئلة يبدأ من آخر ما اختاره اللاعب لهذه الجولة تحديداً
   function selectRound(id: RoundId) {
     setSelectedId(id)
+    setCustomMode(false)
     const size = poolFor(id).length
     const opts = CHOICES.filter((n) => n < size)
     const saved = loadLength(id)
     if (saved && (saved === size || opts.includes(saved))) setCount(saved)
     else setCount(opts.includes(10) ? 10 : (opts[0] ?? size))
+  }
+
+  function pickPreset(n: number) {
+    setCustomMode(false)
+    setCount(n)
+  }
+
+  // اختيار «العدد المناسب لك» يبدأ من العدد الحالي، لا من الصفر
+  function pickCustom() {
+    setCustomMode(true)
+    setCustomText(String(count))
+  }
+
+  function editCustomCount(raw: string) {
+    setCustomText(raw)
+    // فارغ أثناء الكتابة (مسح قبل رقمٍ جديد) — لا يُفرض عليه ١ الآن،
+    // بل عند الخروج من الحقل (commitCustomCount)
+    if (raw.trim() === '') return
+    const n = Number(raw)
+    if (!Number.isFinite(n)) return
+    setCount(Math.max(1, Math.min(poolSize, Math.trunc(n))))
+  }
+
+  /**
+   * يُثبَّت الرقم عند الخروج من الحقل (فقد التركيز أو Enter). يقرأ
+   * القيمة المعروضة فعلياً من الحقل نفسه (raw) لا من count في الحالة —
+   * فـ Enter يستدعي blur() فوراً، وقد لا يكون تحديث count من آخر
+   * ضغطة استقرّ بعد، فيقرأ onBlur رقماً قديماً ويُرجع المعروض إليه.
+   */
+  function commitCustomCount(raw: string) {
+    const n = Number(raw)
+    const clamped = raw.trim() !== '' && Number.isFinite(n)
+      ? Math.max(1, Math.min(poolSize, Math.trunc(n)))
+      : count
+    setCount(clamped)
+    setCustomText(String(clamped))
   }
 
   function confirm() {
@@ -145,22 +187,46 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
                   {options.map((n) => (
                     <button
                       key={n}
-                      className={`setup-chip ${count === n ? 'is-on' : ''}`}
-                      onClick={() => setCount(n)}
-                      aria-pressed={count === n}
+                      className={`setup-chip ${!customMode && count === n ? 'is-on' : ''}`}
+                      onClick={() => pickPreset(n)}
+                      aria-pressed={!customMode && count === n}
                     >
                       <span className="chip-dot" aria-hidden="true" />
                       <span className="chip-label"><span className="ltr">{n}</span> سؤال</span>
                     </button>
                   ))}
                   <button
-                    className={`setup-chip ${count === poolSize ? 'is-on' : ''}`}
-                    onClick={() => setCount(poolSize)}
-                    aria-pressed={count === poolSize}
+                    className={`setup-chip ${!customMode && count === poolSize ? 'is-on' : ''}`}
+                    onClick={() => pickPreset(poolSize)}
+                    aria-pressed={!customMode && count === poolSize}
                   >
                     <span className="chip-dot" aria-hidden="true" />
                     <span className="chip-label">الكل (<span className="ltr">{poolSize}</span>)</span>
                   </button>
+
+                  {customMode ? (
+                    <div className="setup-chip setup-chip-custom is-on">
+                      <span className="chip-dot" aria-hidden="true" />
+                      <span className="chip-label">عدد الأسئلة</span>
+                      <input
+                        type="number"
+                        className="setup-count-input ltr"
+                        min={1}
+                        max={poolSize}
+                        value={customText}
+                        onChange={(e) => editCustomCount(e.target.value)}
+                        onBlur={(e) => commitCustomCount(e.target.value)}
+                        // Enter يؤكّد الرقم بدل الانتظار حتى يُغادر الحقل
+                        onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur() }}
+                        autoFocus
+                      />
+                    </div>
+                  ) : (
+                    <button className="setup-chip" onClick={pickCustom}>
+                      <span className="chip-dot" aria-hidden="true" />
+                      <span className="chip-label">اختر العدد المناسب لك</span>
+                    </button>
+                  )}
                 </div>
               </div>
 
