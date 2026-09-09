@@ -598,9 +598,7 @@
     "type": "authority",
     "tier": "A",
     "site": "https://www.monshaat.gov.sa",
-    "tierVerified": false,
-    "lockup": "assets/logos/monshaat.png",
-    "logo": "assets/logos-symbol/monshaat.png"
+    "tierVerified": false
   },
   {
     "id": "pif",
@@ -675,9 +673,7 @@
     "type": "company",
     "tier": "A",
     "site": "https://splonline.com.sa",
-    "tierVerified": false,
-    "lockup": "assets/logos/splonline.png",
-    "logo": "assets/logos-symbol/splonline.png"
+    "tierVerified": false
   },
   {
     "id": "ssa",
@@ -767,9 +763,7 @@
     "type": "project",
     "tier": "A",
     "site": "https://qiddiya.com",
-    "tierVerified": false,
-    "lockup": "assets/logos/qiddiya.png",
-    "logo": "assets/logos-symbol/qiddiya.png"
+    "tierVerified": false
   },
   {
     "id": "redsea",
@@ -832,9 +826,7 @@
     "type": "company",
     "tier": "A",
     "site": "https://www.sabic.com",
-    "tierVerified": false,
-    "lockup": "assets/logos/sabic.png",
-    "logo": "assets/logos-symbol/sabic.png"
+    "tierVerified": false
   },
   {
     "id": "maaden",
@@ -852,15 +844,7 @@
     "type": "company",
     "tier": "A",
     "site": "https://www.stc.com.sa",
-    "tierVerified": false,
-    "lockup": "assets/logos/stc.png",
-    "crop": {
-      "x": 0.3625,
-      "y": 0.23,
-      "w": 0.2475,
-      "h": 0.54
-    },
-    "logo": "assets/logos-symbol/stc.png"
+    "tierVerified": false
   },
   {
     "id": "saudia",
@@ -886,9 +870,7 @@
     "type": "company",
     "tier": "A",
     "site": "https://www.flynas.com",
-    "tierVerified": false,
-    "lockup": "assets/logos/flynas.png",
-    "logo": "assets/logos-symbol/flynas.png"
+    "tierVerified": false
   },
   {
     "id": "riyadhair",
@@ -959,9 +941,7 @@
     "type": "app",
     "tier": "A",
     "site": "https://www.iam.gov.sa",
-    "tierVerified": false,
-    "lockup": "assets/logos/nafath.png",
-    "logo": "assets/logos-symbol/nafath.png"
+    "tierVerified": false
   },
   {
     "id": "alhilal",

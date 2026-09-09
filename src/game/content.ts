@@ -13,7 +13,10 @@ interface Landmark {
   id: string; nameAr: string; regionAr: string; category: string; noteAr: string; image: string | null
 }
 interface Region {
-  id: string; nameAr: string; shortAr: string; capitalAr: string; historicAr: string; noteAr: string; image: string | null
+  id: string; nameAr: string; shortAr: string; capitalAr: string; historicAr: string; noteAr: string
+  /** مدن حقيقية أخرى في المنطقة، ليست عاصمتها — تُثري مموّهات سؤال العاصمة */
+  otherCitiesAr: string[]
+  image: string | null
 }
 interface Dish {
   id: string; nameAr: string; regionAr: string; descAr: string; image: string | null
@@ -66,6 +69,15 @@ function entityDifficulty(e: Entity): Difficulty {
   return 2
 }
 
+/**
+ * المشاريع والتطبيقات والشركات قليلة العدد كلٌّ على حدة، فتُجمَع في مجموعة
+ * واحدة تمنحها مموّهات من الطراز نفسه (كيانات اقتصادية/استهلاكية) بدل
+ * الرجوع لكل الجهات — فلا يظهر اسم وزارة كخيارٍ لسؤالٍ عن مشروع.
+ */
+function entityGroup(type: Entity['type']): string {
+  return type === 'project' || type === 'app' || type === 'company' ? 'business' : type
+}
+
 /** جولة الشعارات — تتطلّب صوراً؛ الجهات بلا شعار مجلوب تُستبعد */
 export function logoQuestions(): Question[] {
   const withLogos = entities.filter((e) => e.logo || e.lockup)
@@ -76,7 +88,7 @@ export function logoQuestions(): Question[] {
     // المشترك فيُعرض الشعار كاملاً مع تضبيب الاسم — اللون والخط
     // والتكوين هي الدليل، والاسم وحده ما يلزم إخفاؤه.
     const useSymbol = e.tier === 'A' && !!e.logo
-    const samePool = entities.filter((x) => x.type === e.type)
+    const samePool = entities.filter((x) => entityGroup(x.type) === entityGroup(e.type))
     const pool = samePool.length >= 4 ? samePool : entities
     return {
       id: `logo_${e.id}`,
@@ -112,6 +124,18 @@ export function landmarkQuestions(): Question[] {
   })
 }
 
+/**
+ * كل مدن المناطق الحقيقية — العواصم وغيرها — لا العواصم وحدها.
+ * بلا هذا، مموّه سؤال العاصمة عاصمةٌ أخرى دائماً فيسهل استبعادها بمعرفة
+ * عواصم البقية؛ أمّا مدينة حقيقية ليست عاصمة أحد فتصعب معرفتها بالاستبعاد.
+ */
+const allCities = regions.flatMap((r) => [r.capitalAr, ...r.otherCitiesAr])
+
+function cityOptionsFor(correctCity: string): { options: string[]; answerIndex: number } {
+  const others = allCities.filter((c) => c !== correctCity)
+  return { options: [correctCity, ...shuffle(others).slice(0, 3)], answerIndex: 0 }
+}
+
 /** جولة المناطق — عواصم المناطق، وصورة المنطقة إن وُجدت */
 export function regionQuestions(): Question[] {
   const capitals: Question[] = regions.map((r) => ({
@@ -121,7 +145,7 @@ export function regionQuestions(): Question[] {
     difficulty: (r.capitalAr === r.shortAr ? 2 : 3) as Difficulty,
     category: 'عواصم المناطق',
     explanation: r.noteAr,
-    ...optionsFor(r, regions, (x) => x.capitalAr),
+    ...cityOptionsFor(r.capitalAr),
   }))
 
   const photos: Question[] = regions
@@ -273,7 +297,10 @@ export function peopleQuestions(): Question[] {
       difficulty: p.group === 'governors' ? 4 : 3,
       category: GROUP_LABEL[p.group],
       explanation: factExplanation(p),
-      ...peopleOptions(p, [byFact(p.factKind, people), people], (x) => x.factAr),
+      // نفس الفئة أولاً — رياضي مع رياضيين لا مع رائد فضاء — ثم نفس نوع
+      // السؤال، ثم الجميع؛ بلا الفئة أولاً كانت مموّهات «الشهرة» تخلط
+      // مجالات مختلفة كلياً (كرة قدم مع فضاء) فتُكشَف الإجابة بلا معرفة.
+      ...peopleOptions(p, [byGroup(p.group, people), byFact(p.factKind, people), people], (x) => x.factAr),
     })
   }
 
@@ -293,6 +320,7 @@ export const ROUNDS: RoundMeta[] = [
     id: 'landmarks', title: 'خمّن المعلم', subtitle: 'مواقع اليونسكو والمعالم والعمارة', icon: '▲',
     howTo: [
       'تبدأ الصورة من تفصيل مقصوص ثم تتّسع شيئاً فشيئاً.',
+      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات».',
       'اختر الإجابة الصحيحة، بلا مؤقّت — خذ راحتك.',
       'كل إجابة صحيحة متتابعة ترفع مضاعف النقاط.',
     ],
@@ -301,6 +329,7 @@ export const ROUNDS: RoundMeta[] = [
     id: 'regions', title: 'خمّن المنطقة', subtitle: 'المناطق الثلاث عشرة وعواصمها', icon: '●',
     howTo: [
       'أسئلة عن المناطق الثلاث عشرة وعواصمها.',
+      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات».',
       'اختر الإجابة الصحيحة، بلا مؤقّت — خذ راحتك.',
       'السلسلة المتتابعة من الإجابات الصحيحة تضاعف النقاط.',
     ],
@@ -309,6 +338,7 @@ export const ROUNDS: RoundMeta[] = [
     id: 'dishes', title: 'خمّن الطبق', subtitle: 'الأطباق الرسمية للمناطق', icon: '◗',
     howTo: [
       'لكل منطقة طبق رسمي واحد معتمد.',
+      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات».',
       'اختر الإجابة الصحيحة، بلا مؤقّت — خذ راحتك.',
       'السلسلة المتتابعة من الإجابات الصحيحة تضاعف النقاط.',
     ],
@@ -318,6 +348,7 @@ export const ROUNDS: RoundMeta[] = [
     howTo: [
       'تظهر صورة شخصية والسؤال عن اسمها، أو يأتي الاسم والسؤال عن منصبه أو منطقته أو فترة حكمه أو ما اشتُهر به.',
       'الخيارات من الفئة نفسها: ملك مع ملوك، ووزير مع وزراء.',
+      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات».',
       'اختر الإجابة الصحيحة، بلا مؤقّت — خذ راحتك.',
       'السلسلة المتتابعة من الإجابات الصحيحة تضاعف النقاط.',
       'أسماء الوزراء وأمراء المناطق محدّثة حسب آخر تشكيل.',
@@ -327,6 +358,7 @@ export const ROUNDS: RoundMeta[] = [
     id: 'trivia', title: 'أسئلة معرفية', subtitle: 'جغرافيا وتاريخ وثقافة', icon: '✦',
     howTo: [
       'أسئلة من جغرافيا وتاريخ وثقافة ومعالم ومحميات ورؤية 2030 وغيرها.',
+      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات».',
       'اختر الإجابة الصحيحة، بلا مؤقّت — خذ راحتك.',
       'السلسلة المتتابعة من الإجابات الصحيحة تضاعف النقاط.',
       'بعد كل إجابة يظهر شرح مختصر.',
