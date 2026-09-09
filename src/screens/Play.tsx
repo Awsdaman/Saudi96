@@ -23,30 +23,46 @@ export function Play({ state, question, onAnswer, onNext, onQuit }: Props) {
   const meta = ROUNDS.find((r) => r.id === state.roundId)
   const [howTo, setHowTo] = useState(false)
 
+  // الخيارات مخفيّة افتراضاً — تفادياً لتلميح الحل بالاستبعاد بلا معرفة
+  // فعلية، فيُخمَّن السؤال في البال أولاً، ثم تُطلَب الخيارات عند اللزوم.
+  const [choicesShown, setChoicesShown] = useState(false)
+  useEffect(() => {
+    setChoicesShown(false)
+  }, [question.id])
+
   const answerText = question.options[question.answerIndex]
   const isLast = state.index + 1 >= state.questions.length
+  const showChoices = choicesShown || done
 
   // المستمع يُركّب مرة واحدة ويقرأ من ref، وإلا التقط إغلاقاً قديماً
   // فتضيع ضغطة Enter التي تلي الإجابة مباشرةً قبل إعادة التصيير.
-  const latest = useRef({ done, count: question.options.length, onAnswer, onNext, onQuit })
+  const latest = useRef({ done, showChoices, count: question.options.length, onAnswer, onNext, onQuit })
   useEffect(() => {
-    latest.current = { done, count: question.options.length, onAnswer, onNext, onQuit }
+    latest.current = { done, showChoices, count: question.options.length, onAnswer, onNext, onQuit }
   })
 
-  // اختصارات لوحة المفاتيح: ١-٤ للإجابة، Enter للسؤال التالي، Esc للخروج
+  // اختصارات لوحة المفاتيح: مسافة/Enter تُظهر الخيارات أولاً، ثم ١-٤
+  // للإجابة، ثم Enter/مسافة للسؤال التالي — وEsc للخروج في أي وقت.
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const cur = latest.current
       if (e.key === 'Escape') return cur.onQuit()
-      if (!cur.done) {
-        const n = Number(e.key)
-        if (n >= 1 && n <= cur.count) cur.onAnswer(n - 1)
+      if (cur.done) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          cur.onNext()
+        }
         return
       }
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault()
-        cur.onNext()
+      if (!cur.showChoices) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          setChoicesShown(true)
+        }
+        return
       }
+      const n = Number(e.key)
+      if (n >= 1 && n <= cur.count) cur.onAnswer(n - 1)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -65,12 +81,18 @@ export function Play({ state, question, onAnswer, onNext, onQuit }: Props) {
 
         <h2 className="prompt">{question.prompt}</h2>
 
-        <AnswerGrid
-          options={question.options}
-          answerIndex={question.answerIndex}
-          selected={state.selected}
-          onPick={onAnswer}
-        />
+        {showChoices ? (
+          <AnswerGrid
+            options={question.options}
+            answerIndex={question.answerIndex}
+            selected={state.selected}
+            onPick={onAnswer}
+          />
+        ) : (
+          <button className="btn btn-primary play-reveal-choices" onClick={() => setChoicesShown(true)}>
+            أظهر الخيارات
+          </button>
+        )}
 
         <Verdict
           show={done}

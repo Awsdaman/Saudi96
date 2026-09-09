@@ -81,6 +81,8 @@
 
 .btn-quiet:hover { color: var(--text); border-color: var(--muted); }
 
+.play-reveal-choices { align-self: center; min-width: 190px; }
+
 .play-foot {
   display: flex;
   gap: 10px;
