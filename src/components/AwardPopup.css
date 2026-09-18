@@ -1,0 +1,54 @@
+.award-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: rgba(5, 10, 8, 0.72);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  animation: fade 140ms ease-out;
+}
+
+.award {
+  width: min(100%, 380px);
+  background: var(--surface-0);
+  border: 1px solid var(--line-0);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow);
+  animation: rise 180ms ease-out;
+  text-align: center;
+}
+
+.award-points { font-size: 1.15rem; font-weight: 700; }
+
+.award-teams {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.award-team {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  border: 1.5px solid var(--tc);
+  background: color-mix(in srgb, var(--tc) 14%, transparent);
+  color: var(--text);
+  transition: background 140ms;
+}
+
+.award-team:hover { background: color-mix(in srgb, var(--tc) 24%, transparent); }
+.award-team:focus-visible { outline: 2px solid var(--tc); outline-offset: 2px; }
+
+.award-a { --tc: var(--green-bright); }
+.award-b { --tc: var(--gold); }
+
+.award-skip { color: var(--muted); }

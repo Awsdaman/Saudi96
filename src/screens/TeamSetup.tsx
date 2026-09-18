@@ -2,7 +2,7 @@ import { useState } from 'react'
 import './TeamSetup.css'
 
 interface Props {
-  onStart: (nameA: string, nameB: string) => void
+  onStart: (nameA: string, nameB: string, withAudience: boolean) => void
   onSkip: () => void
 }
 
@@ -14,10 +14,13 @@ const DEFAULT_B = 'الفريق الثاني'
 export function TeamSetup({ onStart, onSkip }: Props) {
   const [nameA, setNameA] = useState('')
   const [nameB, setNameB] = useState('')
+  // تبويب جمهورٍ منفصل — الإجابة تبقى عند المستضيف حتى يُفصح عنها.
+  // انظر التعليق في hostSync.ts وAudienceView.tsx.
+  const [withAudience, setWithAudience] = useState(false)
 
   function submit(e: React.FormEvent) {
     e.preventDefault()
-    onStart(nameA.trim() || DEFAULT_A, nameB.trim() || DEFAULT_B)
+    onStart(nameA.trim() || DEFAULT_A, nameB.trim() || DEFAULT_B, withAudience)
   }
 
   return (
@@ -48,6 +51,18 @@ export function TeamSetup({ onStart, onSkip }: Props) {
             />
           </label>
         </div>
+
+        <label className="teamsetup-audience">
+          <input
+            type="checkbox"
+            checked={withAudience}
+            onChange={(e) => setWithAudience(e.target.checked)}
+          />
+          <span>
+            افتح شاشة عرضٍ للجمهور
+            <small>الإجابة تبقى عندك حتى تُعلنها؛ افتحها على شاشة العرض واستضف من هذا الجهاز</small>
+          </span>
+        </label>
 
         <button className="btn btn-primary teamsetup-start" type="submit">ابدأ</button>
         <button className="btn-link teamsetup-skip" type="button" onClick={onSkip}>لعب بلا فرق</button>

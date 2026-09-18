@@ -1,13 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnswerGrid } from '../components/AnswerGrid'
+import { AwardPopup } from '../components/AwardPopup'
 import { HowToModal } from '../components/HowToModal'
 import { ROUNDS } from '../game/content'
+import type { AudienceMessage } from '../game/hostSync'
 import { RevealImage } from '../components/RevealImage'
 import { ScoreBar } from '../components/ScoreBar'
 import { loadEasyMode } from '../game/storage'
 import { Verdict } from '../components/Verdict'
 import type { GameState } from '../game/useGame'
-import type { ChoiceQuestion } from '../game/types'
+import type { ChoiceQuestion, Team } from '../game/types'
 import './Play.css'
 
 interface Props {
@@ -16,13 +18,18 @@ interface Props {
   onAnswer: (i: number) => void
   onNext: () => void
   onQuit: () => void
+  teams?: [Team, Team] | null
+  onAdjust?: (index: 0 | 1, delta: number) => void
+  sendAudience?: (msg: AudienceMessage) => void
 }
 
-export function Play({ state, question, onAnswer, onNext, onQuit }: Props) {
+export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjust, sendAudience }: Props) {
   const done = state.selected !== null
   const last = state.records[state.records.length - 1]
   const meta = ROUNDS.find((r) => r.id === question.round)
   const [howTo, setHowTo] = useState(false)
+  // ظهرت نافذة توزيع النقاط لهذا السؤال فعلاً — لا تتكرّر عند إعادة التصيير
+  const [awarded, setAwarded] = useState(false)
 
   // إخفاء الخيارات تفادياً لتلميح الحل بالاستبعاد بلا معرفة فعلية —
   // نمط اللعب (سهل/صعب) يختاره اللاعب في شاشة الإعداد، ويُقرأ هنا عند
@@ -32,6 +39,28 @@ export function Play({ state, question, onAnswer, onNext, onQuit }: Props) {
   const answerText = question.options[question.answerIndex]
   const isLast = state.index + 1 >= state.questions.length
   const showChoices = choicesShown || done
+
+  // يُبلَّغ تبويب الجمهور بالسؤال دون إجابته — answerIndex لا يصل إلا
+  // بعد أن يحسم المستضيف الأمر (done)، فتبقى الإجابة عنده حتى تلك اللحظة.
+  useEffect(() => {
+    sendAudience?.({
+      type: 'question',
+      data: {
+        roundTitle: state.title,
+        itemLabel: 'سؤال',
+        index: state.index,
+        total: state.questions.length,
+        prompt: question.prompt,
+        image: question.image,
+        reveal: question.reveal,
+        options: showChoices ? question.options : undefined,
+        ...(done ? { answerIndex: question.answerIndex } : {}),
+      },
+    })
+  }, [
+    sendAudience, showChoices, done, state.title, state.index, state.questions.length,
+    question.prompt, question.image, question.reveal, question.options, question.answerIndex,
+  ])
 
   // المستمع يُركّب مرة واحدة ويقرأ من ref، وإلا التقط إغلاقاً قديماً
   // فتضيع ضغطة Enter التي تلي الإجابة مباشرةً قبل إعادة التصيير.
@@ -127,6 +156,15 @@ export function Play({ state, question, onAnswer, onNext, onQuit }: Props) {
 
       {howTo && meta && (
         <HowToModal title={meta.title} steps={meta.howTo} onClose={() => setHowTo(false)} />
+      )}
+
+      {teams && done && last?.correct && !awarded && (
+        <AwardPopup
+          points={last.points}
+          teams={teams}
+          onAward={(i) => { onAdjust?.(i, last.points); setAwarded(true) }}
+          onSkip={() => setAwarded(true)}
+        />
       )}
     </div>
   )

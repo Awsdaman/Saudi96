@@ -1,11 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { AwardPopup } from '../components/AwardPopup'
 import { HowToModal } from '../components/HowToModal'
-import { ScoreBar } from '../components/ScoreBar'
-import { SongAudio } from '../components/SongAudio'
 import { ROUNDS } from '../game/content'
 import { scoreSong } from '../game/engine'
+import type { AudienceMessage } from '../game/hostSync'
+import { ScoreBar } from '../components/ScoreBar'
+import { SongAudio } from '../components/SongAudio'
 import type { GameState } from '../game/useGame'
-import type { SongPhase, SongQuestion } from '../game/types'
+import type { SongPhase, SongQuestion, Team } from '../game/types'
 import './Play.css'
 import './SongPlay.css'
 
@@ -17,15 +19,40 @@ interface Props {
   onUnavailable: () => void
   onNext: () => void
   onQuit: () => void
+  teams?: [Team, Team] | null
+  onAdjust?: (index: 0 | 1, delta: number) => void
+  sendAudience?: (msg: AudienceMessage) => void
 }
 
-export function SongPlay({ state, question, onAction, onJudge, onUnavailable, onNext, onQuit }: Props) {
+export function SongPlay({
+  state, question, onAction, onJudge, onUnavailable, onNext, onQuit, teams, onAdjust, sendAudience,
+}: Props) {
   const [howTo, setHowTo] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [awarded, setAwarded] = useState(false)
   const { song } = question
   const phase = state.songPhase
   const revealed = state.songRevealed
   const record = state.resolved ? state.records[state.records.length - 1] : null
+
+  // العنوان يصل للجمهور بعد الحسم (resolved) لا عند الكشف الذاتي
+  // (revealed) — تلك لحظة تحقّق المستضيف بنفسه قبل أن يُقرّر.
+  useEffect(() => {
+    sendAudience?.({
+      type: 'question',
+      data: {
+        roundTitle: state.title,
+        itemLabel: 'أغنية',
+        index: state.index,
+        total: state.questions.length,
+        prompt: question.prompt,
+        ...(state.resolved ? { correctText: song.artistAr ? `${song.titleAr} — ${song.artistAr}` : song.titleAr } : {}),
+      },
+    })
+  }, [
+    sendAudience, state.resolved, state.title, state.index, state.questions.length,
+    question.prompt, song.titleAr, song.artistAr,
+  ])
   const meta = ROUNDS.find((r) => r.id === 'songs')!
   const src = phase === 1 ? song.clips!.intro3 : phase === 2 ? song.clips!.intro8 : song.clips!.famous
   const firstLength = (song.intro3End ?? 3) - (song.intro3Start ?? 0)
@@ -97,6 +124,15 @@ export function SongPlay({ state, question, onAction, onJudge, onUnavailable, on
         </div>
       </div>
       {howTo && <HowToModal title={meta.title} steps={meta.howTo} onClose={() => setHowTo(false)} />}
+
+      {teams && record?.correct && !awarded && (
+        <AwardPopup
+          points={record.points}
+          teams={teams}
+          onAward={(i) => { onAdjust?.(i, record.points); setAwarded(true) }}
+          onSkip={() => setAwarded(true)}
+        />
+      )}
     </main>
   )
 }

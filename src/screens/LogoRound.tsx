@@ -1,30 +1,38 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { AwardPopup } from '../components/AwardPopup'
 import { HowToModal } from '../components/HowToModal'
 import { LogoCard } from '../components/LogoCard'
-import { ROUNDS, logoCards } from '../game/content'
-import { shuffle } from '../game/engine'
-import type { Entity } from '../game/types'
+import { entityDifficulty, ROUNDS, logoCards } from '../game/content'
+import { basePoints, shuffle } from '../game/engine'
+import type { AudienceMessage } from '../game/hostSync'
+import type { Entity, Team } from '../game/types'
 import './LogoRound.css'
 
 interface Props {
   count: number
   onFinish: (known: number, total: number, missed: Entity[]) => void
   onQuit: () => void
+  teams?: [Team, Team] | null
+  onAdjust?: (index: 0 | 1, delta: number) => void
+  sendAudience?: (msg: AudienceMessage) => void
 }
 
-export function LogoRound({ count, onFinish, onQuit }: Props) {
+export function LogoRound({ count, onFinish, onQuit, teams, onAdjust, sendAudience }: Props) {
   const cards = useMemo(() => shuffle(logoCards()).slice(0, count), [count])
   const meta = ROUNDS.find((r) => r.id === 'logos')!
   const [howTo, setHowTo] = useState(false)
   const [index, setIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
   const [known, setKnown] = useState(0)
+  // نقاط البطاقة الحالية، معلَّقة بانتظار قرار المستضيف من يستحقّها
+  const [pendingAward, setPendingAward] = useState<number | null>(null)
   const missed = useRef<Entity[]>([])
 
   const entity = cards[index]
   const isLast = index + 1 >= cards.length
+  const points = entity ? basePoints(entityDifficulty(entity)) : 0
 
-  function next(gotIt: boolean) {
+  function advance(gotIt: boolean) {
     if (gotIt) setKnown((k) => k + 1)
     else missed.current.push(entity)
 
@@ -36,10 +44,42 @@ export function LogoRound({ count, onFinish, onQuit }: Props) {
     setRevealed(false)
   }
 
-  // المسافة تكشف، ثم ١ / ٢ للحكم على النفس
-  const latest = useRef({ revealed, next, onQuit })
+  // في وضع الفريقين تتوقّف البطاقة عند نافذة توزيع النقاط قبل التقدّم؛
+  // بلا فريقين تتقدّم كما كانت دوماً. الاسم يصل للجمهور هنا بالضبط —
+  // لحظة حكم المستضيف، لا لحظة «اعرض الإجابة» الخاصّة به وحده.
+  function judge(gotIt: boolean) {
+    sendAudience?.({
+      type: 'question',
+      data: {
+        roundTitle: meta.title, itemLabel: 'شعار', index, total: cards.length,
+        prompt: 'لأي جهة هذا الشعار؟', image: entity.logo ?? entity.lockup, correctText: entity.nameAr,
+      },
+    })
+    if (gotIt && teams) { setPendingAward(points); return }
+    advance(gotIt)
+  }
+
+  // الاسم يصل للجمهور بعد الحكم لا عند «اعرض الإجابة» — تلك لحظة
+  // تحقّق المستضيف الخاصّة، تماماً كمنطق الأغنية في SongPlay.
   useEffect(() => {
-    latest.current = { revealed, next, onQuit }
+    if (!entity) return
+    sendAudience?.({
+      type: 'question',
+      data: {
+        roundTitle: meta.title,
+        itemLabel: 'شعار',
+        index,
+        total: cards.length,
+        prompt: 'لأي جهة هذا الشعار؟',
+        image: entity.logo ?? entity.lockup,
+      },
+    })
+  }, [sendAudience, entity, index, cards.length, meta.title])
+
+  // المسافة تكشف، ثم ١ / ٢ للحكم على النفس
+  const latest = useRef({ revealed, judge, onQuit })
+  useEffect(() => {
+    latest.current = { revealed, judge, onQuit }
   })
 
   useEffect(() => {
@@ -53,8 +93,8 @@ export function LogoRound({ count, onFinish, onQuit }: Props) {
         }
         return
       }
-      if (e.key === '1') cur.next(true)
-      if (e.key === '2') cur.next(false)
+      if (e.key === '1') cur.judge(true)
+      if (e.key === '2') cur.judge(false)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -87,8 +127,8 @@ export function LogoRound({ count, onFinish, onQuit }: Props) {
         <>
           <h2 className="logoround-answer">{entity.nameAr}</h2>
           <div className="logoround-judge">
-            <button className="btn btn-yes" onClick={() => next(true)}>عرفتها</button>
-            <button className="btn btn-no" onClick={() => next(false)}>ما عرفتها</button>
+            <button className="btn btn-yes" onClick={() => judge(true)}>عرفتها</button>
+            <button className="btn btn-no" onClick={() => judge(false)}>ما عرفتها</button>
           </div>
         </>
       )}
@@ -96,6 +136,15 @@ export function LogoRound({ count, onFinish, onQuit }: Props) {
       <button className="btn btn-quiet logoround-quit" onClick={onQuit}>إنهاء الجولة</button>
 
       {howTo && <HowToModal title={meta.title} steps={meta.howTo} onClose={() => setHowTo(false)} />}
+
+      {pendingAward !== null && teams && (
+        <AwardPopup
+          points={pendingAward}
+          teams={teams}
+          onAward={(i) => { onAdjust?.(i, pendingAward); setPendingAward(null); advance(true) }}
+          onSkip={() => { setPendingAward(null); advance(true) }}
+        />
+      )}
     </div>
   )
 }

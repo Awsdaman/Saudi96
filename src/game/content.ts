@@ -70,7 +70,7 @@ function optionsFor<T>(correct: T, pool: readonly T[], label: (x: T) => string):
 }
 
 /** صعوبة الجهة حسب شهرتها التقريبية */
-function entityDifficulty(e: Entity): Difficulty {
+export function entityDifficulty(e: Entity): Difficulty {
   if (e.type === 'commission') return 4
   if (e.type === 'authority') return 3
   if (e.type === 'ministry') return 2

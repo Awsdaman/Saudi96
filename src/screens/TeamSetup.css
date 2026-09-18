@@ -84,5 +84,27 @@
 
 .teamsetup-input:focus-visible { outline: 2px solid var(--tc); outline-offset: 1px; }
 
+.teamsetup-audience {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  text-align: start;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+
+.teamsetup-audience input { margin-top: 3px; flex: none; }
+
+.teamsetup-audience small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+
 .teamsetup-start { align-self: center; margin-top: 6px; min-width: 160px; }
 .teamsetup-skip { align-self: center; }

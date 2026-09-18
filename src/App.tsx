@@ -1,11 +1,14 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { TeamScoreboard } from './components/TeamScoreboard'
 import { ROUNDS, poolFor } from './game/content'
+import { AUDIENCE_CHANNEL, audienceUrl, isAudienceWindow } from './game/hostSync'
+import type { AudienceMessage } from './game/hostSync'
 import { saveBest } from './game/storage'
 import { useGame } from './game/useGame'
 import { useRoundTheme } from './game/useRoundTheme'
 import type { Entity, Question, RoundId, Team } from './game/types'
+import { AudienceView } from './screens/AudienceView'
 import { Credits } from './screens/Credits'
 import { CustomBuilder } from './screens/CustomBuilder'
 import { Home } from './screens/Home'
@@ -21,7 +24,9 @@ type View = 'home' | 'custom' | 'logos' | 'logoResults' | 'credits'
 interface LogoOutcome { known: number; total: number; missed: Entity[] }
 
 export default function App() {
-  return <Game />
+  // تبويب الجمهور شجرة مكوّناتٍ مستقلّة تماماً — لا تشارك حالة أو
+  // خطاطيف Game، فيبقى قرار الدور هنا بلا أثرٍ على قواعد الخطاطيف.
+  return isAudienceWindow() ? <AudienceView /> : <Game />
 }
 
 function Game() {
@@ -36,8 +41,34 @@ function Game() {
   // في TeamSetup.tsx. null بعد «لعب بلا فرق» يخفي الشريط العائم كلياً.
   const [teamsReady, setTeamsReady] = useState(false)
   const [teams, setTeams] = useState<[Team, Team] | null>(null)
+  // تبويب جمهورٍ مفتوح فعلاً على شاشة عرضٍ منفصلة — انظر hostSync.ts
+  const [audienceOpen, setAudienceOpen] = useState(false)
+  const channelRef = useRef<BroadcastChannel | null>(null)
 
-  function adjustScore(index: 0 | 1, delta: 1 | -1) {
+  useEffect(() => {
+    if (!audienceOpen) return
+    const channel = new BroadcastChannel(AUDIENCE_CHANNEL)
+    channelRef.current = channel
+    return () => { channel.close(); channelRef.current = null }
+  }, [audienceOpen])
+
+  function sendAudience(msg: AudienceMessage) {
+    channelRef.current?.postMessage(msg)
+  }
+
+  useEffect(() => {
+    if (audienceOpen) sendAudience({ type: 'teams', teams })
+  }, [audienceOpen, teams])
+
+  // الشاشات النشطة (اللعب، بطاقات الشعار) تُبلّغ الجمهور بنفسها سؤالاً
+  // بسؤال؛ هنا تُبلَّغ حالات الانتظار والنتائج فقط.
+  useEffect(() => {
+    if (!audienceOpen || state.phase === 'playing' || view === 'logos') return
+    if (state.phase === 'results' || view === 'logoResults') sendAudience({ type: 'results', score: state.score })
+    else sendAudience({ type: 'idle' })
+  }, [audienceOpen, view, state.phase, state.score])
+
+  function adjustScore(index: 0 | 1, delta: number) {
     setTeams((prev) => {
       if (!prev) return prev
       const next = [...prev] as [Team, Team]
@@ -63,7 +94,12 @@ function Game() {
   if (!teamsReady) {
     return (
       <TeamSetup
-        onStart={(a, b) => { setTeams([{ name: a, score: 0 }, { name: b, score: 0 }]); setTeamsReady(true) }}
+        onStart={(a, b, withAudience) => {
+          setTeams([{ name: a, score: 0 }, { name: b, score: 0 }])
+          setAudienceOpen(withAudience)
+          if (withAudience) window.open(audienceUrl(), 'saudiknowledge-audience')
+          setTeamsReady(true)
+        }}
         onSkip={() => { setTeams(null); setTeamsReady(true) }}
       />
     )
@@ -122,6 +158,9 @@ function Game() {
     return withScoreboard(
       <LogoRound
         count={logoCount}
+        teams={teams}
+        onAdjust={adjustScore}
+        sendAudience={audienceOpen ? sendAudience : undefined}
         onFinish={(known, total, missed) => {
           setIsRecord(saveBest('logos', known))
           setLogoOutcome({ known, total, missed })
@@ -164,7 +203,8 @@ function Game() {
     if (question.kind === 'song') return withScoreboard(
       <SongPlay key={question.id} state={state} question={question}
         onAction={songAction} onJudge={judgeSong} onUnavailable={skipUnavailable}
-        onNext={handleNext} onQuit={goHome} />
+        onNext={handleNext} onQuit={goHome}
+        teams={teams} onAdjust={adjustScore} sendAudience={audienceOpen ? sendAudience : undefined} />
     )
     return withScoreboard(
       <Play
@@ -174,6 +214,9 @@ function Game() {
         onAnswer={answer}
         onNext={handleNext}
         onQuit={goHome}
+        teams={teams}
+        onAdjust={adjustScore}
+        sendAudience={audienceOpen ? sendAudience : undefined}
       />
     )
   }
