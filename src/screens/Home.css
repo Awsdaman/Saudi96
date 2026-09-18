@@ -155,6 +155,14 @@
 
 .chip-label { flex: 1; }
 
+.chip-sub {
+  display: block;
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
 .setup-chip.is-on { border-color: var(--green-bright); font-weight: 700; }
 .setup-chip.is-on .chip-dot { border-color: var(--green-bright); }
 .setup-chip.is-on .chip-dot::after { transform: scale(1); }

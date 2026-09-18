@@ -36,10 +36,13 @@ function Game() {
     : null
   useRoundTheme(themeRoundId)
 
-  function beginRound(id: RoundId, count: number) {
+  function beginRound(id: RoundId, count: number, easy: boolean) {
     setIsRecord(false)
     lastCustom.current = null
-    if (id === 'logos') {
+    // «خمّن الشعار» بالنمط الصعب يبقى بطاقات التذكّر الحرّ المخصّصة؛
+    // بالنمط السهل يمرّ عبر مسار الاختيار من متعدد العادي مثل أي جولة —
+    // نفس بنك الأسئلة (logoQuestions) الذي تستعيره «لعبتي» أصلاً.
+    if (id === 'logos' && !easy) {
       setLogoCount(count)
       setView('logos')
       return
@@ -64,7 +67,14 @@ function Game() {
   function handleNext() {
     if (!state.resolved) return
     const isLast = state.index + 1 >= state.questions.length
-    if (isLast && state.roundId) setIsRecord(saveBest(state.roundId, state.score))
+    // النمط السهل لـ«خمّن الشعار» يسجّل نقاطاً (كأي جولة اختيارٍ من
+    // متعدد)، بينما بطاقات التذكّر الحرّ تسجّل عدد «عرفتها» تحت المفتاح
+    // logos نفسه — مقياسان لا يُقارَنان، فيُفرَد للنمط السهل مفتاحه
+    // الخاص كي لا يُفسد أحدهما رقم الآخر القياسي.
+    if (isLast && state.roundId) {
+      const bestKey = state.roundId === 'logos' ? 'logos-mc' : state.roundId
+      setIsRecord(saveBest(bestKey, state.score))
+    }
     next()
   }
 

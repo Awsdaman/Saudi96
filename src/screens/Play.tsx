@@ -4,7 +4,7 @@ import { HowToModal } from '../components/HowToModal'
 import { ROUNDS } from '../game/content'
 import { RevealImage } from '../components/RevealImage'
 import { ScoreBar } from '../components/ScoreBar'
-import { loadChoicesAlwaysVisible } from '../game/storage'
+import { loadEasyMode } from '../game/storage'
 import { Verdict } from '../components/Verdict'
 import type { GameState } from '../game/useGame'
 import type { ChoiceQuestion } from '../game/types'
@@ -25,9 +25,9 @@ export function Play({ state, question, onAnswer, onNext, onQuit }: Props) {
   const [howTo, setHowTo] = useState(false)
 
   // إخفاء الخيارات تفادياً لتلميح الحل بالاستبعاد بلا معرفة فعلية —
-  // تفضيلٌ يختاره اللاعب في شاشة الإعداد (خيارات الإجابة)، ويُقرأ هنا
-  // عند كل سؤال جديد (المكوّن يُعاد تركيبه بمفتاح question.id).
-  const [choicesShown, setChoicesShown] = useState(loadChoicesAlwaysVisible)
+  // نمط اللعب (سهل/صعب) يختاره اللاعب في شاشة الإعداد، ويُقرأ هنا عند
+  // كل سؤال جديد (المكوّن يُعاد تركيبه بمفتاح question.id).
+  const [choicesShown, setChoicesShown] = useState(loadEasyMode)
 
   const answerText = question.options[question.answerIndex]
   const isLast = state.index + 1 >= state.questions.length

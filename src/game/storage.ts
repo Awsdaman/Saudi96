@@ -47,20 +47,25 @@ export function saveLength(round: string, count: number) {
   }
 }
 
-const CHOICES_KEY = 'saudiknowledge.choicesAlwaysVisible'
+const EASY_KEY = 'saudiknowledge.easyMode'
 
-/** تفضيل اللاعب: تظهر خيارات السؤال فوراً بدل إخفائها حتى تُطلَب */
-export function loadChoicesAlwaysVisible(): boolean {
+/**
+ * نمط اللعب: سهلٌ (مع الخيارات) بدل صعبٍ (بدون خيارات) — يقرّره اللاعب
+ * بعد اختيار التصنيف. في الجولات ذات الاختيار من متعدد يعني إظهار
+ * الخيارات فوراً بدل إخفائها حتى تُطلَب؛ في «خمّن الشعار» يعني عرض
+ * خياراتٍ للاختيار من بينها بدل بطاقات التذكّر الحرّ بلا خيارات.
+ */
+export function loadEasyMode(): boolean {
   try {
-    return localStorage.getItem(CHOICES_KEY) === '1'
+    return localStorage.getItem(EASY_KEY) === '1'
   } catch {
     return false
   }
 }
 
-export function saveChoicesAlwaysVisible(value: boolean) {
+export function saveEasyMode(value: boolean) {
   try {
-    localStorage.setItem(CHOICES_KEY, value ? '1' : '0')
+    localStorage.setItem(EASY_KEY, value ? '1' : '0')
   } catch {
     // التخزين قد يكون معطّلاً — لا يمنع اللعب
   }

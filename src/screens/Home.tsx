@@ -7,9 +7,9 @@ import { ROUNDS, poolFor } from '../game/content'
 import { DEFAULT_ICON_TILE, iconTileUrl, ROUND_THEME, tapestryUrl } from '../game/roundTheme'
 import {
   loadBest,
-  loadChoicesAlwaysVisible,
+  loadEasyMode,
   loadLength,
-  saveChoicesAlwaysVisible,
+  saveEasyMode,
   saveLength,
 } from '../game/storage'
 import type { RoundId } from '../game/types'
@@ -18,7 +18,7 @@ import './Home.css'
 const INTRO_KEY = 'saudiknowledge.introShown'
 
 interface Props {
-  onStart: (id: RoundId, count: number) => void
+  onStart: (id: RoundId, count: number, easy: boolean) => void
   onCustom: () => void
   onCredits: () => void
 }
@@ -44,7 +44,9 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
   const [customMode, setCustomMode] = useState(false)
   const [customText, setCustomText] = useState('')
   const [howTo, setHowTo] = useState(false)
-  const [alwaysShowChoices, setAlwaysShowChoices] = useState(loadChoicesAlwaysVisible)
+  // نمط اللعب: سهلٌ (مع الخيارات) أو صعبٌ (بدون خيارات) — انظر التعليق
+  // في storage.ts لمعناه في كل نوع جولة.
+  const [easyMode, setEasyMode] = useState(loadEasyMode)
   // تظهر مرّة واحدة عند فتح الموقع (لا عند كل رجوعٍ إلى الرئيسية أثناء
   // نفس الجلسة) — sessionStorage يُنسى بإغلاق التبويب، فتظهر من جديد
   // في الجلسة التالية.
@@ -65,9 +67,9 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
     }
   }
 
-  function chooseChoicesVisibility(always: boolean) {
-    setAlwaysShowChoices(always)
-    saveChoicesAlwaysVisible(always)
+  function chooseMode(easy: boolean) {
+    setEasyMode(easy)
+    saveEasyMode(easy)
   }
 
   const shownId = previewId ?? selectedId
@@ -135,7 +137,7 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
   function confirm() {
     if (!selectedId || poolSize === 0) return
     saveLength(selectedId, count)
-    onStart(selectedId, Math.min(count, poolSize))
+    onStart(selectedId, Math.min(count, poolSize), easyMode)
   }
 
   const rows: Row[] = ROUNDS.map((r) => ({
@@ -270,27 +272,39 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
                 </div>
               </div> : <p className="song-draft-note">الأغاني قيد التجهيز. اختر المقطع المشهور لكل أغنية في صفحة المراجعة لتصبح جاهزة للعب.</p>}
 
-              {/* لا معنى لها في الشعار (فلاش كارد بلا خيارات) ولا في الأغنية
-                  (تخمين شفهي)؛ تخصّ فقط الجولات ذات الاختيار من متعدد. */}
-              {poolSize > 0 && selectedId !== 'logos' && selectedId !== 'songs' && (
+              {/* لا معنى له في الأغنية (تخمين شفهي ذاتي الحكم) — في كل
+                  جولةٍ أخرى يقرّر إظهار الخيارات فوراً أو إخفاءها حتى
+                  تُطلَب، وفي الشعار تحديداً يبدّل بين بطاقات التذكّر
+                  الحرّ (بلا خيارات) وصيغة الاختيار من متعدد. */}
+              {poolSize > 0 && selectedId !== 'songs' && (
                 <div className="setup-block">
-                  <h3 className="setup-h3">خيارات الإجابة</h3>
+                  <h3 className="setup-h3">نمط اللعب</h3>
                   <div className="setup-chips">
                     <button
-                      className={`setup-chip ${!alwaysShowChoices ? 'is-on' : ''}`}
-                      onClick={() => chooseChoicesVisibility(false)}
-                      aria-pressed={!alwaysShowChoices}
+                      className={`setup-chip ${easyMode ? 'is-on' : ''}`}
+                      onClick={() => chooseMode(true)}
+                      aria-pressed={easyMode}
                     >
                       <span className="chip-dot" aria-hidden="true" />
-                      <span className="chip-label">مخفية حتى الطلب</span>
+                      <span className="chip-label">
+                        سهل
+                        <small className="chip-sub">
+                          {selectedId === 'logos' ? 'اختيارٌ من متعدد' : 'الخيارات ظاهرة دائماً'}
+                        </small>
+                      </span>
                     </button>
                     <button
-                      className={`setup-chip ${alwaysShowChoices ? 'is-on' : ''}`}
-                      onClick={() => chooseChoicesVisibility(true)}
-                      aria-pressed={alwaysShowChoices}
+                      className={`setup-chip ${!easyMode ? 'is-on' : ''}`}
+                      onClick={() => chooseMode(false)}
+                      aria-pressed={!easyMode}
                     >
                       <span className="chip-dot" aria-hidden="true" />
-                      <span className="chip-label">ظاهرة دائماً</span>
+                      <span className="chip-label">
+                        صعب
+                        <small className="chip-sub">
+                          {selectedId === 'logos' ? 'بلا خيارات — تذكّرٌ حرّ' : 'الخيارات مخفية حتى تُطلَب'}
+                        </small>
+                      </span>
                     </button>
                   </div>
                 </div>
