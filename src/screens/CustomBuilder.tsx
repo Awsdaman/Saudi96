@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { poolSources, poolFromSources } from '../game/content'
 import type { Question } from '../game/types'
-import { loadLength, saveLength } from '../game/storage'
+import { loadEasyMode, loadLength, saveEasyMode, saveLength } from '../game/storage'
 import './CustomBuilder.css'
 
 interface Props {
@@ -19,6 +19,13 @@ export function CustomBuilder({ onStart, onBack }: Props) {
   // نصّ الحقل منفصلٌ عن length نفسه — انظر التعليق نفسه في Home.tsx.
   const [customMode, setCustomMode] = useState(() => !LENGTHS.includes(loadLength('custom') ?? 15))
   const [customText, setCustomText] = useState(() => String(loadLength('custom') ?? 15))
+  // نمط اللعب (سهل/صعب) نفسه المستخدَم في الرئيسية — انظر التعليق في storage.ts
+  const [easyMode, setEasyMode] = useState(loadEasyMode)
+
+  function chooseMode(easy: boolean) {
+    setEasyMode(easy)
+    saveEasyMode(easy)
+  }
 
   const available = useMemo(() => poolFromSources([...picked]).length, [picked])
   const groups = ['جولات', 'فئات الشخصيات', 'تصنيفات معرفية'] as const
@@ -127,6 +134,26 @@ export function CustomBuilder({ onStart, onBack }: Props) {
               <span>اختر العدد المناسب لك</span>
             </button>
           )}
+        </div>
+      </section>
+
+      <section className="builder-group">
+        <h2 className="builder-group-title">نمط اللعب</h2>
+        <div className="chips">
+          <button
+            className={`chip-pick ${easyMode ? 'is-on' : ''}`}
+            onClick={() => chooseMode(true)}
+            aria-pressed={easyMode}
+          >
+            <span>سهل — الخيارات ظاهرة دائماً</span>
+          </button>
+          <button
+            className={`chip-pick ${!easyMode ? 'is-on' : ''}`}
+            onClick={() => chooseMode(false)}
+            aria-pressed={!easyMode}
+          >
+            <span>صعب — الخيارات مخفية حتى تُطلَب</span>
+          </button>
         </div>
       </section>
 

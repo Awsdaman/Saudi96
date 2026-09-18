@@ -9,10 +9,14 @@
     "famousStart": 40,
     "famousEnd": 55,
     "clips": {
-      "intro3": "assets/songs/s001-199754961727-1.mp3",
-      "famous": "assets/songs/s001-199754961727-3.mp3",
-      "intro8": "assets/songs/s001-199754961727-2-8s.mp3"
-    }
+      "intro3": "assets/songs/s001-69dbf950d7c7-1.mp3",
+      "intro8": "assets/songs/s001-69dbf950d7c7-2-8s.mp3",
+      "famous": "assets/songs/s001-69dbf950d7c7-3.mp3"
+    },
+    "intro3Start": 0,
+    "intro3End": 2,
+    "intro8Start": 2,
+    "intro8End": 8
   },
   {
     "id": "s002",
