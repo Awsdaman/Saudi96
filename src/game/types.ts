@@ -103,3 +103,9 @@ export interface RoundMeta {
   /** خطوات «كيف تلعب» — تظهر قبل الجولة وعند الضغط على ؟ */
   howTo: string[]
 }
+
+/** فريقا اللعب التنافسي — نقاطهما يدويّة، مستقلّة عن نقاط الجولة */
+export interface Team {
+  name: string
+  score: number
+}

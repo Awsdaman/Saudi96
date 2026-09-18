@@ -1,0 +1,88 @@
+.teamsetup {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.teamsetup::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--bg) 35%, transparent), color-mix(in srgb, var(--bg) 35%, transparent)),
+    linear-gradient(color-mix(in srgb, var(--green-bright) 16%, transparent), color-mix(in srgb, var(--green-bright) 16%, transparent)),
+    url('/assets/identity/play-bg.jpg');
+  background-size: cover, cover, min(1400px, 100%) auto;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+}
+
+.teamsetup-card {
+  width: min(100%, 480px);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: clamp(24px, 5vw, 36px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-align: center;
+}
+
+.teamsetup-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.1rem);
+  font-weight: 700;
+}
+
+.teamsetup-lede { color: var(--muted); line-height: 1.75; font-size: 0.95rem; }
+
+.teamsetup-teams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+@media (max-width: 480px) {
+  .teamsetup-teams { grid-template-columns: 1fr; }
+}
+
+.teamsetup-team {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--raised);
+  border: 1.5px solid var(--tc);
+  text-align: start;
+}
+
+.teamsetup-team-a { --tc: var(--green-bright); }
+.teamsetup-team-b { --tc: var(--gold); }
+
+.teamsetup-team-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--tc);
+}
+
+.teamsetup-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+
+.teamsetup-input:focus-visible { outline: 2px solid var(--tc); outline-offset: 1px; }
+
+.teamsetup-start { align-self: center; margin-top: 6px; min-width: 160px; }
+.teamsetup-skip { align-self: center; }

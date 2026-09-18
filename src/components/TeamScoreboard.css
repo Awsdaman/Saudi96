@@ -1,0 +1,64 @@
+.teamscore {
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 40;
+  display: flex;
+  gap: 8px;
+}
+
+.teamscore-team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-0) 90%, transparent);
+  border: 1.5px solid var(--tc);
+  box-shadow: var(--shadow);
+}
+
+.teamscore-a { --tc: var(--green-bright); }
+.teamscore-b { --tc: var(--gold); }
+
+.teamscore-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--tc);
+  max-width: 96px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.teamscore-controls { display: flex; align-items: center; gap: 4px; }
+
+.teamscore-btn {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--line-0);
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  transition: border-color 140ms, color 140ms;
+}
+
+.teamscore-btn:hover { color: var(--text); border-color: var(--muted); }
+.teamscore-btn:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 1px; }
+
+.teamscore-value {
+  min-width: 1.6em;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 640px) {
+  .teamscore { top: auto; bottom: 10px; left: 10px; right: 10px; justify-content: center; flex-wrap: wrap; }
+  .teamscore-name { max-width: 72px; }
+}

@@ -468,6 +468,24 @@ export function poolFromSources(ids: readonly string[]): Question[] {
   }))
 }
 
+/**
+ * عدد أسئلة المصادر المختارة دون بناء بنك الأسئلة كاملاً — فلوحة
+ * الإعداد تحتاج رقماً بعد كل نقرة، وبناء الأسئلة (مع خياراتها) لكل
+ * الفئات في كل نقرة كان يجعل الاختيار متأخّراً ملموساً. نفس أولويّة
+ * poolFromSources: round:people يُبطل فئات الشخصيات المحدَّدة.
+ */
+export function availableFromSources(sources: readonly PoolSource[], ids: readonly string[]): number {
+  const picked = new Set(ids)
+  const peopleRoundPicked = picked.has('round:people')
+  let total = 0
+  for (const s of sources) {
+    if (s.group === 'فئات الشخصيات') {
+      if (!peopleRoundPicked && picked.has(s.id)) total += s.count
+    } else if (picked.has(s.id)) total += s.count
+  }
+  return total
+}
+
 /** الجهات المؤهَّلة لجولة «خمّن الشعار» بصيغة البطاقات */
 export function logoCards(): Entity[] {
   return entities.filter((e) => e.lockup || e.logo)

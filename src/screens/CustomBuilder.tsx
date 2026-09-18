@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { poolSources, poolFromSources } from '../game/content'
+import { availableFromSources, poolSources, poolFromSources } from '../game/content'
 import type { Question } from '../game/types'
 import { loadEasyMode, loadLength, saveEasyMode, saveLength } from '../game/storage'
 import './CustomBuilder.css'
@@ -27,7 +27,7 @@ export function CustomBuilder({ onStart, onBack }: Props) {
     saveEasyMode(easy)
   }
 
-  const available = useMemo(() => poolFromSources([...picked]).length, [picked])
+  const available = useMemo(() => availableFromSources(sources, [...picked]), [sources, picked])
   const groups = ['جولات', 'فئات الشخصيات', 'تصنيفات معرفية'] as const
   const maxAvailable = Math.max(1, available)
 
@@ -139,20 +139,30 @@ export function CustomBuilder({ onStart, onBack }: Props) {
 
       <section className="builder-group">
         <h2 className="builder-group-title">نمط اللعب</h2>
-        <div className="chips">
+        {/* اختيارٌ ثنائيٌّ لا تعدّدي، فيأخذ هيئة صفوف الاختيار الواحد
+            (كطول الجولة في الرئيسية) بدل رقاقات التعدّد أعلاه */}
+        <div className="mode-chips">
           <button
-            className={`chip-pick ${easyMode ? 'is-on' : ''}`}
+            className={`mode-chip ${easyMode ? 'is-on' : ''}`}
             onClick={() => chooseMode(true)}
             aria-pressed={easyMode}
           >
-            <span>سهل — الخيارات ظاهرة دائماً</span>
+            <span className="mode-dot" aria-hidden="true" />
+            <span className="mode-label">
+              سهل
+              <small className="mode-sub">الخيارات ظاهرة دائماً</small>
+            </span>
           </button>
           <button
-            className={`chip-pick ${!easyMode ? 'is-on' : ''}`}
+            className={`mode-chip ${!easyMode ? 'is-on' : ''}`}
             onClick={() => chooseMode(false)}
             aria-pressed={!easyMode}
           >
-            <span>صعب — الخيارات مخفية حتى تُطلَب</span>
+            <span className="mode-dot" aria-hidden="true" />
+            <span className="mode-label">
+              صعب
+              <small className="mode-sub">الخيارات مخفية حتى تُطلَب</small>
+            </span>
           </button>
         </div>
       </section>

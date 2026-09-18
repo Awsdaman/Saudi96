@@ -1,9 +1,11 @@
 import { useRef, useState } from 'react'
+import type { ReactNode } from 'react'
+import { TeamScoreboard } from './components/TeamScoreboard'
 import { ROUNDS, poolFor } from './game/content'
 import { saveBest } from './game/storage'
 import { useGame } from './game/useGame'
 import { useRoundTheme } from './game/useRoundTheme'
-import type { Entity, Question, RoundId } from './game/types'
+import type { Entity, Question, RoundId, Team } from './game/types'
 import { Credits } from './screens/Credits'
 import { CustomBuilder } from './screens/CustomBuilder'
 import { Home } from './screens/Home'
@@ -12,6 +14,7 @@ import { LogoRound } from './screens/LogoRound'
 import { Play } from './screens/Play'
 import { Results } from './screens/Results'
 import { SongPlay } from './screens/SongPlay'
+import { TeamSetup } from './screens/TeamSetup'
 
 type View = 'home' | 'custom' | 'logos' | 'logoResults' | 'credits'
 
@@ -29,12 +32,42 @@ function Game() {
   const [logoOutcome, setLogoOutcome] = useState<LogoOutcome | null>(null)
   const lastCustom = useRef<{ pool: Question[]; count: number } | null>(null)
 
+  // شاشة الفريقين تفتح الجلسة، مرّةً واحدة، قبل الرئيسية — انظر التعليق
+  // في TeamSetup.tsx. null بعد «لعب بلا فرق» يخفي الشريط العائم كلياً.
+  const [teamsReady, setTeamsReady] = useState(false)
+  const [teams, setTeams] = useState<[Team, Team] | null>(null)
+
+  function adjustScore(index: 0 | 1, delta: 1 | -1) {
+    setTeams((prev) => {
+      if (!prev) return prev
+      const next = [...prev] as [Team, Team]
+      next[index] = { ...next[index], score: Math.max(0, next[index].score + delta) }
+      return next
+    })
+  }
+
+  // يُلحَق الشريط العائم بكل شاشةٍ دون تكرار شرطه في كل مسار عودة أدناه
+  function withScoreboard(node: ReactNode) {
+    return teams ? <>{node}<TeamScoreboard teams={teams} onAdjust={adjustScore} /></> : node
+  }
+
   // الجولة المخصّصة لها هوية تخزين مستقلة، وتحتفظ بلون اللعبة العام.
   const themeRoundId =
     view === 'logos' || view === 'logoResults' ? 'logos'
     : (state.phase === 'playing' || state.phase === 'results') && state.roundId !== 'custom' ? state.roundId
     : null
+  // يبقى استدعاء الخطّاف قبل أي عودةٍ مبكّرة — قواعد الخطاطيف تحظر
+  // استدعاءه بترتيبٍ يختلف بين تصييرين لنفس المكوّن (شاشة الفريقين ثم الرئيسية)
   useRoundTheme(themeRoundId)
+
+  if (!teamsReady) {
+    return (
+      <TeamSetup
+        onStart={(a, b) => { setTeams([{ name: a, score: 0 }, { name: b, score: 0 }]); setTeamsReady(true) }}
+        onSkip={() => { setTeams(null); setTeamsReady(true) }}
+      />
+    )
+  }
 
   function beginRound(id: RoundId, count: number, easy: boolean) {
     setIsRecord(false)
@@ -86,7 +119,7 @@ function Game() {
 
   // ── جولة الشعار ──
   if (view === 'logos') {
-    return (
+    return withScoreboard(
       <LogoRound
         count={logoCount}
         onFinish={(known, total, missed) => {
@@ -100,7 +133,7 @@ function Game() {
   }
 
   if (view === 'logoResults' && logoOutcome) {
-    return (
+    return withScoreboard(
       <LogoResults
         {...logoOutcome}
         isRecord={isRecord}
@@ -112,7 +145,7 @@ function Game() {
 
   // ── الجولات ذات الخيارات ──
   if (state.phase === 'results') {
-    return (
+    return withScoreboard(
       <Results
         state={state}
         isRecord={isRecord}
@@ -128,12 +161,12 @@ function Game() {
   }
 
   if (state.phase === 'playing' && question) {
-    if (question.kind === 'song') return (
+    if (question.kind === 'song') return withScoreboard(
       <SongPlay key={question.id} state={state} question={question}
         onAction={songAction} onJudge={judgeSong} onUnavailable={skipUnavailable}
         onNext={handleNext} onQuit={goHome} />
     )
-    return (
+    return withScoreboard(
       <Play
         key={question.id}
         state={state}
@@ -146,14 +179,14 @@ function Game() {
   }
 
   if (view === 'custom') {
-    return <CustomBuilder onStart={beginCustom} onBack={goHome} />
+    return withScoreboard(<CustomBuilder onStart={beginCustom} onBack={goHome} />)
   }
 
   if (view === 'credits') {
-    return <Credits onBack={goHome} />
+    return withScoreboard(<Credits onBack={goHome} />)
   }
 
-  return (
+  return withScoreboard(
     <Home
       onStart={beginRound}
       onCustom={() => setView('custom')}

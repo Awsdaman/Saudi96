@@ -79,6 +79,62 @@
 
 .chip-count-input:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 1px; }
 
+/* صفوف اختيارٍ واحد بنقطة راديو — من مرجع setup-chip في Home.css،
+   لكن باسمٍ مستقلّ إذ لا يستوردان بعضهما */
+.mode-chips { display: flex; flex-direction: column; gap: 8px; }
+
+.mode-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  font-size: 0.95rem;
+  text-align: start;
+  transition: border-color 140ms;
+}
+
+.mode-chip:hover { border-color: var(--muted); }
+.mode-chip:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }
+
+.mode-dot {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 1.5px solid var(--muted);
+  transition: border-color 140ms;
+}
+
+.mode-dot::after {
+  content: '';
+  display: block;
+  margin: 2.5px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green-bright);
+  transform: scale(0);
+  transition: transform 140ms;
+}
+
+.mode-chip.is-on { border-color: var(--green-bright); font-weight: 700; }
+.mode-chip.is-on .mode-dot { border-color: var(--green-bright); }
+.mode-chip.is-on .mode-dot::after { transform: scale(1); }
+
+.mode-label { flex: 1; }
+
+.mode-sub {
+  display: block;
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
 .builder-foot {
   display: flex;
   flex-direction: column;
