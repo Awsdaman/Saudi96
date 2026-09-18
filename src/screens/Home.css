@@ -339,9 +339,15 @@
   font-weight: 600;
 }
 
+.home-foot {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+}
+
 /* رابطٌ هادئ: لا ينافس الشبكة، ولا يختفي عمّن يبحث عنه */
 .home-credits {
-  align-self: flex-start;
   color: var(--muted);
   font-size: 0.85rem;
   padding: 6px 10px;

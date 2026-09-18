@@ -59,29 +59,33 @@ npm run build
 
 Then double-click **`dist/index.html`**.
 
-### On the web — GitHub Pages
+### On the web — Vercel
 
-`.github/workflows/pages.yml` builds and publishes on every push to `main`. It runs
-`validate` and `lint` first, so a broken content edit fails the deploy instead of shipping.
+The repository is connected to Vercel, which builds and deploys on every push to `main`.
+The game is live at **<https://saudi96.vercel.app>** — no server, no install, just the link.
+Vercel auto-detects the Vite project (build command `npm run build`, output directory
+`dist`); `package.json`'s `engines` field pins a Node version Vite 8 supports.
 
-The repository is public and Pages is live at
-**<https://awsdaman.github.io/Saudi96/>** — no server, no install, just the link.
+- `base: './'` makes every URL relative, so it works the same at the site root (Vercel) or
+  under a subpath (GitHub Pages, below).
+- The whole app is one screen with no routes, so no rewrite rule is needed.
 
-The workflow builds `main` and force-pushes `dist/` to the **`gh-pages`** branch, which is
-what Pages serves. It runs `validate` and `lint` first, so a broken content edit fails the
-deploy instead of shipping.
+### On the web — GitHub Pages (built, not enabled)
+
+`.github/workflows/pages.yml` also builds and publishes on every push to `main`, force-pushing
+`dist/` to the **`gh-pages`** branch. It runs `validate` and `lint` first, so a broken content
+edit fails the deploy instead of shipping — this part is fully verified.
+
+**Pages itself is not turned on**, because this repository is private: GitHub Pages is
+disabled outright on private repos on the free plan (Settings → Pages has no effect until
+either the repo goes public or the account is on a plan that allows Pages on private repos).
+Until then this workflow just keeps `gh-pages` current with no live URL.
 
 It does *not* use `actions/deploy-pages`. That path calls the Pages REST API to create the
 site, and the workflow token is refused there — `Resource not accessible by integration` —
 because this repository's Actions token is read-only by default. Pushing a `gh-pages` branch
-to a public repository enables Pages without touching that API at all. (Before the repo was
-public, the same step failed for a different reason: Pages is disabled outright on private
-repos on the free plan.)
-
-Once enabled the game is at `https://<user>.github.io/Saudi96/` and needs no further setup:
-
-- `base: './'` makes every URL relative, so the project subpath (`/Saudi96/`) just works.
-- The whole app is one screen with no routes, so no 404 fallback or rewrite rule is needed.
+to a public repository would enable Pages without touching that API at all, once the repo is
+public and Settings → Pages → Source is set to "Deploy from a branch" → `gh-pages`.
 
 The deployed site is about 32 MB — `scripts/postbuild.mjs` drops
 `assets/logos-source` (the 25 MB of pre-crop originals) from `dist/`, since nothing reads it

@@ -46,3 +46,22 @@ export function saveLength(round: string, count: number) {
     // التخزين قد يكون معطّلاً — لا يمنع اللعب
   }
 }
+
+const CHOICES_KEY = 'saudiknowledge.choicesAlwaysVisible'
+
+/** تفضيل اللاعب: تظهر خيارات السؤال فوراً بدل إخفائها حتى تُطلَب */
+export function loadChoicesAlwaysVisible(): boolean {
+  try {
+    return localStorage.getItem(CHOICES_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+export function saveChoicesAlwaysVisible(value: boolean) {
+  try {
+    localStorage.setItem(CHOICES_KEY, value ? '1' : '0')
+  } catch {
+    // التخزين قد يكون معطّلاً — لا يمنع اللعب
+  }
+}

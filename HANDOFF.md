@@ -14,11 +14,11 @@ the README is the reference.
 **Repo:** https://github.com/Awsdaman/Saudi96 (private) · `main` · working dir
 the repository root
 
-**Web build:** `.github/workflows/pages.yml` deploys `main` to GitHub Pages. It is committed
-and verified against a subpath build, but **Pages is not enabled yet** — that is a repository
-setting (Settings -> Pages -> Source: GitHub Actions), and the repo must be public or on a
-plan that allows Pages on private repos. Until then the game runs from `npm run dev` or
-`dist/index.html` only.
+**Web build:** live on Vercel at <https://saudi96.vercel.app>, auto-deployed from `main`.
+`.github/workflows/pages.yml` also builds and pushes `dist/` to `gh-pages` on every push, and
+is verified against a subpath build, but **GitHub Pages itself is not enabled** — that needs
+the repo to be public or on a plan that allows Pages on private repos, so today it's Vercel
+that actually serves the game (plus `npm run dev` or `dist/index.html` locally).
 
 ---
 

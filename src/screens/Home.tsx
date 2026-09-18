@@ -1,12 +1,21 @@
 import type { CSSProperties } from 'react'
 import { useState } from 'react'
 import { HowToModal } from '../components/HowToModal'
+import { IntroModal } from '../components/IntroModal'
 import { RoundIcon } from '../components/RoundIcon'
 import { ROUNDS, poolFor } from '../game/content'
 import { DEFAULT_ICON_TILE, iconTileUrl, ROUND_THEME, tapestryUrl } from '../game/roundTheme'
-import { loadBest, loadLength, saveLength } from '../game/storage'
+import {
+  loadBest,
+  loadChoicesAlwaysVisible,
+  loadLength,
+  saveChoicesAlwaysVisible,
+  saveLength,
+} from '../game/storage'
 import type { RoundId } from '../game/types'
 import './Home.css'
+
+const INTRO_KEY = 'saudiknowledge.introShown'
 
 interface Props {
   onStart: (id: RoundId, count: number) => void
@@ -35,6 +44,31 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
   const [customMode, setCustomMode] = useState(false)
   const [customText, setCustomText] = useState('')
   const [howTo, setHowTo] = useState(false)
+  const [alwaysShowChoices, setAlwaysShowChoices] = useState(loadChoicesAlwaysVisible)
+  // تظهر مرّة واحدة عند فتح الموقع (لا عند كل رجوعٍ إلى الرئيسية أثناء
+  // نفس الجلسة) — sessionStorage يُنسى بإغلاق التبويب، فتظهر من جديد
+  // في الجلسة التالية.
+  const [showIntro, setShowIntro] = useState(() => {
+    try {
+      return sessionStorage.getItem(INTRO_KEY) !== '1'
+    } catch {
+      return true
+    }
+  })
+
+  function closeIntro() {
+    setShowIntro(false)
+    try {
+      sessionStorage.setItem(INTRO_KEY, '1')
+    } catch {
+      // التخزين قد يكون معطّلاً — لا يمنع اللعب
+    }
+  }
+
+  function chooseChoicesVisibility(always: boolean) {
+    setAlwaysShowChoices(always)
+    saveChoicesAlwaysVisible(always)
+  }
 
   const shownId = previewId ?? selectedId
   const heroSrc = (shownId && iconTileUrl(shownId)) || DEFAULT_ICON_TILE
@@ -236,6 +270,32 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
                 </div>
               </div> : <p className="song-draft-note">الأغاني قيد التجهيز. اختر المقطع المشهور لكل أغنية في صفحة المراجعة لتصبح جاهزة للعب.</p>}
 
+              {/* لا معنى لها في الشعار (فلاش كارد بلا خيارات) ولا في الأغنية
+                  (تخمين شفهي)؛ تخصّ فقط الجولات ذات الاختيار من متعدد. */}
+              {poolSize > 0 && selectedId !== 'logos' && selectedId !== 'songs' && (
+                <div className="setup-block">
+                  <h3 className="setup-h3">خيارات الإجابة</h3>
+                  <div className="setup-chips">
+                    <button
+                      className={`setup-chip ${!alwaysShowChoices ? 'is-on' : ''}`}
+                      onClick={() => chooseChoicesVisibility(false)}
+                      aria-pressed={!alwaysShowChoices}
+                    >
+                      <span className="chip-dot" aria-hidden="true" />
+                      <span className="chip-label">مخفية حتى الطلب</span>
+                    </button>
+                    <button
+                      className={`setup-chip ${alwaysShowChoices ? 'is-on' : ''}`}
+                      onClick={() => chooseChoicesVisibility(true)}
+                      aria-pressed={alwaysShowChoices}
+                    >
+                      <span className="chip-dot" aria-hidden="true" />
+                      <span className="chip-label">ظاهرة دائماً</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <button className="btn btn-primary setup-start" disabled={poolSize === 0} onClick={confirm}>ابدأ الجولة</button>
               {selectedId === 'songs' && import.meta.env.DEV && (
                 <a className="btn-link" href="./__songs/review">تجهيز الأغاني واختيار المقاطع</a>
@@ -256,13 +316,22 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
         <nav className="topic-grid">{rows.map(renderRow)}</nav>
       </div>
 
-      {/* الصور من ويكيميديا وأكثرها تشترط نسبها إلى أصحابها،
-          فيلزم أن يكون إلى القائمة سبيلٌ من حيث تُعرض */}
-      <button className="home-credits" onClick={onCredits}>
-        مصادر الصور
-      </button>
+      <div className="home-foot">
+        <button className="btn-link" onClick={() => setShowIntro(true)}>عن اللعبة</button>
+        {/* الصور من ويكيميديا وأكثرها تشترط نسبها إلى أصحابها،
+            فيلزم أن يكون إلى القائمة سبيلٌ من حيث تُعرض */}
+        <button className="home-credits" onClick={onCredits}>
+          مصادر الصور
+        </button>
+      </div>
 
       {howTo && meta && <HowToModal title={meta.title} steps={meta.howTo} onClose={() => setHowTo(false)} />}
+      {showIntro && (
+        <IntroModal
+          categories={rows.map((r) => ({ title: r.title, subtitle: r.subtitle }))}
+          onClose={closeIntro}
+        />
+      )}
     </div>
   )
 }
