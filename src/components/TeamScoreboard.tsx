@@ -3,13 +3,27 @@ import './TeamScoreboard.css'
 
 interface Props {
   teams: [Team, Team]
-  onAdjust: (index: 0 | 1, delta: 1 | -1) => void
+  onAdjust: (index: 0 | 1, delta: number) => void
+  /** رابط شاشة الجمهور — يظهر بجانب الشريط كي يفتحها المستضيف بنفسه
+   *  في أي وقت (فتح النافذة تلقائياً قد يحظره المتصفح بلا إشعارٍ واضح). */
+  audienceHref?: string
 }
 
 /** شريطٌ عائم فوق كل الشاشات — النقاط يدويّة، يقرّرها من يستضيف الجلسة */
-export function TeamScoreboard({ teams, onAdjust }: Props) {
+export function TeamScoreboard({ teams, onAdjust, audienceHref }: Props) {
   return (
     <div className="teamscore" role="group" aria-label="نقاط الفريقين">
+      {audienceHref && (
+        <a
+          className="teamscore-audience"
+          href={audienceHref}
+          target="_blank"
+          rel="noopener"
+          title="فتح شاشة العرض في نافذة جديدة"
+        >
+          🖥 شاشة العرض
+        </a>
+      )}
       {teams.map((team, i) => (
         <div key={i} className={`teamscore-team teamscore-${i === 0 ? 'a' : 'b'}`}>
           <span className="teamscore-name">{team.name}</span>

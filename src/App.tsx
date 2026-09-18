@@ -77,9 +77,17 @@ function Game() {
     })
   }
 
-  // يُلحَق الشريط العائم بكل شاشةٍ دون تكرار شرطه في كل مسار عودة أدناه
+  // يُلحَق الشريط العائم بكل شاشةٍ دون تكرار شرطه في كل مسار عودة أدناه.
+  // رابط شاشة الجمهور يظهر معه دائماً — لا يعتمد على نجاح الفتح
+  // التلقائي عند البدء، فيبقى بمتناول المستضيف لو حظره المتصفح أو أُغلقت
+  // النافذة بالخطأ.
   function withScoreboard(node: ReactNode) {
-    return teams ? <>{node}<TeamScoreboard teams={teams} onAdjust={adjustScore} /></> : node
+    return teams ? (
+      <>
+        {node}
+        <TeamScoreboard teams={teams} onAdjust={adjustScore} audienceHref={audienceOpen ? audienceUrl() : undefined} />
+      </>
+    ) : node
   }
 
   // الجولة المخصّصة لها هوية تخزين مستقلة، وتحتفظ بلون اللعبة العام.
