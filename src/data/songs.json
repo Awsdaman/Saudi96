@@ -58,10 +58,14 @@
     "famousStart": 83,
     "famousEnd": 100,
     "clips": {
-      "intro3": "assets/songs/s004-125bc0b355ea-1.mp3",
-      "famous": "assets/songs/s004-125bc0b355ea-3.mp3",
-      "intro8": "assets/songs/s004-125bc0b355ea-2-8s.mp3"
-    }
+      "intro3": "assets/songs/s004-da0401de914b-1.mp3",
+      "intro8": "assets/songs/s004-da0401de914b-2-8s.mp3",
+      "famous": "assets/songs/s004-da0401de914b-3.mp3"
+    },
+    "intro3Start": 3,
+    "intro3End": 6,
+    "intro8Start": 6,
+    "intro8End": 11
   },
   {
     "id": "s005",
@@ -80,157 +84,269 @@
   },
   {
     "id": "s624f6866e8",
-    "titleAr": "#راشدالماجد - اللي لقا أحبابه  Rashed Al Majed - Elli Lega Ahbabah",
-    "artistAr": "",
+    "titleAr": "اللي لقا أحبابه",
+    "artistAr": "راشد الماجد",
     "sourceFile": "#راشدالماجد - اللي لقا أحبابه  Rashed Al Majed - Elli Lega Ahbabah.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 293.62,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 29,
+    "famousEnd": 45,
+    "clips": {
+      "intro3": "assets/songs/s624f6866e8-29706162f89f-1.mp3",
+      "intro8": "assets/songs/s624f6866e8-29706162f89f-2-8s.mp3",
+      "famous": "assets/songs/s624f6866e8-29706162f89f-3.mp3"
+    },
+    "intro3Start": 0,
+    "intro3End": 3,
+    "intro8Start": 3,
+    "intro8End": 8
   },
   {
     "id": "sce129a2c30",
-    "titleAr": "#عادل إبراهيم - آه يا لندن (النسخة الأصلية)  2014",
-    "artistAr": "",
+    "titleAr": "آه يا لندن",
+    "artistAr": "عادل إبراهيم",
     "sourceFile": "#عادل إبراهيم - آه يا لندن (النسخة الأصلية)  2014.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 288,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 17,
+    "famousEnd": 35,
+    "clips": {
+      "intro3": "assets/songs/sce129a2c30-5acb079027c5-1.mp3",
+      "intro8": "assets/songs/sce129a2c30-5acb079027c5-2-8s.mp3",
+      "famous": "assets/songs/sce129a2c30-5acb079027c5-3.mp3"
+    },
+    "intro3Start": 0,
+    "intro3End": 3,
+    "intro8Start": 3,
+    "intro8End": 8
   },
   {
     "id": "sc1014dfe1f",
-    "titleAr": "Ayed - Lammah  عايض - لماح (حصريا)  2024",
-    "artistAr": "",
+    "titleAr": "لماح",
+    "artistAr": "عايض",
     "sourceFile": "Ayed - Lammah  عايض - لماح (حصريا)  2024.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 221.31,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 80,
+    "famousEnd": 95,
+    "clips": {
+      "intro3": "assets/songs/sc1014dfe1f-c57220002a2e-1.mp3",
+      "intro8": "assets/songs/sc1014dfe1f-c57220002a2e-2-8s.mp3",
+      "famous": "assets/songs/sc1014dfe1f-c57220002a2e-3.mp3"
+    },
+    "intro3Start": 2,
+    "intro3End": 5,
+    "intro8Start": 5,
+    "intro8End": 10
   },
   {
     "id": "s7723c7f0cd",
-    "titleAr": "Majid Al Mohandis ... Hattan  ماجد المهندس ... هتان - كاملة مع المقطع المحذوف من الاغنية",
-    "artistAr": "",
+    "titleAr": "هتان",
+    "artistAr": "ماجد المهندس",
     "sourceFile": "Majid Al Mohandis ... Hattan  ماجد المهندس ... هتان - كاملة مع المقطع المحذوف من الاغنية.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 394.01,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 110,
+    "famousEnd": 130,
+    "clips": {
+      "intro3": "assets/songs/s7723c7f0cd-748bdab37d06-1.mp3",
+      "intro8": "assets/songs/s7723c7f0cd-748bdab37d06-2-8s.mp3",
+      "famous": "assets/songs/s7723c7f0cd-748bdab37d06-3.mp3"
+    },
+    "intro3Start": 15,
+    "intro3End": 18,
+    "intro8Start": 18,
+    "intro8End": 23
   },
   {
     "id": "sf9ee5da247",
-    "titleAr": "Mashkalni",
-    "artistAr": "",
+    "titleAr": "مشكلني",
+    "artistAr": "راشد الماجد",
     "sourceFile": "Mashkalni.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 360.12,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 64,
+    "famousEnd": 85,
+    "clips": {
+      "intro3": "assets/songs/sf9ee5da247-494176bd8f43-1.mp3",
+      "intro8": "assets/songs/sf9ee5da247-494176bd8f43-2-8s.mp3",
+      "famous": "assets/songs/sf9ee5da247-494176bd8f43-3.mp3"
+    },
+    "intro3Start": 6,
+    "intro3End": 9,
+    "intro8Start": 9,
+    "intro8End": 14
   },
   {
     "id": "s47cb47efaf",
-    "titleAr": "Rabeh Saqer...Maaad Tesaal  رابح صقر...ما عاد تسأل",
-    "artistAr": "",
+    "titleAr": "ما عاد تسأل",
+    "artistAr": "رابح صقر",
     "sourceFile": "Rabeh Saqer...Maaad Tesaal  رابح صقر...ما عاد تسأل.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 292.18,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 155,
+    "famousEnd": 175,
+    "clips": {
+      "intro3": "assets/songs/s47cb47efaf-5ce52f9c0639-1.mp3",
+      "intro8": "assets/songs/s47cb47efaf-5ce52f9c0639-2-8s.mp3",
+      "famous": "assets/songs/s47cb47efaf-5ce52f9c0639-3.mp3"
+    },
+    "intro3Start": 1,
+    "intro3End": 4,
+    "intro8Start": 4,
+    "intro8End": 9
   },
   {
     "id": "s64fb141fcf",
-    "titleAr": "Rabeh Saqer...Maghrora  رابح صقر...مغرورة",
-    "artistAr": "",
+    "titleAr": "مغرورة",
+    "artistAr": "رابح صقر",
     "sourceFile": "Rabeh Saqer...Maghrora  رابح صقر...مغرورة.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 343.67,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 45,
+    "famousEnd": 65,
+    "clips": {
+      "intro3": "assets/songs/s64fb141fcf-5af763c268d3-1.mp3",
+      "intro8": "assets/songs/s64fb141fcf-5af763c268d3-2-8s.mp3",
+      "famous": "assets/songs/s64fb141fcf-5af763c268d3-3.mp3"
+    },
+    "intro3Start": 1,
+    "intro3End": 4,
+    "intro8Start": 4,
+    "intro8End": 9
   },
   {
     "id": "s5bd66a00b0",
     "titleAr": "دق الماني",
-    "artistAr": "",
+    "artistAr": "حسام جنيد",
     "sourceFile": "دق الماني.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 560.3,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 194,
+    "famousEnd": 205,
+    "clips": {
+      "intro3": "assets/songs/s5bd66a00b0-8e4b86574fcc-1.mp3",
+      "intro8": "assets/songs/s5bd66a00b0-8e4b86574fcc-2-8s.mp3",
+      "famous": "assets/songs/s5bd66a00b0-8e4b86574fcc-3.mp3"
+    },
+    "intro3Start": 53,
+    "intro3End": 56,
+    "intro8Start": 56,
+    "intro8End": 61
   },
   {
     "id": "sfb9ddfc765",
-    "titleAr": "راكان - ياعنيد  Rakan - Ya Aneed Full HD",
-    "artistAr": "",
+    "titleAr": "ياعنيد",
+    "artistAr": "راكان",
     "sourceFile": "راكان - ياعنيد  Rakan - Ya Aneed Full HD.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 262.18,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 30,
+    "famousEnd": 40,
+    "clips": {
+      "intro3": "assets/songs/sfb9ddfc765-f60dcd78ce36-1.mp3",
+      "intro8": "assets/songs/sfb9ddfc765-f60dcd78ce36-2-8s.mp3",
+      "famous": "assets/songs/sfb9ddfc765-f60dcd78ce36-3.mp3"
+    },
+    "intro3Start": 0,
+    "intro3End": 3,
+    "intro8Start": 3,
+    "intro8End": 8
   },
   {
     "id": "sc752b414be",
-    "titleAr": "عبادي الجوهر - عيونك آخر آمالي   (من ألبوم جلسة طرب 95)",
-    "artistAr": "",
+    "titleAr": "عيونك آخر آمالي",
+    "artistAr": "عبادي الجوهر",
     "sourceFile": "عبادي الجوهر - عيونك آخر آمالي   (من ألبوم جلسة طرب 95).mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 378.19,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 61,
+    "famousEnd": 75,
+    "clips": {
+      "intro3": "assets/songs/sc752b414be-820557344772-1.mp3",
+      "intro8": "assets/songs/sc752b414be-820557344772-2-8s.mp3",
+      "famous": "assets/songs/sc752b414be-820557344772-3.mp3"
+    },
+    "intro3Start": 17,
+    "intro3End": 20,
+    "intro8Start": 20,
+    "intro8End": 25
   },
   {
     "id": "s911d57cd56",
-    "titleAr": "عبادي الجوهر - من عذابي  (من البوم طال السكوت )",
-    "artistAr": "",
+    "titleAr": "من عذابي",
+    "artistAr": "عبادي الجوهر",
     "sourceFile": "عبادي الجوهر - من عذابي  (من البوم طال السكوت ).mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 374.41,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 85,
+    "famousEnd": 100,
+    "clips": {
+      "intro3": "assets/songs/s911d57cd56-25bbd72a8566-1.mp3",
+      "intro8": "assets/songs/s911d57cd56-25bbd72a8566-2-8s.mp3",
+      "famous": "assets/songs/s911d57cd56-25bbd72a8566-3.mp3"
+    },
+    "intro3Start": 0,
+    "intro3End": 3,
+    "intro8Start": 3,
+    "intro8End": 8
   },
   {
     "id": "s9c286e380a",
-    "titleAr": "عبدالله - ذاك الأناني (حصريا)  2018  ABDULLAH - Thak Alanany",
-    "artistAr": "",
+    "titleAr": "ذاك الأناني",
+    "artistAr": "عبدالله",
     "sourceFile": "عبدالله - ذاك الأناني (حصريا)  2018  ABDULLAH - Thak Alanany.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 289.1,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 43,
+    "famousEnd": 60,
+    "clips": {
+      "intro3": "assets/songs/s9c286e380a-94dc3590eeb9-1.mp3",
+      "intro8": "assets/songs/s9c286e380a-94dc3590eeb9-2-8s.mp3",
+      "famous": "assets/songs/s9c286e380a-94dc3590eeb9-3.mp3"
+    },
+    "intro3Start": 2,
+    "intro3End": 5,
+    "intro8Start": 5,
+    "intro8End": 10
   },
   {
     "id": "se7a708b8c6",
-    "titleAr": "عبدالمجيد عبدالله - تتنفسك دنياي (حصريا)  2022",
-    "artistAr": "",
+    "titleAr": "تتنفسك دنياي",
+    "artistAr": "عبدالمجيد عبدالله",
     "sourceFile": "عبدالمجيد عبدالله - تتنفسك دنياي (حصريا)  2022.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 286.17,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 89,
+    "famousEnd": 105,
+    "clips": {
+      "intro3": "assets/songs/se7a708b8c6-1f0867352b82-1.mp3",
+      "intro8": "assets/songs/se7a708b8c6-1f0867352b82-2-8s.mp3",
+      "famous": "assets/songs/se7a708b8c6-1f0867352b82-3.mp3"
+    },
+    "intro3Start": 0,
+    "intro3End": 3,
+    "intro8Start": 3,
+    "intro8End": 8
   },
   {
     "id": "sbf5438c259",
-    "titleAr": "عبدالمجيد عبدالله - يا أبن الاوادم (ألبوم عالم موازي)  2021",
-    "artistAr": "",
+    "titleAr": "يا أبن الاوادم",
+    "artistAr": "عبدالمجيد عبدالله",
     "sourceFile": "عبدالمجيد عبدالله - يا أبن الاوادم (ألبوم عالم موازي)  2021.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 298.79,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 80,
+    "famousEnd": 95,
+    "clips": {
+      "intro3": "assets/songs/sbf5438c259-5f18cc512eea-1.mp3",
+      "intro8": "assets/songs/sbf5438c259-5f18cc512eea-2-8s.mp3",
+      "famous": "assets/songs/sbf5438c259-5f18cc512eea-3.mp3"
+    },
+    "intro3Start": 4,
+    "intro3End": 7,
+    "intro8Start": 7,
+    "intro8End": 12
   },
   {
     "id": "s2cae0e3fcc",
@@ -246,12 +362,20 @@
   {
     "id": "s190ffe806d",
     "titleAr": "يا ندمانه",
-    "artistAr": "",
+    "artistAr": "زايد الصالح",
     "sourceFile": "يا ندمانه.mp3",
-    "status": "draft",
+    "status": "ready",
     "duration": 360.83,
-    "famousStart": null,
-    "famousEnd": null,
-    "clips": null
+    "famousStart": 45,
+    "famousEnd": 59,
+    "clips": {
+      "intro3": "assets/songs/s190ffe806d-dc80869e1aa5-1.mp3",
+      "intro8": "assets/songs/s190ffe806d-dc80869e1aa5-2-8s.mp3",
+      "famous": "assets/songs/s190ffe806d-dc80869e1aa5-3.mp3"
+    },
+    "intro3Start": 0,
+    "intro3End": 3,
+    "intro8Start": 11,
+    "intro8End": 16
   }
 ]
