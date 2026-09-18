@@ -1,6 +1,40 @@
 /** أنواع البيانات الأساسية للعبة */
 
-export type RoundId = 'logos' | 'landmarks' | 'regions' | 'dishes' | 'people' | 'trivia'
+export type RoundId = 'logos' | 'landmarks' | 'regions' | 'dishes' | 'people' | 'trivia' | 'songs'
+export type GameRoundId = RoundId | 'custom'
+export type SongPhase = 1 | 2 | 3
+
+export interface Song {
+  id: string
+  titleAr: string
+  artistAr: string
+  sourceFile: string
+  status: 'draft' | 'ready'
+  duration: number | null
+  famousStart: number | null
+  famousEnd: number | null
+  intro3Start?: number
+  intro3End?: number
+  intro8Start?: number
+  intro8End?: number
+  clips: { intro3: string; intro8: string; famous: string } | null
+}
+
+export interface SongQuestion {
+  kind: 'song'
+  id: string
+  round: 'songs'
+  prompt: string
+  song: Song
+  category?: string
+  explanation?: string
+}
+
+export type Question = (ChoiceQuestion | SongQuestion) & { selectionSource?: string }
+
+export function questionAnswer(question: Question): string {
+  return question.kind === 'song' ? question.song.titleAr : question.options[question.answerIndex]
+}
 
 /** 1 = يعرفه الجميع · 4 = خبير/مصيدة */
 export type Difficulty = 1 | 2 | 3 | 4
@@ -13,7 +47,8 @@ export type Difficulty = 1 | 2 | 3 | 4
  */
 export type RevealKind = 'blur' | 'zoom' | 'none'
 
-export interface Question {
+export interface ChoiceQuestion {
+  kind?: 'choice'
   id: string
   round: RoundId
   /** نص السؤال بالعربية */

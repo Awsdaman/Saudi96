@@ -1,4 +1,17 @@
 import { readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync } from 'node:fs'
+import { resolve, dirname } from 'node:path'
+
+// لا تُنشر المقاطع القديمة أو مقاطع الأغاني التي أُعيدت إلى المسودات.
+const songs = JSON.parse(readFileSync('src/data/songs.json', 'utf8'))
+const usedClips = new Set(songs.filter((s) => s.status === 'ready').flatMap((s) => Object.values(s.clips ?? {})))
+const songDir = resolve('dist/assets/songs')
+if (existsSync(songDir)) {
+  for (const name of readdirSync(songDir)) {
+    const target = resolve(songDir, name)
+    if (dirname(target) === songDir && name.endsWith('.mp3') && !usedClips.has(`assets/songs/${name}`)) rmSync(target)
+  }
+}
 
 // أصول الشعارات قبل القصّ تقع تحت public/ فتُنسخ إلى dist/ مع كل بناء،
 // ولا شيء يقرؤها وقت التشغيل — ٢٥ ميغابايت تُحمَل مع كل نشر وكل نسخة

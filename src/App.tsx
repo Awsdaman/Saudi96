@@ -11,6 +11,7 @@ import { LogoResults } from './screens/LogoResults'
 import { LogoRound } from './screens/LogoRound'
 import { Play } from './screens/Play'
 import { Results } from './screens/Results'
+import { SongPlay } from './screens/SongPlay'
 
 type View = 'home' | 'custom' | 'logos' | 'logoResults' | 'credits'
 
@@ -21,24 +22,23 @@ export default function App() {
 }
 
 function Game() {
-  const { state, question, start, answer, next, home } = useGame()
+  const { state, question, start, answer, next, home, songAction, judgeSong, skipUnavailable } = useGame()
   const [view, setView] = useState<View>('home')
   const [logoCount, setLogoCount] = useState(12)
   const [isRecord, setIsRecord] = useState(false)
   const [logoOutcome, setLogoOutcome] = useState<LogoOutcome | null>(null)
   const lastCustom = useRef<{ pool: Question[]; count: number } | null>(null)
 
-  // لون الجولة النشطة: اللعب والنتيجة بجولةٍ حقيقية وحدها — «لعبتي»
-  // تُعرَّف بعنوانها المميَّز لأن معرّفها الداخلي «trivia» وعاءٌ لا هوية.
-  const isCustomRound = state.title === 'لعبتي'
+  // الجولة المخصّصة لها هوية تخزين مستقلة، وتحتفظ بلون اللعبة العام.
   const themeRoundId =
     view === 'logos' || view === 'logoResults' ? 'logos'
-    : (state.phase === 'playing' || state.phase === 'results') && !isCustomRound ? state.roundId
+    : (state.phase === 'playing' || state.phase === 'results') && state.roundId !== 'custom' ? state.roundId
     : null
   useRoundTheme(themeRoundId)
 
   function beginRound(id: RoundId, count: number) {
     setIsRecord(false)
+    lastCustom.current = null
     if (id === 'logos') {
       setLogoCount(count)
       setView('logos')
@@ -56,13 +56,13 @@ function Game() {
     lastCustom.current = { pool, count }
     setIsRecord(false)
     setView('home')
-    // معرّف الأسئلة المعرفية وعاءٌ لا أكثر — والعنوان يُمرَّر صريحاً
-    start('trivia', 'لعبتي', pool, count)
+    start('custom', 'لعبتي', pool, count)
   }
 
   // الانتقال إلى النتائج يمرّ دائماً عبر next، فهنا تُحفظ النتيجة —
   // في معالج الحدث لا في تأثير جانبي، تفادياً لتصيير متتالٍ.
   function handleNext() {
+    if (!state.resolved) return
     const isLast = state.index + 1 >= state.questions.length
     if (isLast && state.roundId) setIsRecord(saveBest(state.roundId, state.score))
     next()
@@ -107,6 +107,7 @@ function Game() {
         state={state}
         isRecord={isRecord}
         onReplay={() => {
+          setIsRecord(false)
           const c = lastCustom.current
           if (c) beginCustom(c.pool, c.count)
           else start(state.roundId!, state.title, poolFor(state.roundId!), state.questions.length)
@@ -117,8 +118,14 @@ function Game() {
   }
 
   if (state.phase === 'playing' && question) {
+    if (question.kind === 'song') return (
+      <SongPlay key={question.id} state={state} question={question}
+        onAction={songAction} onJudge={judgeSong} onUnavailable={skipUnavailable}
+        onNext={handleNext} onQuit={goHome} />
+    )
     return (
       <Play
+        key={question.id}
         state={state}
         question={question}
         onAnswer={answer}

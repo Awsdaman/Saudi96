@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { poolSources, poolFromSources } from '../game/content'
 import type { Question } from '../game/types'
+import { loadLength, saveLength } from '../game/storage'
 import './CustomBuilder.css'
 
 interface Props {
@@ -13,11 +14,11 @@ const LENGTHS = [10, 15, 20, 30]
 export function CustomBuilder({ onStart, onBack }: Props) {
   const sources = useMemo(() => poolSources(), [])
   const [picked, setPicked] = useState<Set<string>>(new Set())
-  const [length, setLength] = useState(15)
+  const [length, setLength] = useState(() => loadLength('custom') ?? 15)
   // العدد المخصَّص: اللاعب يكتب رقمه بدل الاختيار من القائمة الجاهزة.
   // نصّ الحقل منفصلٌ عن length نفسه — انظر التعليق نفسه في Home.tsx.
-  const [customMode, setCustomMode] = useState(false)
-  const [customText, setCustomText] = useState('15')
+  const [customMode, setCustomMode] = useState(() => !LENGTHS.includes(loadLength('custom') ?? 15))
+  const [customText, setCustomText] = useState(() => String(loadLength('custom') ?? 15))
 
   const available = useMemo(() => poolFromSources([...picked]).length, [picked])
   const groups = ['جولات', 'فئات الشخصيات', 'تصنيفات معرفية'] as const
@@ -144,7 +145,7 @@ export function CustomBuilder({ onStart, onBack }: Props) {
           <button
             className="btn btn-primary"
             disabled={!canStart}
-            onClick={() => onStart(poolFromSources([...picked]), realLength)}
+            onClick={() => { saveLength('custom', realLength); onStart(poolFromSources([...picked]), realLength) }}
           >
             ابدأ
           </button>

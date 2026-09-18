@@ -1,5 +1,42 @@
 # هل تعرف السعودية؟ — SaudiKnowledge
 
+## Song category — خمّن الأغنية
+
+Songs use the same round-length setup, shuffled questions, streak bonus, results, and replay as the rest of the game. They also work in **لعبتي**. Each song is one question with three audio clues:
+
+1. The first **3 seconds** from the start of the recording.
+2. **لا أعلم** restarts from the beginning and plays the first **8 seconds**.
+3. **لا أعلم** plays the famous section selected by the content editor.
+
+Guess aloud, press **عرفت الأغنية**, then self-check the revealed title with **إجابتي صحيحة / إجابتي خاطئة**. The artist is optional supplementary information. A wrong self-check ends the question. **لا أعلم** in phase three reveals the answer and records a miss. Clue progression does not break a streak; a final miss does.
+
+Correct answers earn **300 / 200 / 100** base points by phase, multiplied by the existing streak bonus (10% per preceding correct answer, up to 50%). Replays are free and thinking time is unlimited. If audio cannot load, retry or skip it without losing the streak; technical skips are excluded from accuracy. Audio stops when leaving, revealing an answer, opening help, or hiding the page. Use the play button when automatic playback is blocked.
+
+### Prepare recordings
+
+The five initial songs are registered as **drafts**. Their famous sections must be chosen by the user before they appear in games. Titles initially come from the supplied filenames and remain editable. No famous timestamps are guessed automatically.
+
+1. Put MP3 originals in `Songs/`.
+2. Run `npm run songs:scan` to discover new files and read their durations (or use the review page's scan button).
+3. Run `npm run dev`, then open **http://127.0.0.1:5173/__songs/review**. The local home screen also links to it when the song category is selected. Use the address printed by Vite if the port differs.
+4. Review the title/artist and listen to the first 3 and 8 seconds.
+5. Seek to the famous section and set its start/end, either using the current audio position or entering `MM:SS` / seconds. The suggested length is 15 seconds; the allowed range is 1–60 seconds.
+6. Preview the section, check the review confirmation, and click **اعتماد الأغنية وتجهيزها للعب**.
+
+Approval generates three independently bounded MP3 clips in `public/assets/songs/` and updates `src/data/songs.json`. Neutral clip filenames and removed title/artist/artwork metadata avoid accidental clues. Originals stay untouched. Only ready songs enter standalone or mixed pools; an empty song category explains what is pending. Returning a song to drafts removes it from future rounds.
+
+The editor is available only on a **local Vite development server** and accepts edits only from that server's own origin on loopback. It is not included in the published or disk build. At runtime the browser loads prepared audio files directly, with no audio API or server. Commit the catalog and referenced prepared clips together when shipping approved songs. Originals are needed only for subsequent editing. Postbuild omits obsolete/draft clips.
+
+FFmpeg is installed through the `ffmpeg-static` development dependency; no separate system installation is needed. `npm test` (Node 22.6+; verified on Node 24) checks phase/scoring state transitions, mixed rounds, input validation, and actual audio extraction, including source preservation, clip duration, clue position, and removed answer metadata. `npm run validate` checks ready-song timing and clip paths alongside existing content checks. The deployment workflow runs these tests before building.
+
+The shared round state now gives **لعبتي** its own score identity instead of storing its scores under trivia. Existing saved scores are left intact. Valid custom round lengths are restored, capped to the current pool size.
+
+Mixed rounds draw evenly across selected sources before shuffling the final order, so a large trivia bank cannot crowd songs out. Each selected source appears when the round has at least as many questions as sources. If the round is shorter, a random subset of sources is used; exhausted sources give their remaining slots to the others.
+
+Built-copy background and tapestry URLs are also corrected so the shared visual identity loads from disk and under a hosted subpath.
+
+---
+
 An Arabic-only, RTL Saudi knowledge quiz game that runs locally on your PC.
 Built from `saudi-game-research-pack.md`.
 

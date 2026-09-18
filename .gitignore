@@ -2,3 +2,5 @@ node_modules
 dist
 *.log
 crop-me/
+.song-qa/
+/Songs/

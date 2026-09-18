@@ -1,5 +1,13 @@
 # HANDOFF — picking this project up in a new chat
 
+## Song feature update
+
+`خمّن الأغنية` is implemented with three phases (3 seconds, first 8 seconds, editor-selected famous excerpt), spoken/self-judged guesses, 300/200/100 base points plus streaks, and mixed-round support. The five user recordings in `Songs/` are catalogued in `src/data/songs.json` as drafts; **do not invent or approve their famous timestamps**. The user chooses them in the local editor at `/__songs/review` while Vite runs. See README's Song category section for preparation and validation.
+
+New code: `src/game/gameReducer.ts` owns shared transitions; `SongPlay` and `SongAudio` own the song UI; `scripts/song-library.mjs` generates clips; `song-review-plugin.mjs` provides the loopback-only development editor. The compiled game has no editor/backend requirement. `npm test` includes real audio extraction tests. `ffmpeg-static` is a development dependency. `custom` is now a distinct game-round identity, and valid custom lengths are restored.
+
+The older reference sections below contain historical counts and deployment notes; prefer current source/data and README when they disagree.
+
 Read this first, then `README.md` for depth. This file is orientation and open items;
 the README is the reference.
 

@@ -7,10 +7,11 @@ interface Props {
   score: number
   streak: number
   roundTitle?: string
+  itemLabel?: string
 }
 
 export function ScoreBar({
-  index, total, score, streak, roundTitle,
+  index, total, score, streak, roundTitle, itemLabel = 'سؤال',
 }: Props) {
   const shown = useCountUp(score)
   const done = index + 1
@@ -21,7 +22,7 @@ export function ScoreBar({
         {roundTitle && <span className="sb-round">{roundTitle}</span>}
 
         <span className="chip sb-prog">
-          سؤال <span className="ltr">{done}</span> من <span className="ltr">{total}</span>
+          {itemLabel} <span className="ltr">{done}</span> من <span className="ltr">{total}</span>
         </span>
 
         {streak >= 2 && (

@@ -44,6 +44,7 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
   const meta = selectedId ? ROUNDS.find((r) => r.id === selectedId)! : null
   const poolSize = selectedId ? poolFor(selectedId).length : 0
   const options = CHOICES.filter((n) => n < poolSize)
+  const itemLabel = selectedId === 'songs' ? 'أغنية' : 'سؤال'
 
   // اختيار جولةٍ من الشبكة يفتح لوحة الإعداد بجانبها فوراً — بلا صفحةٍ
   // جديدة؛ عدد الأسئلة يبدأ من آخر ما اختاره اللاعب لهذه الجولة تحديداً
@@ -53,8 +54,12 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
     const size = poolFor(id).length
     const opts = CHOICES.filter((n) => n < size)
     const saved = loadLength(id)
-    if (saved && (saved === size || opts.includes(saved))) setCount(saved)
-    else setCount(opts.includes(10) ? 10 : (opts[0] ?? size))
+    if (saved && Number.isInteger(saved) && saved > 0 && size > 0) {
+      const restored = Math.min(saved, size)
+      setCount(restored)
+      setCustomMode(restored !== size && !opts.includes(restored))
+      setCustomText(String(restored))
+    } else setCount(opts.includes(10) ? 10 : (opts[0] ?? size))
   }
 
   function pickPreset(n: number) {
@@ -94,7 +99,7 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
   }
 
   function confirm() {
-    if (!selectedId) return
+    if (!selectedId || poolSize === 0) return
     saveLength(selectedId, count)
     onStart(selectedId, Math.min(count, poolSize))
   }
@@ -133,23 +138,23 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
         key={r.key}
         className={`topic-card ${empty ? 'is-empty' : ''} ${isSelected ? 'is-selected' : ''}`}
         style={style}
-        onClick={() => (empty ? undefined : r.key === 'custom' ? onCustom() : selectRound(r.key as RoundId))}
+        onClick={() => (r.key === 'custom' ? onCustom() : selectRound(r.key as RoundId))}
         onMouseEnter={preview}
         onMouseLeave={clearPreview}
         onFocus={preview}
         onBlur={clearPreview}
-        disabled={empty}
+        disabled={empty && r.key !== 'songs'}
       >
         {isSelected && <span className="topic-check" aria-hidden="true">✓</span>}
         <span className="topic-card-top">
           <span className="topic-icon"><RoundIcon round={r.key} /></span>
           <span className="topic-count">
             {empty ? (
-              <span className="topic-warn">قريباً</span>
+              <span className="topic-warn">{r.key === 'songs' ? 'بانتظار اختيار المقاطع' : 'قريباً'}</span>
             ) : r.count === null ? (
               'مخصّصة'
             ) : (
-              <><span className="ltr">{r.count}</span> سؤال</>
+              <><span className="ltr">{r.count}</span> {r.key === 'songs' ? 'أغنية' : 'سؤال'}</>
             )}
           </span>
         </span>
@@ -181,7 +186,7 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
               <h2 className="setup-title">{meta.title}</h2>
               <p className="setup-sub">{meta.subtitle}</p>
 
-              <div className="setup-block">
+              {poolSize > 0 ? <div className="setup-block">
                 <h3 className="setup-h3">طول الجولة</h3>
                 <div className="setup-chips">
                   {options.map((n) => (
@@ -192,7 +197,7 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
                       aria-pressed={!customMode && count === n}
                     >
                       <span className="chip-dot" aria-hidden="true" />
-                      <span className="chip-label"><span className="ltr">{n}</span> سؤال</span>
+                      <span className="chip-label"><span className="ltr">{n}</span> {itemLabel}</span>
                     </button>
                   ))}
                   <button
@@ -207,8 +212,9 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
                   {customMode ? (
                     <div className="setup-chip setup-chip-custom is-on">
                       <span className="chip-dot" aria-hidden="true" />
-                      <span className="chip-label">عدد الأسئلة</span>
+                      <label className="chip-label" htmlFor="round-count">{selectedId === 'songs' ? 'عدد الأغاني' : 'عدد الأسئلة'}</label>
                       <input
+                        id="round-count"
                         type="number"
                         className="setup-count-input ltr"
                         min={1}
@@ -228,9 +234,12 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
                     </button>
                   )}
                 </div>
-              </div>
+              </div> : <p className="song-draft-note">الأغاني قيد التجهيز. اختر المقطع المشهور لكل أغنية في صفحة المراجعة لتصبح جاهزة للعب.</p>}
 
-              <button className="btn btn-primary setup-start" onClick={confirm}>ابدأ الجولة</button>
+              <button className="btn btn-primary setup-start" disabled={poolSize === 0} onClick={confirm}>ابدأ الجولة</button>
+              {selectedId === 'songs' && import.meta.env.DEV && (
+                <a className="btn-link" href="./__songs/review">تجهيز الأغاني واختيار المقاطع</a>
+              )}
               <div className="setup-foot">
                 <button className="btn-link" onClick={() => setSelectedId(null)}>تغيير الموضوع</button>
                 <button className="btn-link" onClick={() => setHowTo(true)}>كيف تلعب؟</button>

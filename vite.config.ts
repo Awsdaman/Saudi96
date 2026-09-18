@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import { songReviewPlugin } from './scripts/song-review-plugin.mjs'
 
 // اللعبة تُفتح بالنقر المزدوج على dist/index.html من القرص مباشرة.
 // المتصفحات تمنع وحدات ES عبر بروتوكول file:// (سياسة CORS، الأصل null)،
@@ -7,7 +8,7 @@ import { defineConfig } from 'vite'
 // السمتين type="module" و crossorigin من الصفحة.
 export default defineConfig({
   base: './',
-  plugins: [react()],
+  plugins: [react(), songReviewPlugin()],
   build: {
     modulePreload: false,
     cssCodeSplit: false,

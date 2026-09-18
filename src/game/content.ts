@@ -4,8 +4,16 @@ import regionsRaw from '../data/regions.json'
 import dishesRaw from '../data/dishes.json'
 import peopleRaw from '../data/people.json'
 import triviaRaw from '../data/trivia.json'
+import songsRaw from '../data/songs.json'
 import { shuffle } from './engine'
-import type { Difficulty, Entity, Question, RoundMeta } from './types'
+import type { Difficulty, Entity, Question, RoundMeta, Song, SongQuestion } from './types'
+
+export const songs = songsRaw as Song[]
+
+export function songQuestions(): SongQuestion[] {
+  return songs.filter((s) => s.status === 'ready' && s.clips && s.famousStart !== null && s.famousEnd !== null)
+    .map((song) => ({ kind: 'song', id: `song_${song.id}`, round: 'songs', prompt: 'ما اسم هذه الأغنية؟', song }))
+}
 
 export const entities = entitiesRaw as Entity[]
 
@@ -309,6 +317,17 @@ export function peopleQuestions(): Question[] {
 
 export const ROUNDS: RoundMeta[] = [
   {
+    id: 'songs', title: 'خمّن الأغنية', subtitle: 'ثلاث مراحل… كم تحتاج لتعرفها؟', icon: 'music',
+    howTo: [
+      'استمع إلى المقطع الأول، وخمّن اسم الأغنية بصوتك.',
+      'اضغط «لا أعلم» لسماع المقطع الثاني، ثم اضغطها مرة أخرى لسماع المقطع المشهور.',
+      'إذا عرفتها، قل الاسم أولاً واضغط «عرفت الأغنية»، ثم قيّم إجابتك بعد ظهور الاسم.',
+      'الإجابة الصحيحة تمنحك 300 نقطة في المرحلة الأولى، و200 في الثانية، و100 في الثالثة، مع مضاعف السلسلة.',
+      'إعادة المقطع مجانية، والتفكير بلا مؤقّت. الانتقال بين المراحل لا يقطع السلسلة.',
+      '«لا أعلم» في المرحلة الثالثة تكشف الإجابة وتُنهي السؤال بلا نقاط.',
+    ],
+  },
+  {
     id: 'logos', title: 'خمّن الشعار', subtitle: 'وزارات وهيئات وشركات ومشاريع', icon: '◆',
     howTo: [
       'يظهر الرمز وحده بلا اسم مكتوب.',
@@ -368,6 +387,7 @@ export const ROUNDS: RoundMeta[] = [
 
 export function poolFor(round: string): Question[] {
   switch (round) {
+    case 'songs': return songQuestions()
     case 'logos': return logoQuestions()
     case 'landmarks': return landmarkQuestions()
     case 'regions': return regionQuestions()
@@ -390,6 +410,7 @@ export interface PoolSource {
 /** كل ما يمكن للّاعب اختياره، مع عدد أسئلة كل مصدر */
 export function poolSources(): PoolSource[] {
   const rounds: PoolSource[] = [
+    { id: 'round:songs', label: 'الأغاني', group: 'جولات', count: songQuestions().length },
     { id: 'round:logos', label: 'الشعارات', group: 'جولات', count: logoQuestions().length },
     { id: 'round:landmarks', label: 'المعالم', group: 'جولات', count: landmarkQuestions().length },
     { id: 'round:regions', label: 'المناطق', group: 'جولات', count: regionQuestions().length },
@@ -423,6 +444,7 @@ export function poolFromSources(ids: readonly string[]): Question[] {
   const picked = new Set(ids)
   const out: Question[] = []
 
+  if (picked.has('round:songs')) out.push(...songQuestions())
   if (picked.has('round:logos')) out.push(...logoQuestions())
   if (picked.has('round:landmarks')) out.push(...landmarkQuestions())
   if (picked.has('round:regions')) out.push(...regionQuestions())
@@ -439,7 +461,11 @@ export function poolFromSources(ids: readonly string[]): Question[] {
     out.push(...triviaQuestions().filter((q) => q.category && set.has(q.category)))
   }
 
-  return out
+  return out.map((q) => ({ ...q, selectionSource:
+    q.round === 'trivia' ? `cat:${q.category}`
+      : q.round === 'people' && !picked.has('round:people') ? `people:${q.category}`
+      : `round:${q.round}`,
+  }))
 }
 
 /** الجهات المؤهَّلة لجولة «خمّن الشعار» بصيغة البطاقات */

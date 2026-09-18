@@ -18,6 +18,14 @@ export function RoundIcon({ round }: { round: RoundId | 'custom' }) {
   }
 
   switch (round) {
+    case 'songs':
+      return (
+        <svg {...common}>
+          <path d="M9 17V5l11-2v12M9 9l11-2" />
+          <ellipse cx="6" cy="18" rx="3" ry="2.5" />
+          <ellipse cx="17" cy="16" rx="3" ry="2.5" />
+        </svg>
+      )
     // شعار: درع بنجمة ثمانية داخله
     case 'logos':
       return (

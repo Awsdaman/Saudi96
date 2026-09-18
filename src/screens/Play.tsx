@@ -6,12 +6,12 @@ import { RevealImage } from '../components/RevealImage'
 import { ScoreBar } from '../components/ScoreBar'
 import { Verdict } from '../components/Verdict'
 import type { GameState } from '../game/useGame'
-import type { Question } from '../game/types'
+import type { ChoiceQuestion } from '../game/types'
 import './Play.css'
 
 interface Props {
   state: GameState
-  question: Question
+  question: ChoiceQuestion
   onAnswer: (i: number) => void
   onNext: () => void
   onQuit: () => void
@@ -20,15 +20,12 @@ interface Props {
 export function Play({ state, question, onAnswer, onNext, onQuit }: Props) {
   const done = state.selected !== null
   const last = state.records[state.records.length - 1]
-  const meta = ROUNDS.find((r) => r.id === state.roundId)
+  const meta = ROUNDS.find((r) => r.id === question.round)
   const [howTo, setHowTo] = useState(false)
 
   // الخيارات مخفيّة افتراضاً — تفادياً لتلميح الحل بالاستبعاد بلا معرفة
   // فعلية، فيُخمَّن السؤال في البال أولاً، ثم تُطلَب الخيارات عند اللزوم.
   const [choicesShown, setChoicesShown] = useState(false)
-  useEffect(() => {
-    setChoicesShown(false)
-  }, [question.id])
 
   const answerText = question.options[question.answerIndex]
   const isLast = state.index + 1 >= state.questions.length

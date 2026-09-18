@@ -1,0 +1,253 @@
+[
+  {
+    "id": "s001",
+    "titleAr": "سعوديون",
+    "artistAr": "عايض",
+    "sourceFile": "#سعوديون .. عظماء من بلد عظيم.mp3",
+    "status": "ready",
+    "duration": 145.37,
+    "famousStart": 40,
+    "famousEnd": 55,
+    "clips": {
+      "intro3": "assets/songs/s001-199754961727-1.mp3",
+      "famous": "assets/songs/s001-199754961727-3.mp3",
+      "intro8": "assets/songs/s001-199754961727-2-8s.mp3"
+    }
+  },
+  {
+    "id": "s002",
+    "titleAr": "غلاك أكبر",
+    "artistAr": "مرسول, عبدالعزيز الشهري",
+    "sourceFile": "أغنية مرسول لليوم الوطني 93  #غلاكاكبر.mp3",
+    "status": "ready",
+    "duration": 144.85,
+    "famousStart": 49,
+    "famousEnd": 62,
+    "clips": {
+      "intro3": "assets/songs/s002-7bbc47bbe8f2-1.mp3",
+      "famous": "assets/songs/s002-7bbc47bbe8f2-3.mp3",
+      "intro8": "assets/songs/s002-7bbc47bbe8f2-2-8s.mp3"
+    }
+  },
+  {
+    "id": "s003",
+    "titleAr": "الأماكن",
+    "artistAr": "محمد عبده",
+    "sourceFile": "الاماكن - محمد عبده - حصريا ( النسخه الاصليه ).mp3",
+    "status": "ready",
+    "duration": 711.52,
+    "famousStart": 110,
+    "famousEnd": 120,
+    "clips": {
+      "intro3": "assets/songs/s003-d10f032100e7-1.mp3",
+      "famous": "assets/songs/s003-d10f032100e7-3.mp3",
+      "intro8": "assets/songs/s003-d10f032100e7-2-8s.mp3"
+    }
+  },
+  {
+    "id": "s004",
+    "titleAr": "بربس",
+    "artistAr": "",
+    "sourceFile": "بربس    BARBS.mp3",
+    "status": "ready",
+    "duration": 152.54,
+    "famousStart": 83,
+    "famousEnd": 100,
+    "clips": {
+      "intro3": "assets/songs/s004-125bc0b355ea-1.mp3",
+      "famous": "assets/songs/s004-125bc0b355ea-3.mp3",
+      "intro8": "assets/songs/s004-125bc0b355ea-2-8s.mp3"
+    }
+  },
+  {
+    "id": "s005",
+    "titleAr": "اشتقنا يا حلو",
+    "artistAr": "",
+    "sourceFile": "طرب بحري اشتقنا ياحلو والله اشتقنا.mp3",
+    "status": "ready",
+    "duration": 406.52,
+    "famousStart": 22,
+    "famousEnd": 40,
+    "clips": {
+      "intro3": "assets/songs/s005-a8e6bac34a18-1.mp3",
+      "famous": "assets/songs/s005-a8e6bac34a18-3.mp3",
+      "intro8": "assets/songs/s005-a8e6bac34a18-2-8s.mp3"
+    }
+  },
+  {
+    "id": "s624f6866e8",
+    "titleAr": "#راشدالماجد - اللي لقا أحبابه  Rashed Al Majed - Elli Lega Ahbabah",
+    "artistAr": "",
+    "sourceFile": "#راشدالماجد - اللي لقا أحبابه  Rashed Al Majed - Elli Lega Ahbabah.mp3",
+    "status": "draft",
+    "duration": 293.62,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "sce129a2c30",
+    "titleAr": "#عادل إبراهيم - آه يا لندن (النسخة الأصلية)  2014",
+    "artistAr": "",
+    "sourceFile": "#عادل إبراهيم - آه يا لندن (النسخة الأصلية)  2014.mp3",
+    "status": "draft",
+    "duration": 288,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "sc1014dfe1f",
+    "titleAr": "Ayed - Lammah  عايض - لماح (حصريا)  2024",
+    "artistAr": "",
+    "sourceFile": "Ayed - Lammah  عايض - لماح (حصريا)  2024.mp3",
+    "status": "draft",
+    "duration": 221.31,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "s7723c7f0cd",
+    "titleAr": "Majid Al Mohandis ... Hattan  ماجد المهندس ... هتان - كاملة مع المقطع المحذوف من الاغنية",
+    "artistAr": "",
+    "sourceFile": "Majid Al Mohandis ... Hattan  ماجد المهندس ... هتان - كاملة مع المقطع المحذوف من الاغنية.mp3",
+    "status": "draft",
+    "duration": 394.01,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "sf9ee5da247",
+    "titleAr": "Mashkalni",
+    "artistAr": "",
+    "sourceFile": "Mashkalni.mp3",
+    "status": "draft",
+    "duration": 360.12,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "s47cb47efaf",
+    "titleAr": "Rabeh Saqer...Maaad Tesaal  رابح صقر...ما عاد تسأل",
+    "artistAr": "",
+    "sourceFile": "Rabeh Saqer...Maaad Tesaal  رابح صقر...ما عاد تسأل.mp3",
+    "status": "draft",
+    "duration": 292.18,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "s64fb141fcf",
+    "titleAr": "Rabeh Saqer...Maghrora  رابح صقر...مغرورة",
+    "artistAr": "",
+    "sourceFile": "Rabeh Saqer...Maghrora  رابح صقر...مغرورة.mp3",
+    "status": "draft",
+    "duration": 343.67,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "s5bd66a00b0",
+    "titleAr": "دق الماني",
+    "artistAr": "",
+    "sourceFile": "دق الماني.mp3",
+    "status": "draft",
+    "duration": 560.3,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "sfb9ddfc765",
+    "titleAr": "راكان - ياعنيد  Rakan - Ya Aneed Full HD",
+    "artistAr": "",
+    "sourceFile": "راكان - ياعنيد  Rakan - Ya Aneed Full HD.mp3",
+    "status": "draft",
+    "duration": 262.18,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "sc752b414be",
+    "titleAr": "عبادي الجوهر - عيونك آخر آمالي   (من ألبوم جلسة طرب 95)",
+    "artistAr": "",
+    "sourceFile": "عبادي الجوهر - عيونك آخر آمالي   (من ألبوم جلسة طرب 95).mp3",
+    "status": "draft",
+    "duration": 378.19,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "s911d57cd56",
+    "titleAr": "عبادي الجوهر - من عذابي  (من البوم طال السكوت )",
+    "artistAr": "",
+    "sourceFile": "عبادي الجوهر - من عذابي  (من البوم طال السكوت ).mp3",
+    "status": "draft",
+    "duration": 374.41,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "s9c286e380a",
+    "titleAr": "عبدالله - ذاك الأناني (حصريا)  2018  ABDULLAH - Thak Alanany",
+    "artistAr": "",
+    "sourceFile": "عبدالله - ذاك الأناني (حصريا)  2018  ABDULLAH - Thak Alanany.mp3",
+    "status": "draft",
+    "duration": 289.1,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "se7a708b8c6",
+    "titleAr": "عبدالمجيد عبدالله - تتنفسك دنياي (حصريا)  2022",
+    "artistAr": "",
+    "sourceFile": "عبدالمجيد عبدالله - تتنفسك دنياي (حصريا)  2022.mp3",
+    "status": "draft",
+    "duration": 286.17,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "sbf5438c259",
+    "titleAr": "عبدالمجيد عبدالله - يا أبن الاوادم (ألبوم عالم موازي)  2021",
+    "artistAr": "",
+    "sourceFile": "عبدالمجيد عبدالله - يا أبن الاوادم (ألبوم عالم موازي)  2021.mp3",
+    "status": "draft",
+    "duration": 298.79,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "s2cae0e3fcc",
+    "titleAr": "قالو ترى - عبادي الجوهر",
+    "artistAr": "",
+    "sourceFile": "قالو ترى - عبادي الجوهر.mp3",
+    "status": "draft",
+    "duration": 376.69,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  },
+  {
+    "id": "s190ffe806d",
+    "titleAr": "يا ندمانه",
+    "artistAr": "",
+    "sourceFile": "يا ندمانه.mp3",
+    "status": "draft",
+    "duration": 360.83,
+    "famousStart": null,
+    "famousEnd": null,
+    "clips": null
+  }
+]

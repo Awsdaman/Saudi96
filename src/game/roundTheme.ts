@@ -15,6 +15,7 @@ export interface RoundTheme {
 }
 
 export const ROUND_THEME: Partial<Record<RoundId, RoundTheme>> = {
+  songs:     { color: '#E9AC79', tapestry: 'authenticity' },
   logos:     { color: '#5ABA1C', tapestry: 'authenticity' },
   landmarks: { color: '#C9A24A', tapestry: 'vision' },
   regions:   { color: '#598DCB', tapestry: 'generosity' },
@@ -25,7 +26,8 @@ export const ROUND_THEME: Partial<Record<RoundId, RoundTheme>> = {
 
 export function tapestryUrl(id: RoundId): string | null {
   const t = ROUND_THEME[id]
-  return t ? `assets/identity/${t.tapestry}-tapestry.jpg` : null
+  // متغيّر CSS يُحلّ نسبةً إلى ملف الأنماط؛ الرابط المطلق يمنع assets/assets في البناء.
+  return t ? new URL(`assets/identity/${t.tapestry}-tapestry.jpg`, document.baseURI).href : null
 }
 
 /** رقعة الأيقونة المؤطَّرة — المربّع الكبير على الرئيسية، وشارة التعليمات */

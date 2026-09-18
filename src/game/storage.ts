@@ -31,7 +31,8 @@ const LEN_KEY = 'saudiknowledge.length'
 /** آخر عدد أسئلة اختاره اللاعب لكل جولة */
 export function loadLength(round: string): number | null {
   try {
-    return (JSON.parse(localStorage.getItem(LEN_KEY) ?? '{}') as Record<string, number>)[round] ?? null
+    const value = (JSON.parse(localStorage.getItem(LEN_KEY) ?? '{}') as Record<string, number> | null)?.[round]
+    return typeof value === 'number' && Number.isSafeInteger(value) && value > 0 ? value : null
   } catch {
     return null
   }

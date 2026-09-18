@@ -1,4 +1,4 @@
-import { ROUNDS } from '../game/content'
+import { questionAnswer } from '../game/types'
 import type { GameState } from '../game/useGame'
 import './Results.css'
 
@@ -11,11 +11,12 @@ interface Props {
 
 export function Results({ state, isRecord, onReplay, onHome }: Props) {
   const correct = state.records.filter((r) => r.correct).length
-  const total = state.records.length
-  const round = ROUNDS.find((r) => r.id === state.roundId)
+  const total = state.records.filter((r) => !r.unavailable).length
+  const unavailable = state.records.length - total
   const pct = total ? Math.round((correct / total) * 100) : 0
 
   const verdict =
+    total === 0 ? 'لا توجد إجابات محتسبة' :
     pct >= 90 ? 'معرفة استثنائية' :
     pct >= 70 ? 'أداء ممتاز' :
     pct >= 50 ? 'أداء جيد' :
@@ -24,7 +25,7 @@ export function Results({ state, isRecord, onReplay, onHome }: Props) {
   return (
     <div className="results">
       <header className="results-head">
-        <p className="results-round">{round?.title}</p>
+        <p className="results-round">{state.title}</p>
         <div className="results-orbit">
           <svg viewBox="0 0 100 100" aria-hidden="true">
             <circle className="orbit-track" cx="50" cy="50" r="46" pathLength="100" />
@@ -66,12 +67,17 @@ export function Results({ state, isRecord, onReplay, onHome }: Props) {
             <span className="review-num ltr">{i + 1}</span>
             <span className="review-body">
               <span className="review-q">{r.question.prompt}</span>
-              <span className="review-a">{r.question.options[r.question.answerIndex]}</span>
+              <span className="review-a">{questionAnswer(r.question)}</span>
+              {r.question.kind === 'song' && <span className="review-q">
+                {r.question.song.artistAr && <>{r.question.song.artistAr} · </>}
+                {r.unavailable ? 'تُجاوزت بلا عقوبة' : r.correct ? <>عرفتها في المرحلة <span className="ltr">{r.songPhase}</span> · <span className="ltr">{r.points}</span> نقطة</> : 'لم تعرفها'}
+              </span>}
             </span>
-            <span className="review-mark" aria-hidden="true">{r.correct ? '✓' : '✕'}</span>
+            <span className="review-mark" aria-hidden="true">{r.unavailable ? '—' : r.correct ? '✓' : '✕'}</span>
           </li>
         ))}
       </ol>
+      {unavailable > 0 && <p className="results-round">استُبعدت <span className="ltr">{unavailable}</span> أغنية من نسبة الدقة لتعذّر تشغيلها.</p>}
 
       <div className="results-actions">
         <button className="btn btn-primary" onClick={onReplay}>جولة أخرى</button>

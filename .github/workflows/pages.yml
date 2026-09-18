@@ -34,6 +34,7 @@ jobs:
       # فحص المحتوى قبل البناء — صور مفقودة ومراجع مكسورة ومجالات أرقام معكوسة
       - run: npm run validate
       - run: npm run lint
+      - run: npm test
       - run: npm run build
 
       - name: دفع dist إلى فرع gh-pages

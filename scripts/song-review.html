@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ar-SA" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>تجهيز الأغاني — هل تعرف السعودية؟</title>
+  <style>
+    @font-face{font-family:Thmanyah;src:url('/fonts/thmanyahsans-Regular.woff2')}@font-face{font-family:Thmanyah;src:url('/fonts/thmanyahsans-Bold.woff2');font-weight:700}
+    @font-face{font-family:ThmanyahDisplay;src:url('/fonts/thmanyahserifdisplay-Bold.woff2');font-weight:700}
+    :root{color-scheme:dark;--bg:#0b1410;--surface:#152220;--raised:#1e2f27;--line:#385346;--text:#f2f5f0;--muted:#b4c4ba;--accent:#e9ac79;--correct:#2fd07b;--error:#ff8f84}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Thmanyah,sans-serif;line-height:1.7}
+    main{max-width:1160px;margin:auto;padding:36px 24px 64px}h1,h2,p{margin:0}h1{font:700 clamp(1.8rem,4vw,2.5rem) ThmanyahDisplay;margin-bottom:12px}h2{font:700 1.6rem ThmanyahDisplay}header p{color:var(--muted);max-width:68ch}
+    a{color:var(--accent);text-underline-offset:5px}.topline{display:flex;justify-content:space-between;gap:20px;align-items:start;margin-bottom:30px}.layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:32px;align-items:start}
+    button,input{font:inherit}button{cursor:pointer;background:var(--raised);border:1px solid var(--line);border-radius:10px;color:var(--text);padding:11px 16px;min-height:44px}button:hover:not(:disabled){border-color:var(--accent)}button:disabled{opacity:.5;cursor:default}:focus-visible{outline:2px solid var(--accent);outline-offset:3px}::selection{background:var(--accent);color:var(--bg)}
+    .primary{background:var(--accent);color:var(--bg);font-weight:700}.library{list-style:none;padding:0;margin:12px 0;display:grid;gap:6px}.library button{width:100%;text-align:start;background:transparent;display:flex;flex-direction:column;gap:3px}.library button[aria-pressed=true]{border-color:var(--accent);background:var(--surface)}.library small{color:var(--muted)}.ready{color:var(--correct)!important}
+    .count{color:var(--muted);font-size:.9rem}.editor{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px;box-shadow:0 10px 28px #0003}.section{padding-block:24px;border-bottom:1px solid var(--line)}.section:first-of-type{padding-top:18px}.section h3{margin:0 0 12px;font-size:1rem}.fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:.9rem}input{min-width:0;width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:10px 12px;caret-color:var(--accent)}input::placeholder{color:var(--muted)}.ltr{direction:ltr;unicode-bidi:isolate;font-variant-numeric:tabular-nums}.file{color:var(--muted);overflow-wrap:anywhere;font-size:.8rem;margin-top:12px}
+    audio{width:100%;margin-block:14px;direction:ltr}.actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.help{font-size:.85rem;color:var(--muted);margin-top:12px}.time-field button{margin-top:8px;width:100%;font-size:.82rem}.approval{flex-direction:row;align-items:start;margin:22px 0 14px}.approval input{width:18px;height:18px;flex:none;margin-top:4px;accent-color:var(--accent)}#message{min-height:1.7em;margin-top:16px;color:var(--accent)}#message.error{color:var(--error)}#preview-status{color:var(--accent);min-height:1.7em}.hidden{display:none!important}.empty{color:var(--muted);padding:24px}nav>button{width:100%;margin-top:8px}#draft{font-size:.85rem}.editor-title{display:flex;justify-content:space-between;gap:16px;align-items:center}.status{font-size:.8rem;color:var(--muted)}
+    @media(max-width:760px){main{padding:24px 16px 48px}.topline{flex-direction:column;gap:12px}.layout{grid-template-columns:1fr;gap:20px}.library{grid-template-columns:repeat(2,minmax(0,1fr))}.editor{padding:20px}.fields{grid-template-columns:1fr}.actions button{flex:1}.editor-title{align-items:start}.section{padding-block:20px}}
+  </style>
+</head>
+<body>
+<main>
+  <header class="topline"><div><h1>اختر مقاطع الأغنية</h1><p>حدّد بداية ونهاية كل مرحلة، واستمع إلى المقاطع الثلاثة قبل اعتماد الأغنية للعب.</p></div><a href="/">العودة إلى اللعبة</a></header>
+  <div class="layout">
+    <nav aria-label="مكتبة الأغاني"><p id="counts" class="count"></p><ul id="library" class="library"></ul><button id="scan">البحث عن أغاني جديدة</button><p class="help">أضف تسجيلاتك إلى مجلد <bdi dir="ltr">Songs</bdi> ثم اضغط البحث.</p></nav>
+    <section class="editor" aria-label="تجهيز الأغنية">
+      <p id="empty" class="empty">جارٍ تحميل الأغاني…</p>
+      <form id="form" class="hidden">
+        <div class="editor-title"><h2 id="heading"></h2><span id="status" class="status"></span></div>
+        <section class="section"><div class="fields"><label for="title">اسم الأغنية<input id="title" maxlength="160" required></label><label for="artist">الفنان أو الجهة (اختياري)<input id="artist" maxlength="160"></label></div><p id="filename" class="file"></p></section>
+        <section class="section"><h3>استمع إلى التسجيل</h3><audio id="audio" controls preload="metadata"></audio><p class="help">استخدم شريط الصوت لتحديد موضع البداية والنهاية، أو اكتب الزمن مباشرة.</p></section>
+<section class="section"><h3>المقطع الأول</h3><p class="help">الافتراضي: أول 3 ثوانٍ. يمكنك تغيير البداية والنهاية.</p><div class="fields"><div class="time-field"><label for="intro3-start">البداية — دقائق:ثوانٍ<input id="intro3-start" class="ltr" required autocomplete="off"></label><button id="set-intro3-start" type="button">استخدم موضع الصوت الحالي للبداية</button></div><div class="time-field"><label for="intro3-end">النهاية — دقائق:ثوانٍ<input id="intro3-end" class="ltr" required autocomplete="off"></label><button id="set-intro3-end" type="button">استخدم موضع الصوت الحالي للنهاية</button></div></div><div class="actions" style="margin-top:14px"><button id="intro3" type="button">معاينة المقطع الأول</button></div></section>
+<section class="section"><h3>المقطع الثاني</h3><p class="help">الافتراضي: أول 8 ثوانٍ. يمكنك تغيير البداية والنهاية.</p><div class="fields"><div class="time-field"><label for="intro8-start">البداية — دقائق:ثوانٍ<input id="intro8-start" class="ltr" required autocomplete="off"></label><button id="set-intro8-start" type="button">استخدم موضع الصوت الحالي للبداية</button></div><div class="time-field"><label for="intro8-end">النهاية — دقائق:ثوانٍ<input id="intro8-end" class="ltr" required autocomplete="off"></label><button id="set-intro8-end" type="button">استخدم موضع الصوت الحالي للنهاية</button></div></div><div class="actions" style="margin-top:14px"><button id="intro8" type="button">معاينة المقطع الثاني</button></div></section>
+        <section class="section"><h3>أين يبدأ المقطع المشهور وأين ينتهي؟</h3><div class="fields"><div class="time-field"><label for="start">البداية — دقائق:ثوانٍ<input id="start" class="ltr" placeholder="02:10" required autocomplete="off"></label><button id="set-start" type="button">استخدم موضع الصوت الحالي للبداية</button></div><div class="time-field"><label for="end">النهاية — دقائق:ثوانٍ<input id="end" class="ltr" placeholder="02:25" required autocomplete="off"></label><button id="set-end" type="button">استخدم موضع الصوت الحالي للنهاية</button></div></div><p class="help">نقترح 15 ثانية. اختر نهاية طبيعية للجملة الموسيقية. يمكنك أيضاً كتابة الزمن بالثواني.</p><div class="actions" style="margin-top:14px"><button id="preview" type="button">معاينة المقطع المشهور</button></div><p id="preview-status" role="status"></p></section>
+        <label class="approval"><input id="approved" type="checkbox" required><span>راجعت الاسم والمقاطع الثلاثة، وهذا هو المقطع المشهور الذي أريده.</span></label>
+        <div class="actions"><button id="save" class="primary" type="submit">اعتماد الأغنية وتجهيزها للعب</button><button id="draft" type="button">إعادتها إلى المسودات</button></div>
+      </form>
+      <p id="message" role="status" aria-live="polite"></p>
+    </section>
+  </div>
+</main>
+<script>
+  const $ = (id) => document.getElementById(id);
+  let songs = [], selected = null, working = false, boundary = null, playRequest = 0;
+  const audio = $('audio');
+  function message(text, error = false) { $('message').textContent = text; $('message').classList.toggle('error', error); }
+  function fmt(seconds) { const n = Math.round(seconds * 100) / 100; return String(Math.floor(n / 60)).padStart(2, '0') + ':' + (n % 60).toFixed(2).padStart(5, '0'); }
+  function parse(text) { const value = text.trim(); if (/^\d+(\.\d+)?$/.test(value)) return Number(value); const m = /^(\d+):([0-5]?\d(?:\.\d+)?)$/.exec(value); return m ? Number(m[1]) * 60 + Number(m[2]) : NaN; }
+  function stop() { playRequest++; audio.pause(); boundary = null; }
+  function busy(value) { working = value; document.querySelectorAll('button,input').forEach((el) => el.disabled = value); }
+  async function api(route, body) { const response = await fetch('/__songs/' + route, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {}); const data = await response.json(); if (!response.ok) throw new Error(data.error || 'تعذّرت العملية'); return data; }
+  function renderLibrary() {
+    $('counts').textContent = songs.length + ' أغنية · ' + songs.filter((s) => s.status === 'ready').length + ' جاهزة للعب';
+    $('library').replaceChildren();
+    for (const song of songs) { const li = document.createElement('li'), button = document.createElement('button'), name = document.createElement('span'), state = document.createElement('small'); button.type = 'button'; name.textContent = song.titleAr; state.textContent = song.status === 'ready' ? 'جاهزة للعب' : 'بانتظار اختيار المقطع'; if (song.status === 'ready') state.className = 'ready'; button.setAttribute('aria-pressed', String(selected?.id === song.id)); button.append(name, state); button.onclick = () => select(song); li.append(button); $('library').append(li); }
+  }
+  function select(song) {
+    if (working) return; stop(); selected = song; $('form').classList.remove('hidden'); $('empty').classList.add('hidden');
+    $('heading').textContent = song.titleAr; $('status').textContent = song.status === 'ready' ? 'جاهزة للعب' : 'مسودة';
+    $('title').value = song.titleAr; $('artist').value = song.artistAr; $('filename').textContent = 'التسجيل: ' + song.sourceFile;
+    $('start').value = song.famousStart === null ? '' : fmt(song.famousStart); $('end').value = song.famousEnd === null ? '' : fmt(song.famousEnd);
+    for (const [key, fallback] of [['intro3', 3], ['intro8', 8]]) { $(key + '-start').value = fmt(song[key + 'Start'] ?? 0); $(key + '-end').value = fmt(song[key + 'End'] ?? fallback); }
+    $('approved').checked = false; $('preview-status').textContent = ''; message(''); audio.src = '/__songs/audio/' + encodeURIComponent(song.id); renderLibrary();
+  }
+  async function refresh() { songs = await api('catalog'); renderLibrary(); if (songs.length) select(songs.find((s) => s.id === selected?.id) || songs[0]); else $('empty').textContent = 'لا توجد أغاني بعد. أضف التسجيلات إلى مجلد Songs ثم اضغط البحث.'; }
+  function selection(prefix = '') { const start = parse($(prefix + 'start').value), end = parse($(prefix + 'end').value), duration = audio.duration || selected.duration; if (!Number.isFinite(start) || !Number.isFinite(end) || start < 0 || end <= start || !Number.isFinite(duration) || end > duration || end - start < 1 || end - start > 60) throw new Error('اختر بداية ونهاية داخل الأغنية، وبمدة من ثانية واحدة إلى 60 ثانية.'); return { start, end }; }
+  async function preview(start, end, label) {
+    stop(); const token = playRequest; message('');
+    try { if (audio.readyState < 1) throw new Error('انتظر تحميل التسجيل ثم أعد المحاولة.'); boundary = end; audio.currentTime = start; await audio.play(); if (token !== playRequest) return; $('preview-status').textContent = label + ' · ' + fmt(start) + ' إلى ' + fmt(end); }
+    catch (error) { boundary = null; message(error.message || 'تعذّر تشغيل التسجيل؛ أعد المحاولة.', true); }
+  }
+  const timer = setInterval(() => { if (boundary !== null && audio.currentTime >= boundary) { stop(); $('preview-status').textContent = 'انتهت المعاينة.'; } }, 30);
+  audio.addEventListener('error', () => message('تعذّر تحميل التسجيل. تأكّد من وجود الملف في مجلد Songs ثم أعد اختيار الأغنية.', true));
+  for (const [key, fallback, label] of [['intro3', 3, 'المقطع الأول'], ['intro8', 8, 'المقطع الثاني']]) {
+    $(key).onclick = () => { try { const range = selection(key + '-'); preview(range.start, range.end, label); } catch (error) { message(error.message, true); } };
+    $('set-' + key + '-start').onclick = () => { $(key + '-start').value = fmt(audio.currentTime); $(key + '-end').value = fmt(Math.min(audio.duration || selected.duration, audio.currentTime + fallback)); $('approved').checked = false; };
+    $('set-' + key + '-end').onclick = () => { $(key + '-end').value = fmt(audio.currentTime); $('approved').checked = false; };
+  }
+  $('set-start').onclick = () => { $('start').value = fmt(audio.currentTime); $('end').value = fmt(Math.min(audio.duration || selected.duration || Infinity, audio.currentTime + 15)); $('approved').checked = false; };
+  $('set-end').onclick = () => { $('end').value = fmt(audio.currentTime); $('approved').checked = false; };
+  $('preview').onclick = () => { try { const s = selection(); preview(s.start, s.end, 'المقطع المشهور'); } catch (error) { message(error.message, true); } };
+  $('form').oninput = (event) => { if (event.target.id !== 'approved') $('approved').checked = false; };
+  $('form').onsubmit = async (event) => {
+    event.preventDefault(); if (working || !selected) return;
+    try { const range = selection(), first = selection('intro3-'), second = selection('intro8-'); stop(); busy(true); message('جارٍ تجهيز المقاطع الثلاثة…'); await api('approve', { id: selected.id, titleAr: $('title').value, artistAr: $('artist').value, famousStart: range.start, famousEnd: range.end, intro3Start: first.start, intro3End: first.end, intro8Start: second.start, intro8End: second.end }); busy(false); await refresh(); message('تم الاعتماد. الأغنية جاهزة الآن في خمّن الأغنية ولعبتي.'); }
+    catch (error) { message(error.message, true); } finally { busy(false); }
+  };
+  $('draft').onclick = async () => { if (!selected || working) return; stop(); busy(true); try { await api('draft', { id: selected.id }); busy(false); await refresh(); message('أُعيدت إلى المسودات، ولن تظهر في الجولات.'); } catch (error) { message(error.message, true); } finally { busy(false); } };
+  $('scan').onclick = async () => { stop(); busy(true); message('جارٍ قراءة التسجيلات…'); try { await api('scan', {}); busy(false); await refresh(); message('تحدّثت مكتبة الأغاني.'); } catch (error) { message(error.message, true); } finally { busy(false); } };
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
+  window.addEventListener('pagehide', () => { stop(); clearInterval(timer); });
+  refresh().catch((error) => { $('empty').textContent = 'تعذّر تحميل المكتبة. أعد تحميل الصفحة للمحاولة مرة أخرى.'; message(error.message, true); });
+</script>
+</body>
+</html>

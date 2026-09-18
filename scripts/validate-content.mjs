@@ -1,4 +1,5 @@
 import { readFileSync, existsSync } from 'node:fs'
+import { validateSongs } from './validate-songs.mjs'
 
 const read = (p) => JSON.parse(readFileSync(p, 'utf8'))
 const entities = read('src/data/entities.json')
@@ -12,6 +13,8 @@ const GROUPS = ['ministers', 'kings', 'governors', 'astronauts', 'athletes', 'ar
 const FACTS = ['role', 'reign', 'region', 'fame']
 
 const problems = []
+const songs = read('src/data/songs.json')
+problems.push(...validateSongs(songs, (file) => existsSync(`public/${file}`)))
 const warn = []
 const fail = (m) => problems.push(m)
 
