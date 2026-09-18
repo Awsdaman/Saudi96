@@ -54,6 +54,10 @@ export function SongPlay({
     question.prompt, song.titleAr, song.artistAr,
   ])
   const meta = ROUNDS.find((r) => r.id === 'songs')!
+  // بعد المرحلة الثالثة (المقطع المشهور) لا مقطع تالٍ — الزرّ هناك
+  // يستسلم للسؤال بدل أن ينتقل، فيحمل نصّاً مختلفاً عن مرحلتَي التقدّم
+  const isLastPhase = phase === 3
+  const nextPhasePoints = !isLastPhase ? scoreSong((phase + 1) as SongPhase, state.streak) : null
   const src = phase === 1 ? song.clips!.intro3 : phase === 2 ? song.clips!.intro8 : song.clips!.famous
   const firstLength = (song.intro3End ?? 3) - (song.intro3Start ?? 0)
   const secondLength = (song.intro8End ?? 8) - (song.intro8Start ?? 0)
@@ -90,8 +94,15 @@ export function SongPlay({
             <div className="song-actions">
               <button className="btn btn-primary" disabled={!state.songHeard || howTo}
                 onClick={() => onAction('song-reveal', phase)}>عرفت الأغنية</button>
-              <button className="btn btn-quiet" disabled={!state.songHeard || howTo}
-                onClick={() => { setFailed(false); onAction('song-clue', phase) }}>لا أعلم</button>
+              <button className="btn btn-quiet song-next-btn" disabled={!state.songHeard || howTo}
+                onClick={() => { setFailed(false); onAction('song-clue', phase) }}>
+                {isLastPhase ? 'لم أعرفها' : (
+                  <>
+                    المقطع التالي
+                    <small className="song-next-hint">تنخفض النقاط إلى <span className="ltr">{nextPhasePoints}</span></small>
+                  </>
+                )}
+              </button>
             </div>
             {failed && <button className="btn btn-quiet" onClick={onUnavailable}>تجاوز الأغنية بلا عقوبة</button>}
           </div>
@@ -129,8 +140,10 @@ export function SongPlay({
         <AwardPopup
           points={record.points}
           teams={teams}
-          onAward={(i) => { onAdjust?.(i, record.points); setAwarded(true) }}
-          onSkip={() => setAwarded(true)}
+          // توزيع النقاط يُنهي هذه الأغنية — ينتقل للتالي على طول، بلا
+          // ضغطة «التالي» إضافية بعد إغلاق النافذة.
+          onAward={(i) => { onAdjust?.(i, record.points); setAwarded(true); onNext() }}
+          onSkip={() => { setAwarded(true); onNext() }}
         />
       )}
     </main>

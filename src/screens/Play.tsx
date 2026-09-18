@@ -30,6 +30,12 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
   const [howTo, setHowTo] = useState(false)
   // ظهرت نافذة توزيع النقاط لهذا السؤال فعلاً — لا تتكرّر عند إعادة التصيير
   const [awarded, setAwarded] = useState(false)
+  // المقدّم يسأل الحضور بصوته وهم يجيبون شفهياً، فلا داعي أن يخمّن مثلهم —
+  // زرٌّ يكشف له وحده الإجابة الصحيحة، دون أن يمسّ state.selected أو
+  // يصل إلى تبويب الجمهور (sendAudience أعلاه لا يرسل answerIndex إلا
+  // بعد done، وهذا الكشف محليٌّ بحتٌ في هذا المكوّن). يُعاد ضبطه تلقائياً
+  // مع كل سؤالٍ جديد لأن Play.tsx يُركَّب من جديد بمفتاح question.id.
+  const [hostReveal, setHostReveal] = useState(false)
 
   // إخفاء الخيارات تفادياً لتلميح الحل بالاستبعاد بلا معرفة فعلية —
   // نمط اللعب (سهل/صعب) يختاره اللاعب في شاشة الإعداد، ويُقرأ هنا عند
@@ -96,8 +102,11 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
+  const isPortrait = question.round === 'people'
+  const imageClass = question.image ? (isPortrait ? 'has-image has-image-portrait' : 'has-image has-image-wide') : ''
+
   return (
-    <div className={`play ${question.image ? 'has-image' : ''}`}>
+    <div className={`play ${imageClass}`}>
       <div className="ask">
         <ScoreBar
           index={state.index}
@@ -120,6 +129,18 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
           <button className="btn btn-primary play-reveal-choices" onClick={() => setChoicesShown(true)}>
             أظهر الخيارات
           </button>
+        )}
+
+        {!done && (
+          hostReveal ? (
+            <p className="host-reveal-answer">
+              الإجابة الصحيحة: <strong>{answerText}</strong>
+            </p>
+          ) : (
+            <button className="btn btn-quiet host-reveal-btn" onClick={() => setHostReveal(true)}>
+              👁 اعرض لي الإجابة
+            </button>
+          )
         )}
 
         <Verdict
@@ -162,8 +183,10 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
         <AwardPopup
           points={last.points}
           teams={teams}
-          onAward={(i) => { onAdjust?.(i, last.points); setAwarded(true) }}
-          onSkip={() => setAwarded(true)}
+          // توزيع النقاط يُنهي هذا السؤال — ينتقل للتالي على طول، بلا
+          // ضغطة «التالي» إضافية بعد إغلاق النافذة.
+          onAward={(i) => { onAdjust?.(i, last.points); setAwarded(true); onNext() }}
+          onSkip={() => { setAwarded(true); onNext() }}
         />
       )}
     </div>

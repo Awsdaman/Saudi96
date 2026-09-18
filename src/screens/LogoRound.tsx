@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { AwardPopup } from '../components/AwardPopup'
 import { HowToModal } from '../components/HowToModal'
 import { LogoCard } from '../components/LogoCard'
-import { entityDifficulty, ROUNDS, logoCards } from '../game/content'
-import { basePoints, shuffle } from '../game/engine'
+import { ROUNDS, logoCards } from '../game/content'
+import { LOGO_RECALL_POINTS, shuffle } from '../game/engine'
 import type { AudienceMessage } from '../game/hostSync'
 import type { Entity, Team } from '../game/types'
 import './LogoRound.css'
@@ -30,7 +30,7 @@ export function LogoRound({ count, onFinish, onQuit, teams, onAdjust, sendAudien
 
   const entity = cards[index]
   const isLast = index + 1 >= cards.length
-  const points = entity ? basePoints(entityDifficulty(entity)) : 0
+  const points = entity ? LOGO_RECALL_POINTS : 0
 
   function advance(gotIt: boolean) {
     if (gotIt) setKnown((k) => k + 1)

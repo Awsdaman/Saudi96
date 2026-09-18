@@ -53,8 +53,8 @@ test('three phases stay on the same question and only the final give-up scores a
 })
 
 test('phase points apply the existing streak multiplier and cap at 50 percent', () => {
-  assert.deepEqual([1, 2, 3].map((p) => scoreSong(p, 0)), [300, 200, 100])
-  assert.equal(scoreSong(2, 3), 260)
+  assert.deepEqual([1, 2, 3].map((p) => scoreSong(p, 0)), [300, 150, 50])
+  assert.equal(scoreSong(2, 3), 195)
   assert.equal(scoreSong(1, 99), 450)
   for (let phase = 1; phase <= 3; phase++) {
     let s = { ...start(), streak: 3 }

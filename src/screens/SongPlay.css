@@ -25,6 +25,10 @@
 .song-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
 .song-actions .btn { min-width: 160px; align-self: stretch; }
 .song-actions .btn:disabled { opacity: .45; }
+/* الزرّ الذي يستهلك مقطعاً أطول ينقص النقاط — رقمها يظهر تحت اسمه
+   مباشرةً بدل أن يكتشف اللاعب الانخفاض بعد فوات الأوان */
+.song-next-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.song-next-hint { font-weight: 400; font-size: .74rem; color: var(--wrong); }
 .song-answer { padding-block: 16px; border-top: 1px solid var(--line); }
 .song-answer h2 { font-family: var(--font-display); color: var(--green-bright); font-size: clamp(1.5rem, 4vw, 2.2rem); overflow-wrap: anywhere; }
 .song-answer > .btn { align-self: center; }

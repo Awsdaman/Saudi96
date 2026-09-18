@@ -4,6 +4,7 @@ import { TeamScoreboard } from './components/TeamScoreboard'
 import { ROUNDS, poolFor } from './game/content'
 import { AUDIENCE_CHANNEL, audienceUrl, isAudienceWindow } from './game/hostSync'
 import type { AudienceMessage } from './game/hostSync'
+import { sourceColor } from './game/sourceTheme'
 import { saveBest } from './game/storage'
 import { useGame } from './game/useGame'
 import { useRoundTheme } from './game/useRoundTheme'
@@ -95,9 +96,15 @@ function Game() {
     view === 'logos' || view === 'logoResults' ? 'logos'
     : (state.phase === 'playing' || state.phase === 'results') && state.roundId !== 'custom' ? state.roundId
     : null
+  // «لعبتي» بلا لونٍ ثابتٍ خاصٍّ بها — بدل ذلك تُصبَغ الخلفية بلون
+  // فئة السؤال الحالي (sourceTheme.ts)، فتتغيّر مع كل سؤال حسب مصدره
+  // (جولة كاملة، فئة شخصياتٍ، أو تصنيفٌ معرفي) بدل البقاء بلون افتراضيٍّ ثابت.
+  const customColor = state.roundId === 'custom' && state.phase === 'playing'
+    ? sourceColor(question?.selectionSource)
+    : null
   // يبقى استدعاء الخطّاف قبل أي عودةٍ مبكّرة — قواعد الخطاطيف تحظر
   // استدعاءه بترتيبٍ يختلف بين تصييرين لنفس المكوّن (شاشة الفريقين ثم الرئيسية)
-  useRoundTheme(themeRoundId)
+  useRoundTheme(themeRoundId, customColor)
 
   if (!teamsReady) {
     return (

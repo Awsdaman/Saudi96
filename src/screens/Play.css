@@ -83,6 +83,29 @@
 
 .play-reveal-choices { align-self: center; min-width: 190px; }
 
+/* أداة المقدّم: يراها هو وحده على جهازه — لا تصل شاشة الجمهور ولا
+   تُسجَّل كإجابة. حدٌّ متقطّع يميّزها بصرياً عن أزرار اللعب الفعلية. */
+.host-reveal-btn {
+  align-self: center;
+  border: 1.5px dashed var(--line);
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+}
+.host-reveal-btn:hover { border-color: var(--muted); color: var(--text); }
+
+.host-reveal-answer {
+  align-self: center;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.92rem;
+  padding: 8px 16px;
+  border: 1.5px dashed color-mix(in srgb, var(--correct) 55%, var(--line));
+  border-radius: 10px;
+  background: var(--correct-fill);
+}
+.host-reveal-answer strong { color: var(--correct); }
+
 .play-foot {
   display: flex;
   gap: 10px;
@@ -91,28 +114,34 @@
   margin-top: 8px;
 }
 
-/* ── سؤالٌ بصورة، على شاشة الجهاز ─────────────────────────
+/* ── سؤالٌ بصورة بورتريه (شخصيات)، على شاشة الجهاز ────────
    عمودان: السؤال والخيارات جهةً، وإطار الصورة جهةً أخرى — من
    تخطيط «واجهتي المخصّصة» في demos/my-customized.html، بدل عمودٍ
-   واحدٍ يُنزل الصورة فوق كل شيء. عمودٌ واحد يبقى دون صورة أو في
-   الشاشة الضيّقة، حيث لا مكان لعمودين معاً. */
+   واحدٍ يُنزل الصورة فوق كل شيء. صورة الشخصية طوليةٌ، فعمودٌ ضيّق
+   يكبّر الوجه بدل فراغٍ فارغ على جانبيها لو صارت بعرض الصفحة كامل.
+   عمودٌ واحد يبقى دون صورة أو في الشاشة الضيّقة، حيث لا مكان لعمودين. */
 @media (min-width: 760px) {
-  .play.has-image {
+  .play.has-image-portrait {
     max-width: 1120px;
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
     align-items: center;
     gap: 44px;
   }
-  .play.has-image .ask { min-height: 0; }
-  .play.has-image .prompt { text-align: start; }
-  .play.has-image .reveal {
-    max-height: none;
-    aspect-ratio: 4 / 3;
-    align-self: center;
-  }
-  .play.has-image .reveal-portrait {
+  .play.has-image-portrait .ask { min-height: 0; }
+  .play.has-image-portrait .prompt { text-align: start; }
+  .play.has-image-portrait .reveal-portrait {
     height: min(60vh, 520px);
     margin-inline: 0;
   }
+}
+
+/* ── سؤالٌ بصورةٍ أفقية (معالم/شعارات/مناطق/أطباق) ────────
+   لا فراغ جانبي يستحقّ عموداً هنا كما في البورتريه — الصورة تأخذ
+   عرض الصفحة كاملاً وترتفع فوق السؤال، والخيارات تبقى بعمودٍ واحدٍ
+   متوسّطاً كالوضع الافتراضي بلا صورة، لا مضغوطةً بعمودٍ جانبي ضيّق. */
+.play.has-image-wide { max-width: 900px; }
+.play.has-image-wide .reveal {
+  max-height: min(58vh, 620px);
+  margin-bottom: 8px;
 }

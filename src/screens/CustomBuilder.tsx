@@ -1,5 +1,8 @@
+import type { CSSProperties } from 'react'
 import { useMemo, useState } from 'react'
 import { availableFromSources, poolSources, poolFromSources } from '../game/content'
+import { DEFAULT_ICON_TILE } from '../game/roundTheme'
+import { SOURCE_THEME } from '../game/sourceTheme'
 import type { Question } from '../game/types'
 import { loadEasyMode, loadLength, saveEasyMode, saveLength } from '../game/storage'
 import './CustomBuilder.css'
@@ -14,6 +17,10 @@ const LENGTHS = [10, 15, 20, 30]
 export function CustomBuilder({ onStart, onBack }: Props) {
   const sources = useMemo(() => poolSources(), [])
   const [picked, setPicked] = useState<Set<string>>(new Set())
+  // معاينة الرقعة الكبيرة: المصدر تحت المؤشر، أو آخر ما اختير إن لم
+  // يكن شيء تحت المؤشر — نفس فكرة previewId/selectedId في Home.tsx،
+  // لكن هنا اختيارٌ متعدّد فلا «مختار واحد» ثابت يُعاد إليه.
+  const [previewId, setPreviewId] = useState<string | null>(null)
   const [length, setLength] = useState(() => loadLength('custom') ?? 15)
   // العدد المخصَّص: اللاعب يكتب رقمه بدل الاختيار من القائمة الجاهزة.
   // نصّ الحقل منفصلٌ عن length نفسه — انظر التعليق نفسه في Home.tsx.
@@ -30,6 +37,13 @@ export function CustomBuilder({ onStart, onBack }: Props) {
   const available = useMemo(() => availableFromSources(sources, [...picked]), [sources, picked])
   const groups = ['جولات', 'فئات الشخصيات', 'تصنيفات معرفية'] as const
   const maxAvailable = Math.max(1, available)
+
+  const lastPicked = [...picked][picked.size - 1] ?? null
+  const shownId = previewId ?? lastPicked
+  const heroTheme = shownId ? SOURCE_THEME[shownId] : undefined
+  const heroSrc = heroTheme?.image ?? DEFAULT_ICON_TILE
+  const heroStyle = heroTheme ? ({ '--rc': heroTheme.color } as CSSProperties) : undefined
+  const shownSource = shownId ? sources.find((s) => s.id === shownId) : null
 
   function pickCustom() {
     setCustomMode(true)
@@ -79,46 +93,84 @@ export function CustomBuilder({ onStart, onBack }: Props) {
         <p className="builder-sub">اختر ما تبغى، ونمزجها لك في جولة واحدة</p>
       </header>
 
-      {groups.map((g) => (
-        <section key={g} className="builder-group">
-          <h2 className="builder-group-title">{g}</h2>
-          <div className="chips">
-            {sources.filter((s) => s.group === g).map((s) => (
-              <button
-                key={s.id}
-                className={`chip-pick ${picked.has(s.id) ? 'is-on' : ''}`}
-                onClick={() => toggle(s.id)}
-                aria-pressed={picked.has(s.id)}
-                disabled={s.count === 0}
-              >
-                <span>{s.label}</span>
-                <span className="chip-count ltr">{s.count}</span>
-              </button>
-            ))}
+      <div className="builder-body">
+        <aside className="builder-hero-panel">
+          <div className="builder-hero" style={heroStyle} aria-hidden="true">
+            {/* إعادة تصيير الصورة بمفتاحٍ جديد تُشغِّل حركة الدخول عند كل تبديل */}
+            <img key={heroSrc} className="builder-hero-img" src={heroSrc} alt="" />
           </div>
-        </section>
-      ))}
+          {shownSource ? (
+            <>
+              <h2 className="builder-hero-title">{shownSource.label}</h2>
+              <p className="builder-hero-sub">
+                <span className="ltr">{shownSource.count}</span> سؤال متاح
+              </p>
+            </>
+          ) : (
+            <>
+              <h2 className="builder-hero-title">جهّز جولتك</h2>
+              <p className="builder-hero-sub">مرّر فوق أي تصنيف لمعاينته، واختر ما يعجبك</p>
+            </>
+          )}
+        </aside>
+
+        <div className="builder-sources">
+          {groups.map((g) => (
+            <section key={g} className="builder-group">
+              <h2 className="builder-group-title">{g}</h2>
+              <div className="source-grid">
+                {sources.filter((s) => s.group === g).map((s) => {
+                  const theme = SOURCE_THEME[s.id]
+                  const style = theme ? ({ '--rc': theme.color } as CSSProperties) : undefined
+                  const isOn = picked.has(s.id)
+                  return (
+                    <button
+                      key={s.id}
+                      className={`source-card ${isOn ? 'is-on' : ''}`}
+                      style={style}
+                      onClick={() => toggle(s.id)}
+                      onMouseEnter={() => setPreviewId(s.id)}
+                      onMouseLeave={() => setPreviewId(null)}
+                      onFocus={() => setPreviewId(s.id)}
+                      onBlur={() => setPreviewId(null)}
+                      aria-pressed={isOn}
+                      disabled={s.count === 0}
+                    >
+                      {isOn && <span className="source-check" aria-hidden="true">✓</span>}
+                      <span className="source-label">{s.label}</span>
+                      <span className="source-count ltr">{s.count}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      </div>
 
       <section className="builder-group">
         <h2 className="builder-group-title">عدد الأسئلة</h2>
-        <div className="chips">
+        <div className="mode-chips mode-chips-row">
           {LENGTHS.map((n) => (
             <button
               key={n}
-              className={`chip-pick ${!customMode && length === n ? 'is-on' : ''}`}
+              className={`mode-chip ${!customMode && length === n ? 'is-on' : ''}`}
               onClick={() => { setCustomMode(false); setLength(n) }}
               aria-pressed={!customMode && length === n}
             >
-              <span className="ltr">{n}</span>
+              <span className="mode-dot" aria-hidden="true" />
+              <span className="mode-label"><span className="ltr">{n}</span> سؤال</span>
             </button>
           ))}
 
           {customMode ? (
-            <span className="chip-pick chip-pick-custom is-on">
-              <span>عدد الأسئلة</span>
+            <div className="mode-chip mode-chip-custom is-on">
+              <span className="mode-dot" aria-hidden="true" />
+              <label className="mode-label" htmlFor="custom-count">عدد الأسئلة</label>
               <input
+                id="custom-count"
                 type="number"
-                className="chip-count-input ltr"
+                className="mode-count-input ltr"
                 min={1}
                 max={maxAvailable}
                 value={customText}
@@ -128,10 +180,11 @@ export function CustomBuilder({ onStart, onBack }: Props) {
                 onKeyDown={(e) => { if (e.key === 'Enter') e.currentTarget.blur() }}
                 autoFocus
               />
-            </span>
+            </div>
           ) : (
-            <button className="chip-pick" onClick={pickCustom}>
-              <span>اختر العدد المناسب لك</span>
+            <button className="mode-chip" onClick={pickCustom}>
+              <span className="mode-dot" aria-hidden="true" />
+              <span className="mode-label">اختر العدد المناسب لك</span>
             </button>
           )}
         </div>
@@ -139,8 +192,6 @@ export function CustomBuilder({ onStart, onBack }: Props) {
 
       <section className="builder-group">
         <h2 className="builder-group-title">نمط اللعب</h2>
-        {/* اختيارٌ ثنائيٌّ لا تعدّدي، فيأخذ هيئة صفوف الاختيار الواحد
-            (كطول الجولة في الرئيسية) بدل رقاقات التعدّد أعلاه */}
         <div className="mode-chips">
           <button
             className={`mode-chip ${easyMode ? 'is-on' : ''}`}

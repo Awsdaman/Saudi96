@@ -1,10 +1,30 @@
 .builder {
-  max-width: 780px;
+  position: relative;
+  z-index: 0;
+  max-width: 1180px;
   margin: 0 auto;
-  padding: 6vh 20px 60px;
+  padding: clamp(20px, 4vh, 44px) clamp(20px, 4vw, 64px) 60px;
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: clamp(20px, 3vh, 28px);
+}
+
+/* نفس مشهد الهوية الرسمي خلف كل شاشةٍ أخرى (Home.css/Play.css) — كان
+   غائباً هنا تماماً فبدت الصفحة خلفيةً مسطّحة بلا نسيجٍ ولا هوية،
+   بخلاف كل شاشةٍ أخرى في اللعبة. */
+.builder::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--bg) 35%, transparent), color-mix(in srgb, var(--bg) 35%, transparent)),
+    linear-gradient(color-mix(in srgb, var(--green-bright) 16%, transparent), color-mix(in srgb, var(--green-bright) 16%, transparent)),
+    url('/assets/identity/play-bg.jpg');
+  background-size: cover, cover, min(1400px, 100%) auto;
+  background-position: center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat;
 }
 
 .builder-head { text-align: center; }
@@ -18,6 +38,63 @@
 
 .builder-sub { color: var(--muted); margin-top: 8px; }
 
+/* لوحة معاينةٍ ثابتة يميناً (كالرئيسية) وشبكة التصنيفات يساراً —
+   تمرير المؤشر فوق أي تصنيف يعرض صورته ولونه في اللوحة، فتتحرّك
+   الرقعة الكبيرة كما في اختيار جولةٍ بالرئيسية بدل رقاقاتٍ صمّاء. */
+.builder-body {
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) 1fr;
+  align-items: start;
+  gap: clamp(20px, 3vw, 32px);
+}
+
+.builder-hero-panel {
+  position: sticky;
+  top: clamp(20px, 4vh, 44px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.builder-hero {
+  aspect-ratio: 16 / 10;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--rc, var(--line)) 55%, transparent),
+    0 0 32px -10px color-mix(in srgb, var(--rc, transparent) 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rc, var(--line)) 70%, var(--line));
+  transition: box-shadow 220ms, border-color 220ms;
+  margin-bottom: 4px;
+}
+
+.builder-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  animation: builder-hero-fade 260ms ease-out both;
+}
+
+@keyframes builder-hero-fade {
+  from { opacity: 0; transform: scale(1.03); }
+  to   { opacity: 1; transform: none; }
+}
+
+.builder-hero-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.builder-hero-sub { color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
+
+.builder-sources { display: flex; flex-direction: column; gap: 22px; }
+
 .builder-group { display: flex; flex-direction: column; gap: 12px; }
 
 .builder-group-title {
@@ -26,62 +103,93 @@
   color: var(--muted);
 }
 
-.chips { display: flex; flex-wrap: wrap; gap: 9px; }
+/* ── بطاقات التصنيفات — من مرجع topic-card في Home.css، بنفس فكرة
+   نسيج الجولة يلوح خلف البطاقة عند اللمس، لكن اختياراً متعدّداً
+   (علامة صحّ) لا انتقالاً بين مسارات. */
+.source-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
 
-.chip-pick {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 11px 16px;
-  border-radius: 999px;
+.source-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  text-align: start;
+  padding: 14px 16px;
+  min-height: 76px;
   background: var(--surface);
   border: 1.5px solid var(--line);
-  font-size: 0.95rem;
-  transition: background 140ms, border-color 140ms, color 140ms;
+  border-radius: 12px;
+  transition: background 160ms, border-color 160ms, transform 160ms, box-shadow 160ms;
 }
 
-.chip-pick:hover:not(:disabled) { border-color: var(--muted); }
-.chip-pick:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }
-.chip-pick:disabled { opacity: 0.4; }
+.source-card > * { position: relative; z-index: 2; }
 
-.chip-pick.is-on {
-  background: rgba(0, 166, 81, 0.16);
-  border-color: var(--green-bright);
-  color: var(--text);
+.source-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(165deg, color-mix(in srgb, var(--rc, var(--green-bright)) 22%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+  pointer-events: none;
 }
 
-.chip-count {
+.source-card:hover:not(:disabled)::before,
+.source-card:focus-visible::before,
+.source-card.is-on::before { opacity: 1; }
+
+.source-card:hover:not(:disabled),
+.source-card:focus-visible,
+.source-card.is-on {
+  border-color: var(--rc, var(--green-bright));
+}
+
+.source-card.is-on { background: color-mix(in srgb, var(--rc, var(--green-bright)) 16%, var(--surface)); }
+
+.source-card:hover:not(:disabled) { transform: translateY(-1px); }
+.source-card:focus-visible { outline: 2px solid var(--rc, var(--green-bright)); outline-offset: 2px; }
+.source-card:disabled { opacity: 0.4; }
+
+.source-check {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  inset-inline-end: 10px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--rc, var(--green-bright));
+  color: #06140c;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.source-label { font-weight: 600; font-size: 0.92rem; padding-inline-end: 22px; }
+
+.source-count {
   font-size: 0.76rem;
   color: var(--muted);
   background: rgba(255, 255, 255, 0.06);
-  padding: 2px 8px;
+  padding: 1px 8px;
   border-radius: 999px;
 }
 
-.chip-pick.is-on .chip-count { color: var(--green-bright); background: rgba(0, 166, 81, 0.16); }
-
-/* رقاقة العدد المخصَّص: نفس الهيئة، لكنها <span> لا زرّاً —
-   الحقل داخلها هو ما يُنقر ويُحرَّر */
-.chip-pick-custom { cursor: text; }
-
-.chip-count-input {
-  width: 3.6em;
-  padding: 2px 6px;
-  border-radius: 999px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  color: var(--text);
-  font-size: 0.9rem;
-  font-weight: 700;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-
-.chip-count-input:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 1px; }
+.source-card.is-on .source-count { color: var(--rc, var(--green-bright)); background: color-mix(in srgb, var(--rc, var(--green-bright)) 18%, transparent); }
 
 /* صفوف اختيارٍ واحد بنقطة راديو — من مرجع setup-chip في Home.css،
    لكن باسمٍ مستقلّ إذ لا يستوردان بعضهما */
 .mode-chips { display: flex; flex-direction: column; gap: 8px; }
+.mode-chips-row { flex-direction: row; flex-wrap: wrap; }
+.mode-chips-row .mode-chip { width: auto; flex: 1 1 120px; }
 
 .mode-chip {
   display: flex;
@@ -135,6 +243,26 @@
   margin-top: 2px;
 }
 
+/* صفّ العدد المخصَّص: نفس هيئة صفّ الاختيار، لكنه <div> لا زرّاً —
+   الحقل داخله هو ما يُنقر ويُحرَّر */
+.mode-chip-custom { cursor: text; }
+
+.mode-count-input {
+  flex: none;
+  width: 4.5em;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.mode-count-input:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 1px; }
+
 .builder-foot {
   display: flex;
   flex-direction: column;
@@ -149,3 +277,8 @@
 .builder-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; }
 .builder-actions .btn-primary { align-self: auto; }
 .builder-actions .btn:disabled { opacity: 0.45; }
+
+@media (max-width: 760px) {
+  .builder-body { grid-template-columns: 1fr; }
+  .builder-hero-panel { position: static; }
+}

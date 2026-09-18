@@ -1,25 +1,32 @@
-import type { Difficulty, Question, SongPhase } from './types'
+import type { Question, SongPhase } from './types'
 
 /** أقصى مضاعف يمكن بلوغه بالسلسلة المتتابعة */
 export const MAX_STREAK_BONUS = 5
 
-/** نقاط أساسية حسب الصعوبة */
-export function basePoints(difficulty: Difficulty): number {
-  return 100 * difficulty
-}
+/**
+ * نقاطٌ ثابتة موحَّدة — كانت تعتمد على تصنيف صعوبة السؤال (١٠٠-٤٠٠)،
+ * فتبدو للاعب متفاوتةً بلا سبب واضح إذ لا يرى تصنيف الصعوبة أصلاً في
+ * أي مكان. الآن قيمتان فقط في اللعبة كلها: سؤال اختيارٍ من متعدد
+ * عادي، وتذكّر «خمّن الشعار» الحرّ بلا خيارات (أصعب، فنقاطه أعلى).
+ */
+export const MC_POINTS = 300
+export const LOGO_RECALL_POINTS = 500
+
+/** نقاط كل مرحلة في «خمّن الأغنية» — تتناقص كلما احتجت مقطعاً أطول */
+const SONG_PHASE_POINTS: Record<SongPhase, number> = { 1: 300, 2: 150, 3: 50 }
 
 /** مضاعف السلسلة: يزيد ١٠٪ لكل إجابة صحيحة متتابعة حتى ٥٠٪ */
 export function streakMultiplier(streak: number): number {
   return 1 + Math.min(streak, MAX_STREAK_BONUS) * 0.1
 }
 
-/** النقاط النهائية للإجابة الصحيحة: أساسها الصعوبة، ومضاعف السلسلة فوقه. */
-export function scoreAnswer(difficulty: Difficulty, streak: number): number {
-  return Math.round(basePoints(difficulty) * streakMultiplier(streak))
+/** النقاط النهائية لسؤال اختيارٍ من متعدد: قيمةٌ ثابتة، ومضاعف السلسلة فوقها. */
+export function scoreAnswer(streak: number): number {
+  return Math.round(MC_POINTS * streakMultiplier(streak))
 }
 
 export function scoreSong(phase: SongPhase, streak: number): number {
-  return Math.round((400 - phase * 100) * streakMultiplier(streak))
+  return Math.round(SONG_PHASE_POINTS[phase] * streakMultiplier(streak))
 }
 
 /** خلط عشوائي (Fisher–Yates) — لا يعدّل المصفوفة الأصلية */
