@@ -46,7 +46,7 @@
 /* صور الأشخاص طولية: إطار 3:4 يكبّر الوجه بدل هدر عرض 4:3 */
 .reveal-portrait {
   aspect-ratio: 3 / 4;
-  height: min(46vh, 400px);
+  height: min(46vh, 25rem);
   width: auto;
   max-height: none;
   margin-inline: auto;
@@ -62,8 +62,8 @@
   z-index: 2;
   bottom: 10px;
   inset-inline-end: 10px;
-  width: 34px;
-  height: 34px;
+  width: 2.125rem;
+  height: 2.125rem;
   display: grid;
   place-items: center;
   border-radius: 9px;
@@ -84,14 +84,14 @@
   z-index: 60;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: 1.5rem;
   background: rgba(5, 10, 8, 0.85);
   animation: fade 140ms ease-out;
   cursor: zoom-out;
 }
 
 .reveal-lightbox-img {
-  max-width: min(92vw, 1100px);
+  max-width: min(92vw, 68.75rem);
   max-height: 88vh;
   width: auto;
   height: auto;
@@ -106,8 +106,8 @@
   position: fixed;
   top: 18px;
   inset-inline-end: 18px;
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   display: grid;
   place-items: center;
   border-radius: 50%;

@@ -5,9 +5,10 @@
 .play {
   position: relative;
   z-index: 0;
-  max-width: 780px;
+  max-width: 48.75rem;
   margin: 0 auto;
-  padding: 28px max(20px, var(--frame-gutter)) 60px;
+  /* أعلى الشاشة يبقى خالياً لشريط الفريقين الثابت (TeamScoreboard) */
+  padding: 3.25rem max(1.25rem, var(--frame-gutter)) 3.75rem;
   /* هوية الجولة تصل إلى كل ما يقرأ هذه المتغيّرات — بطاقات الخيارات،
      رقائق شريط النقاط، مسار التقدّم — بدل أن تبقى حبيسة نقطةٍ صغيرة */
   --surface: color-mix(in srgb, var(--green-bright) 9%, var(--surface-0));
@@ -21,8 +22,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 20px;
-  min-height: calc(100dvh - 88px);
+  gap: 1.25rem;
+  min-height: calc(100dvh - 7rem); /* = حشوة .play العلوية والسفلية */
 }
 
 .prompt {
@@ -33,7 +34,7 @@
 }
 
 .btn {
-  padding: 13px 22px;
+  padding: 0.8125rem 1.375rem;
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 700;
@@ -58,12 +59,12 @@
   border-color: var(--line);
   align-self: center;
   font-weight: 400;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 .btn-quiet:hover { color: var(--text); border-color: var(--muted); }
 
-.play-reveal-choices { align-self: center; min-width: 190px; }
+.play-reveal-choices { align-self: center; min-width: 11.875rem; }
 
 /* أداة المقدّم: يراها هو وحده على جهازه — لا تصل شاشة الجمهور ولا
    تُسجَّل كإجابة. حدٌّ متقطّع يميّزها بصرياً عن أزرار اللعب الفعلية. */
@@ -71,8 +72,8 @@
   align-self: center;
   border: 1.5px dashed var(--line);
   border-radius: 10px;
-  padding: 8px 16px;
-  font-size: 0.85rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
 }
 .host-reveal-btn:hover { border-color: var(--muted); color: var(--text); }
 
@@ -81,7 +82,7 @@
   text-align: center;
   color: var(--muted);
   font-size: 0.92rem;
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
   border: 1.5px dashed color-mix(in srgb, var(--correct) 55%, var(--line));
   border-radius: 10px;
   background: var(--correct-fill);
@@ -90,10 +91,10 @@
 
 .play-foot {
   display: flex;
-  gap: 10px;
+  gap: 0.625rem;
   justify-content: center;
   align-items: center;
-  margin-top: 8px;
+  margin-top: 0.5rem;
 }
 
 /* ── سؤالٌ بصورة بورتريه (شخصيات)، على شاشة الجهاز ────────
@@ -104,16 +105,16 @@
    عمودٌ واحد يبقى دون صورة أو في الشاشة الضيّقة، حيث لا مكان لعمودين. */
 @media (min-width: 760px) {
   .play.has-image-portrait {
-    max-width: 1120px;
+    max-width: 70rem;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 420px);
+    grid-template-columns: minmax(0, 1fr) minmax(18.75rem, 26.25rem);
     align-items: center;
-    gap: 44px;
+    gap: 2.75rem;
   }
   .play.has-image-portrait .ask { min-height: 0; }
   .play.has-image-portrait .prompt { text-align: start; }
   .play.has-image-portrait .reveal-portrait {
-    height: min(60vh, 520px);
+    height: min(60vh, 32.5rem);
     margin-inline: 0;
   }
 }
@@ -122,8 +123,8 @@
    لا فراغ جانبي يستحقّ عموداً هنا كما في البورتريه — الصورة تأخذ
    عرض الصفحة كاملاً وترتفع فوق السؤال، والخيارات تبقى بعمودٍ واحدٍ
    متوسّطاً كالوضع الافتراضي بلا صورة، لا مضغوطةً بعمودٍ جانبي ضيّق. */
-.play.has-image-wide { max-width: 900px; }
+.play.has-image-wide { max-width: 56.25rem; }
 .play.has-image-wide .reveal {
-  max-height: min(58vh, 620px);
-  margin-bottom: 8px;
+  max-height: min(58vh, 38.75rem);
+  margin-bottom: 0.5rem;
 }

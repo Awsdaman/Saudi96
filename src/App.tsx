@@ -8,6 +8,7 @@ import { sourceColor } from './game/sourceTheme'
 import { saveBest } from './game/storage'
 import { useGame } from './game/useGame'
 import { useRoundTheme } from './game/useRoundTheme'
+import { useStageScale } from './game/useStageScale'
 import type { Entity, Question, RoundId, Team } from './game/types'
 import { AudienceView } from './screens/AudienceView'
 import { Credits } from './screens/Credits'
@@ -105,6 +106,9 @@ function Game() {
   // يبقى استدعاء الخطّاف قبل أي عودةٍ مبكّرة — قواعد الخطاطيف تحظر
   // استدعاءه بترتيبٍ يختلف بين تصييرين لنفس المكوّن (شاشة الفريقين ثم الرئيسية)
   useRoundTheme(themeRoundId, customColor)
+  // شاشات الأسئلة (اختيار، أغنية، بطاقات الشعار) تُكبَّر للعرض من بعيد؛
+  // الرئيسية والنتائج والمصادر تبقى بحجمها. انظر index.css.
+  useStageScale(view === 'logos' || (state.phase === 'playing' && !!question))
 
   if (!teamsReady) {
     return (

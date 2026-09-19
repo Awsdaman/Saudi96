@@ -1,8 +1,8 @@
 .verdict {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 18px 20px;
+  gap: 0.625rem;
+  padding: 1.125rem 1.25rem;
   border-radius: var(--radius);
   border: 1.5px solid var(--line);
   background: var(--surface);

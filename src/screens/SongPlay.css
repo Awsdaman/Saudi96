@@ -1,44 +1,44 @@
-.song-play { max-width: 800px; }
-.song-play .ask { gap: 22px; }
+.song-play { max-width: 50rem; }
+.song-play .ask { gap: 1.375rem; }
 .song-play .prompt { font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2rem); }
-.song-phases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0; margin: 0; list-style: none; gap: 10px; }
-.song-phases li { display: flex; align-items: center; justify-content: center; gap: 9px; color: var(--muted); padding-block: 12px; border-bottom: 2px solid var(--line); font-size: .92rem; }
+.song-phases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 0; margin: 0; list-style: none; gap: 0.625rem; }
+.song-phases li { display: flex; align-items: center; justify-content: center; gap: 0.5625rem; color: var(--muted); padding-block: 0.75rem; border-bottom: 2px solid var(--line); font-size: 1rem; }
 .song-phases .is-current { color: var(--text); border-color: var(--green-bright); font-weight: 700; }
 .song-phases .is-past { color: var(--green-bright); }
 .song-phase-num { font-variant-numeric: tabular-nums; }
 .song-potential { text-align: center; color: var(--muted); }
-.song-potential strong { color: var(--green-bright); font-size: 1.15rem; margin-inline: 4px; }
-.song-audio { display: flex; flex-direction: column; align-items: center; gap: 14px; padding-block: 8px; }
-.song-listen { display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 12px 20px; min-height: 52px; border-radius: 6px; background: transparent; border: 1px solid var(--muted); color: var(--text); font-weight: 500; transition: background 150ms; }
+.song-potential strong { color: var(--green-bright); font-size: 1.15rem; margin-inline: 0.25rem; }
+.song-audio { display: flex; flex-direction: column; align-items: center; gap: 0.875rem; padding-block: 0.5rem; }
+.song-listen { display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 0.75rem 1.25rem; min-height: 3.25rem; border-radius: 6px; background: transparent; border: 1px solid var(--muted); color: var(--text); font-weight: 500; transition: background 150ms; }
 .song-listen:hover:not(:disabled) { background: var(--surface); border-color: var(--text); }
 .song-listen:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 4px; }
-.song-listen svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 3; stroke-linejoin: round; flex: none; }
+.song-listen svg { width: 1.5rem; height: 1.5rem; stroke: currentColor; fill: none; stroke-width: 3; stroke-linejoin: round; flex: none; }
 .song-listen:disabled { opacity: .55; }
-.song-time { display: flex; gap: 6px; color: var(--muted); font-variant-numeric: tabular-nums; font-size: .85rem; }
-.song-progress { width: min(360px, 100%); height: 6px; border: none; border-radius: 10px; overflow: hidden; background: var(--line); accent-color: var(--green-bright); }
+.song-time { display: flex; gap: 0.375rem; color: var(--muted); font-variant-numeric: tabular-nums; font-size: .95rem; }
+.song-progress { width: min(22.5rem, 100%); height: 0.375rem; border: none; border-radius: 10px; overflow: hidden; background: var(--line); accent-color: var(--green-bright); }
 .song-progress::-webkit-progress-bar { background: var(--line); }
 .song-progress::-webkit-progress-value { background: var(--green-bright); }
 .song-progress::-moz-progress-bar { background: var(--green-bright); }
-.song-audio-note { color: var(--muted); text-align: center; line-height: 1.7; font-size: .9rem; }
-.song-decision, .song-answer { display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.song-audio-note { color: var(--muted); text-align: center; line-height: 1.7; font-size: 1rem; }
+.song-decision, .song-answer { display: flex; flex-direction: column; align-items: center; gap: 0.875rem; text-align: center; }
 .song-decision > p, .song-answer > p { color: var(--muted); line-height: 1.7; }
-.song-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
-.song-actions .btn { min-width: 160px; align-self: stretch; }
+.song-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.75rem; }
+.song-actions .btn { min-width: 10rem; align-self: stretch; }
 .song-actions .btn:disabled { opacity: .45; }
 /* الزرّ الذي يستهلك مقطعاً أطول ينقص النقاط — رقمها يظهر تحت اسمه
    مباشرةً بدل أن يكتشف اللاعب الانخفاض بعد فوات الأوان */
 .song-next-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-.song-next-hint { font-weight: 400; font-size: .74rem; color: var(--wrong); }
-.song-answer { padding-block: 16px; border-top: 1px solid var(--line); }
+.song-next-hint { font-weight: 400; font-size: .85rem; color: var(--wrong); }
+.song-answer { padding-block: 1rem; border-top: 1px solid var(--line); }
 .song-answer h2 { font-family: var(--font-display); color: var(--green-bright); font-size: clamp(1.5rem, 4vw, 2.2rem); overflow-wrap: anywhere; }
 .song-answer > .btn { align-self: center; }
 .song-yes { border-color: var(--correct); background: var(--correct-fill); }
 .song-no { border-color: var(--wrong); background: var(--wrong-fill); }
 .song-answer .song-success { color: var(--correct); }
-.song-draft-note { color: var(--muted); font-size: .9rem; line-height: 1.8; }
+.song-draft-note { color: var(--muted); font-size: 1rem; line-height: 1.8; }
 @media (max-width: 480px) {
-  .song-phases li { flex-direction: column; gap: 4px; font-size: .8rem; }
+  .song-phases li { flex-direction: column; gap: 0.25rem; font-size: .8rem; }
   .song-actions { width: 100%; }
-  .song-actions .btn { flex: 1; min-width: 130px; padding-inline: 12px; }
-  .song-play .ask { gap: 18px; }
+  .song-actions .btn { flex: 1; min-width: 8.125rem; padding-inline: 0.75rem; }
+  .song-play .ask { gap: 1.125rem; }
 }
