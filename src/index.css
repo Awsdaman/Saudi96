@@ -160,6 +160,43 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ── الخلفية الموحّدة ──
+   طبقةٌ واحدة ثابتة خلف كل الشاشات (بما فيها شاشة الجمهور والمصادر)،
+   لا نسخةٌ في كل ملف شاشة: لا شاشة تنحرف عنها، ولا تُعاد رسمها عند كل
+   انتقال، ويصبغها لون الجولة (--green-bright) فوراً حين يتغيّر.
+
+   المشهد يملأ الشاشة كلها بـ cover على أي نسبة، وشريطا السدو قطعتان
+   منفصلتان مثبّتتان على الحافتين ويتكرّران عمودياً — فيبقى الإطار
+   كاملاً حتى حين تقصّ cover أطراف المشهد. أُنتجت الأصول من
+   play-bg.jpg بـ scripts/make-background.mjs (كُبّرت مسبقاً لتبقى
+   الحواف حادّة). الروابط مكتوبة url() مباشرةً لا عبر متغيّر: فيتولّاها
+   Vite ويعيد كتابتها للبناء المفتوح من القرص وتحت مسارٍ فرعي. */
+:root {
+  /* عرض شريط السدو — تقرؤه الشاشات أيضاً كي لا يقع محتواها فوق الإطار */
+  --frame-w: clamp(18px, 5.4vw, 240px);
+  --frame-gutter: calc(var(--frame-w) + 12px);
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--bg) 35%, transparent), color-mix(in srgb, var(--bg) 35%, transparent)),
+    linear-gradient(color-mix(in srgb, var(--green-bright) 16%, transparent), color-mix(in srgb, var(--green-bright) 16%, transparent)),
+    url('/assets/identity/bg-band-l.webp'),
+    url('/assets/identity/bg-band-r.webp'),
+    url('/assets/identity/bg-scene.jpg');
+  background-size: cover, cover, var(--frame-w) auto, var(--frame-w) auto, cover;
+  /* اليسار واليمين هنا فيزيائيان (لا يتبعان dir): الشريط الأيسر عند الحافة اليسرى دائماً.
+     المشهد يُقصّ من الأعلى أكثر — الجبال والنخلة في ثلثه السفلي */
+  background-position: center, center, left top, right top, center 60%;
+  background-repeat: no-repeat, no-repeat, repeat-y, repeat-y, no-repeat;
+}
+
 button {
   font-family: inherit;
   font-size: inherit;

@@ -100,6 +100,12 @@ as a ministry logo, a map filed as a giga-project, a photo of Oman filed as a Sa
 mountain. The two failure modes are *a plausible photo of the wrong thing* and *a real
 artifact that isn't the subject*. No script can catch either.
 
+**8. The background is one layer, and its `url()`s must stay literal.** `body::before` in
+`src/index.css` paints every screen. Vite only rewrites plain `url('/assets/…')` values so the
+built copy loads from disk and under a subpath — putting the URLs in a CSS custom property
+skips that rewrite and breaks `file://`. Never re-add a per-screen `::before` artwork: that is
+what produced the letterboxed box (the old `min(1400px, 100%)` cap) on wide windows.
+
 ---
 
 ## Where things live

@@ -1,7 +1,8 @@
 .credits {
   max-width: 860px;
   margin: 0 auto;
-  padding: 4vh 20px 8vh;
+  /* الخلفية موحّدة في index.css؛ الهامش الأفقي لا ينزل عن شريط السدو */
+  padding: 4vh max(20px, var(--frame-gutter)) 8vh;
 }
 
 .credits-head { margin-bottom: clamp(20px, 4vh, 36px); }
@@ -73,6 +74,9 @@
 }
 
 .credit-author { max-width: 28ch; overflow-wrap: anywhere; }
+
+/* فريق العمل: الاسم هو المقصود هنا لا البيانات الوصفية، فيُبرَز */
+.credit-team .credit-meta { color: var(--text); font-size: 1rem; font-weight: 700; }
 
 .credit-lic { color: var(--gold); }
 

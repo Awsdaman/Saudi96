@@ -1,36 +1,18 @@
-/* الأرضية: مشهد الهوية الرسمي (جبل ونخلة وإطار سدو، من دليل العلامة)
-   بلون الجولة النشطة نفسه من الأصل — ست رقعاتٍ جاهزة، واحدة لكل
-   جولة (public/assets/identity/<id>-bg.jpg)، بدل مشهدٍ واحد يُصبَغ
-   بغسلٍ فوقه. لون الجولة الأوضح يبقى في مكانه الصحيح أيضاً: خلفية
-   بطاقات الخيارات نفسها (AnswerGrid.css). */
+/* الأرضية: مشهد الهوية الرسمي (جبل ونخلة وإطار سدو) — طبقةٌ واحدة
+   مشتركة بين كل الشاشات في index.css، يصبغها لون الجولة بغسلٍ خفيف.
+   لون الجولة الأوضح يبقى في مكانه الصحيح أيضاً: خلفية بطاقات
+   الخيارات نفسها (AnswerGrid.css). */
 .play {
   position: relative;
   z-index: 0;
   max-width: 780px;
   margin: 0 auto;
-  padding: 28px 20px 60px;
+  padding: 28px max(20px, var(--frame-gutter)) 60px;
   /* هوية الجولة تصل إلى كل ما يقرأ هذه المتغيّرات — بطاقات الخيارات،
      رقائق شريط النقاط، مسار التقدّم — بدل أن تبقى حبيسة نقطةٍ صغيرة */
   --surface: color-mix(in srgb, var(--green-bright) 9%, var(--surface-0));
   --raised: color-mix(in srgb, var(--green-bright) 14%, var(--raised-0));
   --line: color-mix(in srgb, var(--green-bright) 32%, var(--line-0));
-}
-
-.play::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-color: var(--bg);
-  background-image:
-    linear-gradient(color-mix(in srgb, var(--bg) 35%, transparent), color-mix(in srgb, var(--bg) 35%, transparent)),
-    linear-gradient(color-mix(in srgb, var(--green-bright) 16%, transparent), color-mix(in srgb, var(--green-bright) 16%, transparent)),
-    url('/assets/identity/play-bg.jpg');
-  /* نفس مشهد الرئيسية بلا استثناء — انظر التعليق نفسه في Home.css.
-     لا تُكبَّر الرقعة فوق دقّتها الحقيقية (1400px) */
-  background-size: cover, cover, min(1400px, 100%) auto;
-  background-position: center, center, center;
-  background-repeat: no-repeat, no-repeat, no-repeat;
 }
 
 /* عمود اللعب: الشريط، السؤال، الخيارات، الحكم — كتلةٌ واحدة تتوسّط

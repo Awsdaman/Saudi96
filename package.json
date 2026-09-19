@@ -18,7 +18,8 @@
     "test": "node --experimental-strip-types --test tests/*.test.mjs",
     "fetch-credits": "node scripts/fetch-credits.mjs",
     "export-crops": "node scripts/export-for-crop.mjs",
-    "import-crops": "node scripts/import-crops.mjs"
+    "import-crops": "node scripts/import-crops.mjs",
+    "make-background": "node scripts/make-background.mjs"
   },
   "dependencies": {
     "react": "^19.2.8",

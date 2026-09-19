@@ -355,6 +355,20 @@ Jabal Sawda / Jabal Ferwa dispute).
 Thmanyah — Sans for the interface, Serif Display for the title and score.
 Files live in `public/fonts/`.
 
+## Background
+
+One fixed layer behind every screen (including the audience window and Credits), defined once
+in `src/index.css` as `body::before`. The scene fills the viewport with `cover`; the two sadu
+bands are separate tiles pinned to the left/right edges and repeated vertically, so the frame
+stays whole at any window shape. The round colour tints it through `--green-bright`.
+
+The three files (`bg-scene.jpg`, `bg-band-l.webp`, `bg-band-r.webp` in `public/assets/identity/`)
+are generated from `play-bg.jpg` by `npm run make-background` — upscaled 3× and lightly sharpened
+so they stay crisp on 1080p and 4K. To use a sharper original, replace `play-bg.jpg` (same layout
+and proportions, or adjust the constants at the top of `scripts/make-background.mjs`) and rerun.
+Screens must not add their own copy: `tests/background.test.mjs` fails if they do. Screens keep
+their content off the bands with `--frame-gutter` (and `--frame-w` for the team scoreboard).
+
 ## Icons
 
 `src/components/RoundIcon.tsx` — six line icons drawn as inline SVG on a 24×24 grid, all

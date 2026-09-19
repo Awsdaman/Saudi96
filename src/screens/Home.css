@@ -11,26 +11,9 @@
   display: flex;
   flex-direction: column;
   gap: clamp(20px, 3vh, 28px);
-  padding: clamp(20px, 4vh, 44px) clamp(20px, 4vw, 64px);
-}
-
-/* مشهد الهوية الرسمي نفسه خلف شاشة اللعب (Play.css) — هنا بلون
-   العلامة الافتراضي، إذ لا جولة نشطة بعد تُلوّنه بهويتها */
-.home::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background-color: var(--bg);
-  background-image:
-    linear-gradient(color-mix(in srgb, var(--bg) 35%, transparent), color-mix(in srgb, var(--bg) 35%, transparent)),
-    linear-gradient(color-mix(in srgb, var(--green-bright) 16%, transparent), color-mix(in srgb, var(--green-bright) 16%, transparent)),
-    url('/assets/identity/play-bg.jpg');
-  /* لا تُكبَّر الرقعة فوق دقّتها الحقيقية (1400px) — انظر التعليق
-     نفسه في Play.css */
-  background-size: cover, cover, min(1400px, 100%) auto;
-  background-position: center, center, center;
-  background-repeat: no-repeat, no-repeat, no-repeat;
+  /* الخلفية موحّدة في index.css (بلون العلامة الافتراضي هنا إذ لا جولة
+     نشطة بعد)؛ الهامش الأفقي لا ينزل عن شريط السدو */
+  padding: clamp(20px, 4vh, 44px) max(clamp(20px, 4vw, 64px), var(--frame-gutter));
 }
 
 .home-head { text-align: start; }

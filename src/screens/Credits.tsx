@@ -23,6 +23,13 @@ const isFree = (l?: string | null) => !!l && /public domain|^PD$|CC0/i.test(l)
 /** غير حرّة — تُستعمل على ويكيبيديا بالاستشهاد العادل */
 const isNonFree = (l?: string | null) => !!l && /fair use|استعمال عادل/i.test(l)
 
+/** من عمل على اللعبة — تُعرض أسفل قائمة الصور */
+const TEAM = [
+  { role: 'فكرة اللعبة', name: 'Aous' },
+  { role: 'التصميم', name: 'Ahmed' },
+  { role: 'الأغاني', name: 'Panda' },
+] as const
+
 interface Props { onBack: () => void }
 
 export function Credits({ onBack }: Props) {
@@ -101,6 +108,20 @@ export function Credits({ onBack }: Props) {
       )}
 
       {section('رخص أخرى', 'رخصٌ حرّة أخرى، لكلٍّ شرطها.', groups.rest)}
+
+      <section className="credit-group credit-team">
+        <h2>فريق العمل</h2>
+        <ul className="credit-list">
+          {TEAM.map((m) => (
+            <li key={m.role} className="credit">
+              <span className="credit-name">{m.role}</span>
+              <span className="credit-meta">
+                <span className="ltr">{m.name}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
     </div>
   )
 }
