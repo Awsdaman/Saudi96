@@ -1,0 +1,103 @@
+.celebrate-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(5, 10, 8, 0.82);
+  overflow: hidden;
+  animation: fade 180ms ease-out;
+}
+
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+.celebrate-fireworks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.firework {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.spark {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--spark-color, var(--gold));
+  box-shadow: 0 0 6px 1px var(--spark-color, var(--gold));
+  transform-origin: 0 0;
+  animation: spark-burst 1.6s ease-out infinite;
+  animation-delay: var(--delay, 0s);
+  opacity: 0;
+}
+
+@keyframes spark-burst {
+  0%   { transform: rotate(var(--angle)) translateY(0) scale(1); opacity: 0; }
+  8%   { opacity: 1; }
+  75%  { opacity: 0.85; }
+  100% { transform: rotate(var(--angle)) translateY(-84px) scale(0.25); opacity: 0; }
+}
+
+.celebrate-card {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 26rem);
+  background: var(--surface-0);
+  border: 1px solid var(--line-0);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+  animation: rise 260ms ease-out;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+.celebrate-emoji { font-size: 2.5rem; line-height: 1; margin-bottom: 0.25rem; }
+
+.celebrate-kicker {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.celebrate-winner {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 5vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.celebrate-winner.is-a { color: var(--green-bright); }
+.celebrate-winner.is-b { color: var(--gold); }
+
+.celebrate-score {
+  color: var(--text);
+  font-weight: 700;
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 0.5rem;
+}
+
+/* .btn-primary المشتركة تضبط align-self: flex-start، وترتيب تحميل
+   ملفّات CSS يجعلها تغلب قاعدةً بنفس الخصوصية هنا — خصوصيةٌ أعلى
+   (فئتان) تحسم الأمر بدل الاعتماد على ترتيب التحميل */
+.celebrate-card .celebrate-dismiss { align-self: center; min-width: 12rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .spark { animation: none; opacity: 0; }
+  .celebrate-backdrop, .celebrate-card { animation: none; }
+}

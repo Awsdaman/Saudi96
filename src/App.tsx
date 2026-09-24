@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { CelebrationPopup } from './components/CelebrationPopup'
 import { TeamScoreboard } from './components/TeamScoreboard'
 import { applyDifficulty, ROUNDS, poolFor } from './game/content'
 import { AUDIENCE_CHANNEL, audienceUrl, isAudienceWindow } from './game/hostSync'
@@ -37,6 +38,9 @@ function Game() {
   const [logoCount, setLogoCount] = useState(12)
   const [isRecord, setIsRecord] = useState(false)
   const [logoOutcome, setLogoOutcome] = useState<LogoOutcome | null>(null)
+  // احتفالٌ قصيرٌ بالفريق الفائز عند انتهاء الجولة — يظهر فوق شاشة
+  // النتيجة (لا بدلاً منها)، ويُخفيه المستضيف حين يريد مراجعة التفاصيل.
+  const [celebrating, setCelebrating] = useState(false)
   const lastCustom = useRef<{ pool: Question[]; count: number; sourceIds: string[]; mode: PlayMode } | null>(null)
   // مفتاح تتبّع الأسئلة المشاهَدة للجولة الجارية — جولةٌ عادية بمعرّفها،
   // و«لعبتي» بتركيبة مصادرها (فتُتابَع كلّ تركيبةٍ على حدة).
@@ -189,6 +193,7 @@ function Game() {
     if (isLast && state.roundId) {
       const bestKey = state.roundId === 'logos' ? 'logos-mc' : state.roundId
       setIsRecord(saveBest(bestKey, state.score))
+      if (teams) setCelebrating(true)
     }
     next()
   }
@@ -196,6 +201,7 @@ function Game() {
   function goHome() {
     home()
     setLogoOutcome(null)
+    setCelebrating(false)
     setView('home')
   }
 
@@ -211,6 +217,7 @@ function Game() {
           setIsRecord(saveBest('logos', known))
           setLogoOutcome({ known, total, missed })
           setView('logoResults')
+          if (teams) setCelebrating(true)
         }}
         onQuit={goHome}
       />
@@ -219,29 +226,39 @@ function Game() {
 
   if (view === 'logoResults' && logoOutcome) {
     return withScoreboard(
-      <LogoResults
-        {...logoOutcome}
-        isRecord={isRecord}
-        onReplay={() => { setLogoOutcome(null); setView('logos') }}
-        onHome={goHome}
-      />
+      <>
+        <LogoResults
+          {...logoOutcome}
+          isRecord={isRecord}
+          onReplay={() => { setLogoOutcome(null); setView('logos') }}
+          onHome={goHome}
+        />
+        {celebrating && teams && (
+          <CelebrationPopup teams={teams} onDismiss={() => setCelebrating(false)} />
+        )}
+      </>
     )
   }
 
   // ── الجولات ذات الخيارات ──
   if (state.phase === 'results') {
     return withScoreboard(
-      <Results
-        state={state}
-        isRecord={isRecord}
-        onReplay={() => {
-          setIsRecord(false)
-          const c = lastCustom.current
-          if (c) beginCustom(c.pool, c.count, c.sourceIds, c.mode)
-          else startTracked(state.roundId!, state.title, poolFor(state.roundId!), state.questions.length, state.roundId!, loadPlayMode())
-        }}
-        onHome={goHome}
-      />
+      <>
+        <Results
+          state={state}
+          isRecord={isRecord}
+          onReplay={() => {
+            setIsRecord(false)
+            const c = lastCustom.current
+            if (c) beginCustom(c.pool, c.count, c.sourceIds, c.mode)
+            else startTracked(state.roundId!, state.title, poolFor(state.roundId!), state.questions.length, state.roundId!, loadPlayMode())
+          }}
+          onHome={goHome}
+        />
+        {celebrating && teams && (
+          <CelebrationPopup teams={teams} onDismiss={() => setCelebrating(false)} />
+        )}
+      </>
     )
   }
 
