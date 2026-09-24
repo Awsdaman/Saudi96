@@ -99,6 +99,21 @@ test('wrong self-check resets the streak; unavailable audio preserves it', () =>
   assert.equal(skipped.records[0].unavailable, true)
 })
 
+test('host judgments: a spoken miss picks no option, a one-screen reveal is flagged, both resolve the question', () => {
+  const choiceQ = (id) => ({ ...choice, id, options: ['صحيح', 'خطأ', 'ثالث'] })
+  let s = start([choiceQ('a'), choiceQ('b'), choiceQ('c')], 'trivia')
+  s = act(s, 'answer', { choice: -1 })
+  assert.equal(s.resolved, true)
+  assert.equal(s.selected, -1)
+  assert.equal(s.records[0].correct, false)
+  assert.equal(s.score, 0)
+  s = act(act(s, 'next'), 'answer', { choice: s.questions[1].answerIndex, revealed: true })
+  assert.equal(s.records[1].revealed, true)
+  assert.equal(s.records[1].points, 300)
+  s = act(act(s, 'next'), 'answer', { choice: -2 })
+  assert.equal(s.resolved, false, 'anything below -1 is still rejected')
+})
+
 test('mixed rounds support both formats, keep their identity, and preserve choices', () => {
   let s = start([choice, song('one')], 'custom')
   for (let i = 0; i < 2; i++) {

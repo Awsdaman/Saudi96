@@ -10,7 +10,8 @@ import type { GameRoundId, PlayMode } from './types'
  */
 
 export type TrackedRound = GameRoundId | 'logos-cards'
-export interface TrackedAnswer { q: string; c: boolean; r: TrackedRound }
+/** h: كشفها المستضيف بنفسه — تُعدّ منفصلةً ولا تدخل دقّة التصنيف أو السؤال */
+export interface TrackedAnswer { q: string; c: boolean; r: TrackedRound; h?: true }
 
 const ENDPOINT = '/api/events'
 const VISITOR_KEY = 'saudiknowledge.visitor'
@@ -82,5 +83,25 @@ export function trackRoundEnd(round: TrackedRound, completed: boolean, answers: 
 export function answersOf(records: readonly AnswerRecord[]): TrackedAnswer[] {
   return records
     .filter((r) => !r.unavailable)
-    .map((r) => ({ q: r.question.id, c: r.correct, r: r.question.round }))
+    .map((r) => ({ q: r.question.id, c: r.correct, r: r.question.round, ...(r.revealed ? { h: true as const } : {}) }))
+}
+
+/**
+ * يتذكّر كم إجابةً من الجولة الجارية أُرسلت، فيعيد الجديدة وحدها — إغلاق
+ * التبويب يُرسل ما أُجيب حتى لحظته، فإن عاد اللاعب (ذاكرة المتصفح) وأكمل
+ * الجولة لم تُحسب إجاباتها الأولى مرّتين. يُصفَّر بجولةٍ جديدة (مصفوفة
+ * أسئلةٍ جديدة) تلقائياً.
+ */
+export function createRoundReporter() {
+  let round: unknown = null
+  let sent = 0
+  return (roundKey: unknown, records: readonly AnswerRecord[]): TrackedAnswer[] => {
+    if (roundKey !== round) {
+      round = roundKey
+      sent = 0
+    }
+    const fresh = records.slice(sent)
+    sent = records.length
+    return answersOf(fresh)
+  }
 }

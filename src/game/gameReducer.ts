@@ -10,6 +10,8 @@ export interface AnswerRecord {
   unavailable?: boolean
   /** أُظهرت الخيارات على الشاشة قبل الاختيار — تُنصّف النقاط عقوبةً على المخاطرة المتجنَّبة */
   discounted?: boolean
+  /** كشفها المستضيف بنفسه («اعرض لي الإجابة» بشاشةٍ واحدة) — لا إجابةَ من اللاعبين تُحتسب في دقّة الأسئلة */
+  revealed?: boolean
 }
 
 export interface GameState {
@@ -37,14 +39,15 @@ export const initialState: GameState = {
 
 export type Action =
   | { type: 'start'; roundId: GameRoundId; title: string; pool: readonly Question[]; count: number }
-  | { type: 'answer'; questionId: string; choice: number; discounted?: boolean }
+  /** choice = -1: حكم المستضيف بإجابةٍ شفهية خاطئة — بلا خيارٍ مختار على الشاشة */
+  | { type: 'answer'; questionId: string; choice: number; discounted?: boolean; revealed?: boolean }
   | { type: 'song-heard' | 'song-clue' | 'song-reveal'; questionId: string; songPhase: SongPhase }
   | { type: 'song-judge'; questionId: string; correct: boolean }
   | { type: 'song-unavailable'; questionId: string }
   | { type: 'next'; questionId: string }
   | { type: 'home' }
 
-function finish(state: GameState, correct: boolean, selected: number | null, unavailable = false, discounted = false): GameState {
+function finish(state: GameState, correct: boolean, selected: number | null, unavailable = false, discounted = false, revealed = false): GameState {
   const question = state.questions[state.index]
   const points = correct
     ? question.kind === 'song' ? scoreSong() : scoreAnswer(discounted)
@@ -58,6 +61,7 @@ function finish(state: GameState, correct: boolean, selected: number | null, una
       ...(question.kind === 'song' ? { songPhase: state.songPhase } : {}),
       ...(unavailable ? { unavailable: true } : {}),
       ...(discounted && correct ? { discounted: true } : {}),
+      ...(revealed ? { revealed: true } : {}),
     }],
   }
 }
@@ -79,8 +83,8 @@ export function gameReducer(state: GameState, action: Action): GameState {
   }
   if (state.resolved) return state
   if (action.type === 'answer') {
-    if (question.kind === 'song' || !Number.isInteger(action.choice) || action.choice < 0 || action.choice >= question.options.length) return state
-    return finish(state, action.choice === question.answerIndex, action.choice, false, action.discounted)
+    if (question.kind === 'song' || !Number.isInteger(action.choice) || action.choice < -1 || action.choice >= question.options.length) return state
+    return finish(state, action.choice === question.answerIndex, action.choice, false, action.discounted, action.revealed)
   }
   if (question.kind !== 'song') return state
   if ('songPhase' in action && action.songPhase !== state.songPhase) return state

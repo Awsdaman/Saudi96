@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { AdminDashboard } from './admin/AdminDashboard'
 import { CelebrationPopup } from './components/CelebrationPopup'
 import { TeamScoreboard } from './components/TeamScoreboard'
-import { answersOf, trackRoundEnd, trackRoundStart, trackVisit } from './game/analytics'
+import { createRoundReporter, trackRoundEnd, trackRoundStart, trackVisit } from './game/analytics'
 import { applyDifficulty, ROUNDS, poolFor } from './game/content'
 import { AUDIENCE_CHANNEL, audienceUrl, isAdminHost, isAudienceWindow } from './game/hostSync'
 import type { AudienceMessage } from './game/hostSync'
@@ -116,6 +116,22 @@ function Game() {
 
   useEffect(() => { trackVisit() }, [])
 
+  // إغلاق التبويب منتصف الجولة يُرسل ما أُجيب حتى لحظته — وreporter
+  // يضمن ألّا تُرسَل إجابةٌ مرّتين إن عاد اللاعب إليها وأكملها
+  const reportRef = useRef(createRoundReporter())
+  const liveRound = useRef({ phase: state.phase, roundId: state.roundId, questions: state.questions, records: state.records })
+  useEffect(() => {
+    liveRound.current = { phase: state.phase, roundId: state.roundId, questions: state.questions, records: state.records }
+  })
+  useEffect(() => {
+    function onHide() {
+      const r = liveRound.current
+      if (r.phase === 'playing' && r.roundId) trackRoundEnd(r.roundId, false, reportRef.current(r.questions, r.records))
+    }
+    window.addEventListener('pagehide', onHide)
+    return () => window.removeEventListener('pagehide', onHide)
+  }, [])
+
   function adjustScore(index: 0 | 1, delta: number) {
     setTeams((prev) => {
       if (!prev) return prev
@@ -209,14 +225,14 @@ function Game() {
       const bestKey = state.roundId === 'logos' ? 'logos-mc' : state.roundId
       setIsRecord(saveBest(bestKey, state.score))
       if (teams) setCelebrating(true)
-      trackRoundEnd(state.roundId, true, answersOf(state.records))
+      trackRoundEnd(state.roundId, true, reportRef.current(state.questions, state.records))
     }
     next()
   }
 
   function goHome() {
     // الخروج منتصف الجولة يُسجَّل بما أُجيب حتى لحظته، لا كجولةٍ مكتملة
-    if (state.phase === 'playing' && state.roundId) trackRoundEnd(state.roundId, false, answersOf(state.records))
+    if (state.phase === 'playing' && state.roundId) trackRoundEnd(state.roundId, false, reportRef.current(state.questions, state.records))
     home()
     setLogoOutcome(null)
     setCelebrating(false)
@@ -231,12 +247,11 @@ function Game() {
         teams={teams}
         onAdjust={adjustScore}
         sendAudience={audienceOpen ? sendAudience : undefined}
-        onFinish={(known, total, missed, cards) => {
+        onFinish={(known, total, missed) => {
           setIsRecord(saveBest('logos', known))
           setLogoOutcome({ known, total, missed })
           setView('logoResults')
           if (teams) setCelebrating(true)
-          trackRoundEnd('logos-cards', true, cards.map((e) => ({ q: `card_${e.id}`, c: !missed.includes(e), r: 'logos-cards' })))
         }}
         onQuit={goHome}
       />

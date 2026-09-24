@@ -21,6 +21,14 @@ export function createFakeRedis() {
       case 'INCR': return incr(a[0], 1)
       case 'INCRBY': return incr(a[0], Number(a[1]))
       case 'GET': return strings.get(a[0]) ?? null
+      case 'MGET': return a.map((k) => strings.get(k) ?? null)
+      case 'SADD': {
+        const s = set(a[0])
+        const before = s.size
+        for (const x of a.slice(1)) s.add(x)
+        return s.size - before
+      }
+      case 'SCARD': return sets.get(a[0])?.size ?? 0
       case 'EXPIRE': return 1
       case 'HINCRBY': {
         const h = hash(a[0])

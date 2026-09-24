@@ -15,7 +15,7 @@ import './Play.css'
 interface Props {
   state: GameState
   question: ChoiceQuestion
-  onAnswer: (i: number, discounted?: boolean) => void
+  onAnswer: (i: number, discounted?: boolean, revealed?: boolean) => void
   onNext: () => void
   onQuit: () => void
   teams?: [Team, Team] | null
@@ -48,6 +48,12 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
     setChoicesShown(true)
     setManuallyRevealed(true)
   }
+
+  // بشاشتين (تبويب جمهورٍ مفتوح — sendAudience لا يصل إلا حينها):
+  // «اعرض لي الإجابة» نظرةٌ للمستضيف وحده، ثم يحكم هو على إجابة الفريق
+  // الشفهية بـ✓/✗. بشاشةٍ واحدة يبقى كما كان: يكشف الإجابة للجميع مباشرةً.
+  const twoScreens = !!sendAudience
+  const [peeking, setPeeking] = useState(false)
 
   const answerText = question.options[question.answerIndex]
   const isLast = state.index + 1 >= state.questions.length
@@ -145,11 +151,22 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
           </button>
         )}
 
-        {!done && (
-          <button className="btn btn-quiet host-reveal-btn" onClick={() => onAnswer(question.answerIndex, false)}>
+        {!done && (twoScreens && peeking ? (
+          <div className="host-peek" role="status">
+            <p>الإجابة الصحيحة <small>(لك وحدك — لا تظهر على شاشة العرض)</small>: <strong>{answerText}</strong></p>
+            <div className="host-peek-judge">
+              <button className="btn btn-yes" onClick={() => onAnswer(question.answerIndex, manuallyRevealed)}>✓ أجابوا صحيحاً</button>
+              <button className="btn btn-no" onClick={() => onAnswer(-1, false)}>✕ أخطؤوا</button>
+            </div>
+          </div>
+        ) : (
+          <button
+            className="btn btn-quiet host-reveal-btn"
+            onClick={() => (twoScreens ? setPeeking(true) : onAnswer(question.answerIndex, false, true))}
+          >
             👁 اعرض لي الإجابة
           </button>
-        )}
+        ))}
 
         <Verdict
           show={done}

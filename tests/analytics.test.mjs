@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { GET, POST, riyadhDay, setStorageForTests } from '../api/events.ts'
 import { createFakeRedis } from '../scripts/fake-redis.mjs'
+import { AUTO_REFRESH_MS, STALE_ON_RETURN_MS, shouldRefreshOnReturn } from '../src/admin/refresh.ts'
 
 const V1 = 'visitor-aaaaaaaa'
 const V2 = 'visitor-bbbbbbbb'
@@ -22,7 +23,23 @@ test('visits count every page load but unique visitors once each', async () => {
   const redis = fresh()
   for (const v of [V1, V1, V2]) assert.equal((await post({ type: 'visit', visitor: v })).status, 204)
   assert.equal(redis.strings.get('sk:visits'), '3')
-  assert.equal(redis.sets.get('sk:visitors').size, 2)
+  assert.equal(redis.sets.get('sk:dev').size, 2)
+})
+
+test('host-revealed answers are counted apart and never touch accuracy', async () => {
+  const redis = fresh()
+  assert.equal((await post({ type: 'round_end', visitor: V1, round: 'trivia', completed: true, answers: [
+    { q: 'geo_001', c: true, r: 'trivia', h: true },
+    { q: 'geo_002', c: false, r: 'trivia' },
+  ] })).status, 204)
+  const h = (k) => Object.fromEntries(redis.hashes.get(k) ?? [])
+  assert.deepEqual(h('sk:revealed'), { trivia: '1' })
+  assert.deepEqual(h('sk:answered'), { trivia: '1' })
+  assert.deepEqual(h('sk:right'), {})
+  assert.deepEqual(h('sk:q:seen'), { geo_002: '1' })
+  assert.equal((await post({ type: 'round_end', visitor: V1, round: 'trivia', completed: true, answers: [
+    { q: 'geo_001', c: true, r: 'trivia', h: 'yes' },
+  ] })).status, 400)
 })
 
 test('malformed or hostile events are rejected and never written', async () => {
@@ -93,8 +110,14 @@ test('stats need the configured password and lock out brute force', async () => 
 })
 
 test('stats report totals, 30 days ending today, rounds, and hardest questions', async () => {
-  fresh()
+  const redis = fresh()
   process.env.ADMIN_PASSWORD = 'pw'
+  let commands = 0
+  const inner = redis.exec
+  setStorageForTests(async (cmds) => { commands += cmds.length; return inner(cmds) })
+  // بيانات النظام التقديري السابق (قبل العدّ الدقيق) تبقى محسوبة
+  redis.sets.set('sk:visitors', new Set(['old-1', 'old-2', 'old-3']))
+  redis.sets.set(`sk:visitors:${riyadhDay(Date.now())}`, new Set(['old-1']))
   try {
     await post({ type: 'visit', visitor: V1 })
     await post({ type: 'visit', visitor: V2 })
@@ -104,13 +127,17 @@ test('stats report totals, 30 days ending today, rounds, and hardest questions',
         { q: 'hard_q', c: i === 0, r: 'trivia' }, { q: 'easy_q', c: true, r: 'trivia' }, { q: 'rare_q', c: false, r: 'trivia' },
       ].slice(0, i < 2 ? 3 : 2) })
     }
+    commands = 0
     const res = await get('pw')
+    // لوحةٌ واحدة تُحدَّث لا تستنزف الحصّة: أقلّ من 80 أمراً للتحديث كلّه
+    assert.ok(commands < 80, `a dashboard refresh costs ${commands} commands`)
     assert.equal(res.headers.get('cache-control'), 'no-store')
     const s = await res.json()
-    assert.deepEqual(s.totals, { visitors: 2, visits: 2, roundsStarted: 1, roundsCompleted: 4 })
+    assert.deepEqual(s.totals, { visitors: 5, visits: 2, roundsStarted: 1, roundsCompleted: 4 })
     assert.equal(s.days.length, 30)
     assert.equal(s.days.at(-1).date, riyadhDay(Date.now()))
-    assert.deepEqual(s.days.at(-1), { date: riyadhDay(Date.now()), visitors: 2, visits: 2, rounds: 1 })
+    assert.deepEqual(s.days.at(-1), { date: riyadhDay(Date.now()), visitors: 3, visits: 2, rounds: 1 })
+    assert.deepEqual(s.days.at(-2), { date: riyadhDay(Date.now(), 1), visitors: 0, visits: 0, rounds: 0 })
     assert.deepEqual(s.modes, { easy: 1 })
     assert.equal(s.avgLength, 10)
     // rare_q seen only twice — under the ranking threshold
@@ -120,6 +147,16 @@ test('stats report totals, 30 days ending today, rounds, and hardest questions',
   } finally {
     delete process.env.ADMIN_PASSWORD
   }
+})
+
+test('dashboard refresh timing: fresh on return, cheap when left open', () => {
+  const t0 = Date.parse('2026-09-24T12:00:00Z')
+  assert.equal(shouldRefreshOnReturn(t0, t0 + 60_000), false, 'glancing away for a minute costs nothing')
+  assert.equal(shouldRefreshOnReturn(t0, t0 + STALE_ON_RETURN_MS + 1), true)
+  assert.equal(shouldRefreshOnReturn(0, t0), true, 'never loaded counts as stale')
+  // أسوأ حال: مفتوحة ظاهرةً ٢٤ ساعة كل يوم شهراً كاملاً، بأقلّ من 80 أمراً للتحديث
+  const perMonth = (30 * 24 * 3600_000 / AUTO_REFRESH_MS) * 80
+  assert.ok(perMonth <= 0.15 * 500_000, `left open it would use ${perMonth} of 500k free commands a month`)
 })
 
 test('the Riyadh day rolls over at 21:00 UTC', () => {

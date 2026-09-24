@@ -429,8 +429,21 @@ completed per category, accuracy per category, easy/medium/hard and team/solo/au
 usage, average round length, and the most-missed questions.
 
 - **Tracking** (`src/game/analytics.ts`) is anonymous: a random ID per browser in
-  `localStorage`, no names or personal data. One person on two devices counts as two
-  visitors. Nothing is sent from `file://`, the audience tab, or the admin site itself.
+  `localStorage`, no names or personal data. Nothing is sent from `file://`, the audience
+  tab, or the admin site itself. The dashboard therefore counts **devices**, not people: a
+  group playing on one screen is one device; one person on two devices is two. Counts are
+  exact (Redis sets); days before the switch to sets were HyperLogLog estimates and are
+  still added in.
+- **Closing the tab mid-round** still reports the answers given so far (`pagehide`); each
+  answer is reported once even if the round is resumed from the browser's back cache.
+- **«👁 اعرض لي الإجابة»**: with the audience screen open it is a private peek for the host
+  plus ✓/✗ to judge the spoken answer (a ✓ scores normally; the audience sees nothing until
+  then). With one screen it reveals and selects the answer as before, and is recorded as a
+  host reveal — counted separately, never in accuracy.
+- The dashboard refreshes itself when you come back to it (if its numbers are over 10
+  minutes old), hourly while left open and visible, never while hidden, and instantly via
+  «تحديث» (`src/admin/refresh.ts`). A refresh costs under 80 Redis commands — even left open
+  all day every day that is about 11% of the free Upstash quota, leaving the rest for players.
 - **Server** is one Vercel function, `api/events.ts`: `POST` records strictly validated
   events, `GET` returns aggregates only with the `x-admin-password` header. Ten wrong
   passwords from one address lock it out for 15 minutes.

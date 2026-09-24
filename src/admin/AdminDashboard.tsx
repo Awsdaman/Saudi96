@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { ROUNDS, logoCards, poolFor } from '../game/content'
 import { questionAnswer } from '../game/types'
+import { AUTO_REFRESH_MS, shouldRefreshOnReturn } from './refresh'
 import './AdminDashboard.css'
 
 /**
@@ -14,7 +15,7 @@ interface Stats {
   generatedAt: string
   totals: { visitors: number; visits: number; roundsStarted: number; roundsCompleted: number }
   days: { date: string; visitors: number; visits: number; rounds: number }[]
-  rounds: { id: string; started: number; completed: number; answered: number; right: number }[]
+  rounds: { id: string; started: number; completed: number; answered: number; right: number; revealed?: number }[]
   modes: Record<string, number>
   play: Record<string, number>
   avgLength: number
@@ -25,7 +26,6 @@ interface Stats {
 type Result = { ok: true; stats: Stats } | { ok: false; status: number; message: string }
 
 const PW_KEY = 'saudiknowledge.adminPw'
-const REFRESH_MS = 60_000
 
 const fmt = (n: number) => Math.round(n).toLocaleString('en-US')
 const pct = (part: number, whole: number) => (whole ? Math.round((part / whole) * 100) : 0)
@@ -76,11 +76,13 @@ export function AdminDashboard() {
     return () => meta.remove()
   }, [])
 
+  const lastLoadedAt = useRef(0)
   const load = useCallback(async (pw: string) => {
     setLoading(true)
     const result = await fetchStats(pw)
     setLoading(false)
     if (result.ok) {
+      lastLoadedAt.current = Date.now()
       setStats(result.stats)
       setError(null)
       setPassword(pw)
@@ -101,12 +103,19 @@ export function AdminDashboard() {
     if (initialPw.current) void load(initialPw.current)
   }, [load])
 
-  // تحديثٌ تلقائي كل دقيقة أثناء فعاليةٍ حيّة — لا حين يكون التبويب مخفياً
+  // كل ساعة والصفحة ظاهرة، وفور العودة إليها إن قدمت أرقامها — انظر refresh.ts
   const hasStats = stats !== null
   useEffect(() => {
     if (!hasStats || !password) return
-    const id = window.setInterval(() => { if (!document.hidden) void load(password) }, REFRESH_MS)
-    return () => window.clearInterval(id)
+    const id = window.setInterval(() => { if (!document.hidden) void load(password) }, AUTO_REFRESH_MS)
+    const onReturn = () => {
+      if (!document.hidden && shouldRefreshOnReturn(lastLoadedAt.current, Date.now())) void load(password)
+    }
+    document.addEventListener('visibilitychange', onReturn)
+    return () => {
+      window.clearInterval(id)
+      document.removeEventListener('visibilitychange', onReturn)
+    }
   }, [hasStats, password, load])
 
   function logout() {
@@ -205,7 +214,12 @@ function Dashboard({ stats, loading, error, onRefresh, onLogout }: {
     .sort((a, b) => a.p - b.p)
     .map(({ r, p }) => ({
       key: r.id, label: ROUND_LABEL[r.id] ?? r.id, value: p, display: `${p}%`,
-      detail: <><Num>{fmt(r.right)}</Num> صحيحة من <Num>{fmt(r.answered)}</Num></>,
+      detail: (
+        <>
+          <Num>{fmt(r.right)}</Num> صحيحة من <Num>{fmt(r.answered)}</Num>
+          {!!r.revealed && <> · كشف المستضيف <Num>{fmt(r.revealed)}</Num> (خارج النسبة)</>}
+        </>
+      ),
     }))
 
   const modeTotal = Object.values(stats.modes).reduce((s, n) => s + n, 0)
@@ -219,7 +233,7 @@ function Dashboard({ stats, loading, error, onRefresh, onLogout }: {
       <header className="admin-head">
         <div>
           <h1 className="admin-title">لوحة الإدارة</h1>
-          <p className="admin-muted">آخر تحديث <span className="ltr">{updated}</span> · يتجدّد تلقائياً كل دقيقة · التواريخ بتوقيت الرياض</p>
+          <p className="admin-muted">آخر تحديث <span className="ltr">{updated}</span> · يتجدّد كلما عدت إلى الصفحة، وكل ساعة إن بقيت مفتوحة، وفوراً بزرّ «تحديث» · التواريخ بتوقيت الرياض</p>
         </div>
         <div className="admin-actions">
           <button className="btn btn-quiet" onClick={onRefresh} disabled={loading}>{loading ? 'جارٍ التحديث…' : 'تحديث'}</button>
@@ -231,11 +245,14 @@ function Dashboard({ stats, loading, error, onRefresh, onLogout }: {
 
       <section className="admin-kpis" aria-label="الأرقام الرئيسية">
         <div className="admin-card admin-hero">
-          <span className="admin-label">زوّارٌ فريدون</span>
+          <span className="admin-label">أجهزة فريدة فتحت اللعبة</span>
           <span className="admin-hero-value ltr">{fmt(totals.visitors)}</span>
-          <span className="admin-muted admin-small">كل متصفّحٍ يُعدّ مرّة واحدة — الشخص نفسه على جهازين يُعدّ زائرَين</span>
+          <span className="admin-muted admin-small">
+            كل متصفّحٍ يُعدّ مرّة: مجموعةٌ تلعب على شاشةٍ واحدة تُعدّ جهازاً واحداً، والشخص على جهازين يُعدّ جهازين.
+            لقياس اللعب نفسه انظر «جولات بدأت».
+          </span>
         </div>
-        <StatTile label="زوّار اليوم" value={fmt(today?.visitors ?? 0)} />
+        <StatTile label="أجهزة اليوم" value={fmt(today?.visitors ?? 0)} />
         <StatTile label="إجمالي الزيارات" value={fmt(totals.visits)} />
         <StatTile label="جولات بدأت" value={fmt(totals.roundsStarted)} />
         <StatTile label="نسبة إكمال الجولات" value={`${pct(totals.roundsCompleted, totals.roundsStarted)}%`} />
@@ -243,7 +260,7 @@ function Dashboard({ stats, loading, error, onRefresh, onLogout }: {
       </section>
 
       <section className="admin-card">
-        <h2 className="admin-h2">الزوّار الفريدون يومياً</h2>
+        <h2 className="admin-h2">الأجهزة الفريدة يومياً</h2>
         <p className="admin-muted admin-small">آخر 30 يوماً — مرّر فوق أي يوم لتفاصيله</p>
         <DailyChart days={stats.days} />
       </section>
@@ -256,7 +273,7 @@ function Dashboard({ stats, loading, error, onRefresh, onLogout }: {
         </section>
         <section className="admin-card">
           <h2 className="admin-h2">نسبة الإجابات الصحيحة</h2>
-          <p className="admin-muted admin-small">لكل تصنيف (حتى داخل «لعبتي») — الأصعب أولاً</p>
+          <p className="admin-muted admin-small">لكل تصنيف (حتى داخل «لعبتي») — الأصعب أولاً. إجاباتٌ كشفها المستضيف بنفسه لا تُحسب.</p>
           <BarList rows={accuracy} max={100} empty="لا إجابات مسجّلة بعد." />
         </section>
       </div>
@@ -272,6 +289,7 @@ function Dashboard({ stats, loading, error, onRefresh, onLogout }: {
             <StatTile label="جولات بفريقين" value={fmt(stats.play.teams ?? 0)} />
             <StatTile label="جولات بلا فرق" value={fmt(stats.play.solo ?? 0)} />
             <StatTile label="مع شاشة عرضٍ للجمهور" value={fmt(stats.play.audience ?? 0)} />
+            <StatTile label="إجاباتٌ كشفها المستضيف" value={fmt(stats.rounds.reduce((s, r) => s + (r.revealed ?? 0), 0))} />
           </div>
         </div>
       </section>
@@ -389,7 +407,7 @@ function DailyChart({ days }: { days: Stats['days'] }) {
               onMouseEnter={() => setActive(i)}
               onFocus={() => setActive(i)}
               onBlur={() => setActive(null)}
-              aria-label={`${longDate(d.date)}: ${d.visitors} زائر، ${d.visits} زيارة، ${d.rounds} جولة`}
+              aria-label={`${longDate(d.date)}: ${d.visitors} جهاز، ${d.visits} زيارة، ${d.rounds} جولة`}
             >
               {d.visitors > 0 && <span className="admin-col-bar" style={{ height: `${(d.visitors / max) * 100}%` }} />}
             </button>
@@ -397,7 +415,7 @@ function DailyChart({ days }: { days: Stats['days'] }) {
           {tip && active !== null && (
             <div className={`admin-tip ${tipAlign}`} style={{ left: `${((active + 0.5) / n) * 100}%` }} dir="rtl" role="status">
               <strong>{longDate(tip.date)}</strong>
-              <span><span className="ltr">{fmt(tip.visitors)}</span> زائر فريد</span>
+              <span><span className="ltr">{fmt(tip.visitors)}</span> جهاز فريد</span>
               <span><span className="ltr">{fmt(tip.visits)}</span> زيارة</span>
               <span><span className="ltr">{fmt(tip.rounds)}</span> جولة</span>
             </div>
@@ -411,7 +429,7 @@ function DailyChart({ days }: { days: Stats['days'] }) {
         <summary>عرض كجدول</summary>
         <div className="admin-table-wrap">
           <table className="admin-table">
-            <thead><tr><th>اليوم</th><th>زوّار فريدون</th><th>زيارات</th><th>جولات</th></tr></thead>
+            <thead><tr><th>اليوم</th><th>أجهزة فريدة</th><th>زيارات</th><th>جولات</th></tr></thead>
             <tbody>
               {[...days].reverse().map((d) => (
                 <tr key={d.date}>

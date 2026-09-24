@@ -4,6 +4,7 @@ import { HowToModal } from '../components/HowToModal'
 import { LogoCard } from '../components/LogoCard'
 import { ROUNDS, logoCards } from '../game/content'
 import { POINTS, shuffle } from '../game/engine'
+import { trackRoundEnd } from '../game/analytics'
 import type { AudienceMessage } from '../game/hostSync'
 import { loadSeen, markSeen, resetSeen } from '../game/storage'
 import type { Entity, Team } from '../game/types'
@@ -13,7 +14,7 @@ const SEEN_KEY = 'logos-cards'
 
 interface Props {
   count: number
-  onFinish: (known: number, total: number, missed: Entity[], cards: Entity[]) => void
+  onFinish: (known: number, total: number, missed: Entity[]) => void
   onQuit: () => void
   teams?: [Team, Team] | null
   onAdjust?: (index: 0 | 1, delta: number) => void
@@ -46,17 +47,33 @@ export function LogoRound({ count, onFinish, onQuit, teams, onAdjust, sendAudien
   // نقاط البطاقة الحالية، معلَّقة بانتظار قرار المستضيف من يستحقّها
   const [pendingAward, setPendingAward] = useState<number | null>(null)
   const missed = useRef<Entity[]>([])
+  // أحكام البطاقات بترتيبها، وعدد ما أُرسل منها للإحصاءات — فالخروج أو
+  // إغلاق التبويب يُرسل الجديد وحده، ولا تُعدّ بطاقةٌ مرّتين
+  const judged = useRef<{ q: string; c: boolean; r: 'logos-cards' }[]>([])
+  const reported = useRef(0)
+  function report(completed: boolean) {
+    const fresh = judged.current.slice(reported.current)
+    reported.current = judged.current.length
+    trackRoundEnd('logos-cards', completed, fresh)
+  }
 
   const entity = cards[index]
   const isLast = index + 1 >= cards.length
   const points = entity ? POINTS : 0
 
+  function quit() {
+    report(false)
+    onQuit()
+  }
+
   function advance(gotIt: boolean) {
     if (gotIt) setKnown((k) => k + 1)
     else missed.current.push(entity)
+    judged.current.push({ q: `card_${entity.id}`, c: gotIt, r: 'logos-cards' })
 
     if (isLast) {
-      onFinish(gotIt ? known + 1 : known, cards.length, missed.current, cards)
+      report(true)
+      onFinish(gotIt ? known + 1 : known, cards.length, missed.current)
       return
     }
     setIndex((i) => i + 1)
@@ -96,15 +113,21 @@ export function LogoRound({ count, onFinish, onQuit, teams, onAdjust, sendAudien
   }, [sendAudience, entity, index, cards.length, meta.title])
 
   // المسافة تكشف، ثم ١ / ٢ للحكم على النفس
-  const latest = useRef({ revealed, judge, onQuit })
+  const latest = useRef({ revealed, judge, quit, report })
   useEffect(() => {
-    latest.current = { revealed, judge, onQuit }
+    latest.current = { revealed, judge, quit, report }
   })
+
+  useEffect(() => {
+    const onHide = () => latest.current.report(false)
+    window.addEventListener('pagehide', onHide)
+    return () => window.removeEventListener('pagehide', onHide)
+  }, [])
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const cur = latest.current
-      if (e.key === 'Escape') return cur.onQuit()
+      if (e.key === 'Escape') return cur.quit()
       if (!cur.revealed) {
         if (e.key === ' ' || e.key === 'Enter') {
           e.preventDefault()
@@ -152,7 +175,7 @@ export function LogoRound({ count, onFinish, onQuit, teams, onAdjust, sendAudien
         </>
       )}
 
-      <button className="btn btn-quiet logoround-quit" onClick={onQuit}>إنهاء الجولة</button>
+      <button className="btn btn-quiet logoround-quit" onClick={quit}>إنهاء الجولة</button>
 
       {howTo && <HowToModal title={meta.title} steps={meta.howTo} onClose={() => setHowTo(false)} />}
 

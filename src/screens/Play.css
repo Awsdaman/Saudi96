@@ -86,6 +86,27 @@
 }
 .host-reveal-btn:hover { border-color: var(--muted); color: var(--text); }
 
+/* نظرة المستضيف الخاصّة بشاشتين — حدٌّ متقطّع كزرّها، فلا تُحسب زرّ لعب */
+.host-peek {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.125rem;
+  border: 1.5px dashed color-mix(in srgb, var(--correct) 55%, var(--line));
+  border-radius: 12px;
+  background: var(--correct-fill);
+  text-align: center;
+}
+.host-peek p { color: var(--muted); line-height: 1.7; }
+.host-peek strong { color: var(--correct); font-size: 1.1rem; }
+.host-peek-judge { display: flex; gap: 0.625rem; flex-wrap: wrap; justify-content: center; }
+.host-peek .btn-yes,
+.host-peek .btn-no { border: 1.5px solid; color: var(--text); }
+.host-peek .btn-yes { border-color: var(--correct); background: rgba(0, 166, 81, 0.16); }
+.host-peek .btn-no { border-color: var(--wrong); background: rgba(192, 57, 43, 0.12); }
+
 .play-foot {
   display: flex;
   gap: 0.625rem;

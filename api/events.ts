@@ -18,6 +18,8 @@ type Exec = (cmds: Cmd[]) => Promise<unknown[]>
 
 const P = 'sk:'
 const DAY_TTL = 60 * 60 * 24 * 400
+/** مجموعات الأجهزة اليومية أثقل من العدّادات، واللوحة لا تعرض أكثر من 30 يوماً */
+const DEVICE_DAY_TTL = 60 * 60 * 24 * 40
 const DAYS_SHOWN = 30
 const MAX_BODY = 32_000
 const MAX_ANSWERS = 500
@@ -75,10 +77,12 @@ function commandsFor(ev: unknown, now: number): Cmd[] | null {
   const day = riyadhDay(now)
 
   if (ev.type === 'visit') {
+    // عدٌّ دقيق بمجموعة (SADD/SCARD) لا بتقدير HyperLogLog. مفاتيح
+    // sk:visitors القديمة (تقديرية) تبقى تُقرأ في GET للأيام التي سبقت التبديل.
     return [
-      ['PFADD', `${P}visitors`, ev.visitor],
-      ['PFADD', `${P}visitors:${day}`, ev.visitor],
-      ['EXPIRE', `${P}visitors:${day}`, DAY_TTL],
+      ['SADD', `${P}dev`, ev.visitor],
+      ['SADD', `${P}dev:${day}`, ev.visitor],
+      ['EXPIRE', `${P}dev:${day}`, DEVICE_DAY_TTL],
       ['INCR', `${P}visits`],
       ['INCR', `${P}visits:${day}`],
       ['EXPIRE', `${P}visits:${day}`, DAY_TTL],
@@ -108,11 +112,20 @@ function commandsFor(ev: unknown, now: number): Cmd[] | null {
     if (!isRound(round) || typeof completed !== 'boolean' || !Array.isArray(answers) || answers.length > MAX_ANSWERS) return null
     const answered = new Map<string, number>()
     const right = new Map<string, number>()
+    const revealed = new Map<string, number>()
     const seen = new Map<string, boolean>()
+    const counted = new Set<string>()
     for (const a of answers) {
       if (!isObj(a) || typeof a.q !== 'string' || !QID.test(a.q) || typeof a.c !== 'boolean' || !isRound(a.r)) return null
+      if (a.h !== undefined && a.h !== true) return null
       // السؤال نفسه مرّتين في الحدث الواحد يُحسب مرّة
-      if (seen.has(a.q)) continue
+      if (counted.has(a.q)) continue
+      counted.add(a.q)
+      // كشفها المستضيف بلا إجابةٍ من اللاعبين: تُعدّ وحدها، خارج الدقّة كلّها
+      if (a.h) {
+        revealed.set(a.r, (revealed.get(a.r) ?? 0) + 1)
+        continue
+      }
       seen.set(a.q, a.c)
       answered.set(a.r, (answered.get(a.r) ?? 0) + 1)
       if (a.c) right.set(a.r, (right.get(a.r) ?? 0) + 1)
@@ -121,6 +134,7 @@ function commandsFor(ev: unknown, now: number): Cmd[] | null {
     if (completed) cmds.push(['HINCRBY', `${P}completed`, round, 1])
     for (const [r, n] of answered) cmds.push(['HINCRBY', `${P}answered`, r, n])
     for (const [r, n] of right) cmds.push(['HINCRBY', `${P}right`, r, n])
+    for (const [r, n] of revealed) cmds.push(['HINCRBY', `${P}revealed`, r, n])
     for (const [q, c] of seen) {
       cmds.push(['HINCRBY', `${P}q:seen`, q, 1])
       if (!c) cmds.push(['HINCRBY', `${P}q:wrong`, q, 1])
@@ -183,27 +197,32 @@ export async function GET(request: Request): Promise<Response> {
 
     const now = Date.now()
     const days = Array.from({ length: DAYS_SHOWN }, (_, i) => riyadhDay(now, DAYS_SHOWN - 1 - i))
+    // عدّادات الأيام كلّها بأمرَي MGET، لا بأمرٍ لكل يوم — حصّة Upstash
+    // المجانية تُحسب بالأوامر. الأجهزة الفريدة تحتاج SCARD لكل يوم، ومعها
+    // PFCOUNT للمفاتيح التقديرية القديمة التي سبقت العدّ الدقيق.
     const fixed: Cmd[] = [
-      ['PFCOUNT', `${P}visitors`], ['GET', `${P}visits`],
+      ['SCARD', `${P}dev`], ['PFCOUNT', `${P}visitors`], ['GET', `${P}visits`],
       ['HGETALL', `${P}started`], ['HGETALL', `${P}completed`],
-      ['HGETALL', `${P}answered`], ['HGETALL', `${P}right`],
+      ['HGETALL', `${P}answered`], ['HGETALL', `${P}right`], ['HGETALL', `${P}revealed`],
       ['HGETALL', `${P}modes`], ['HGETALL', `${P}play`], ['HGETALL', `${P}length`],
       ['HGETALL', `${P}q:seen`], ['HGETALL', `${P}q:wrong`],
+      ['MGET', ...days.map((d) => `${P}visits:${d}`)],
+      ['MGET', ...days.map((d) => `${P}rounds:${d}`)],
     ]
-    const daily: Cmd[] = days.flatMap((d) => [
-      ['PFCOUNT', `${P}visitors:${d}`], ['GET', `${P}visits:${d}`], ['GET', `${P}rounds:${d}`],
-    ])
-    const r = await exec([...fixed, ...daily])
+    const perDay: Cmd[] = days.flatMap((d) => [['SCARD', `${P}dev:${d}`], ['PFCOUNT', `${P}visitors:${d}`]])
+    const r = await exec([...fixed, ...perDay])
 
-    const started = toMap(r[2]), completed = toMap(r[3])
-    const answered = toMap(r[4]), right = toMap(r[5])
-    const length = toMap(r[8])
-    const seen = toMap(r[9]), wrong = toMap(r[10])
+    const started = toMap(r[3]), completed = toMap(r[4])
+    const answered = toMap(r[5]), right = toMap(r[6]), revealed = toMap(r[7])
+    const length = toMap(r[10])
+    const seen = toMap(r[11]), wrong = toMap(r[12])
+    const dayVisits = Array.isArray(r[13]) ? r[13] : []
+    const dayRounds = Array.isArray(r[14]) ? r[14] : []
 
-    const roundIds = new Set([...Object.keys(started), ...Object.keys(answered)])
+    const roundIds = new Set([...Object.keys(started), ...Object.keys(answered), ...Object.keys(revealed)])
     const rounds = [...roundIds].map((id) => ({
       id, started: started[id] ?? 0, completed: completed[id] ?? 0,
-      answered: answered[id] ?? 0, right: right[id] ?? 0,
+      answered: answered[id] ?? 0, right: right[id] ?? 0, revealed: revealed[id] ?? 0,
     }))
 
     const questions = Object.entries(seen)
@@ -215,20 +234,20 @@ export async function GET(request: Request): Promise<Response> {
     return json({
       generatedAt: new Date(now).toISOString(),
       totals: {
-        visitors: Number(r[0]) || 0,
-        visits: Number(r[1]) || 0,
+        visitors: (Number(r[0]) || 0) + (Number(r[1]) || 0),
+        visits: Number(r[2]) || 0,
         roundsStarted: Object.values(started).reduce((s, n) => s + n, 0),
         roundsCompleted: Object.values(completed).reduce((s, n) => s + n, 0),
       },
       days: days.map((date, i) => ({
         date,
-        visitors: Number(r[fixed.length + i * 3]) || 0,
-        visits: Number(r[fixed.length + i * 3 + 1]) || 0,
-        rounds: Number(r[fixed.length + i * 3 + 2]) || 0,
+        visitors: (Number(r[fixed.length + i * 2]) || 0) + (Number(r[fixed.length + i * 2 + 1]) || 0),
+        visits: Number(dayVisits[i]) || 0,
+        rounds: Number(dayRounds[i]) || 0,
       })),
       rounds,
-      modes: toMap(r[6]),
-      play: toMap(r[7]),
+      modes: toMap(r[8]),
+      play: toMap(r[9]),
       avgLength: length.n ? length.sum / length.n : 0,
       questions,
       questionsTracked: Object.keys(seen).length,
