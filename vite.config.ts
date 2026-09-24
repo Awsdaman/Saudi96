@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import { analyticsDevPlugin } from './scripts/analytics-dev-plugin.mjs'
 import { songReviewPlugin } from './scripts/song-review-plugin.mjs'
 
 // اللعبة تُفتح بالنقر المزدوج على dist/index.html من القرص مباشرة.
@@ -8,7 +9,7 @@ import { songReviewPlugin } from './scripts/song-review-plugin.mjs'
 // السمتين type="module" و crossorigin من الصفحة.
 export default defineConfig({
   base: './',
-  plugins: [react(), songReviewPlugin()],
+  plugins: [react(), songReviewPlugin(), analyticsDevPlugin()],
   build: {
     modulePreload: false,
     cssCodeSplit: false,

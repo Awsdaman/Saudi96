@@ -1,0 +1,50 @@
+/**
+ * بديلٌ في الذاكرة لـ Upstash Redis — يحاكي شكل ردود واجهة pipeline
+ * (أعداد لـ INCR، نصوص لـ GET، مصفوفة مسطّحة لـ HGETALL) للأوامر التي
+ * يستعملها api/events.ts وحدها. للاختبارات وخادم التطوير، لا للإنتاج.
+ */
+export function createFakeRedis() {
+  const strings = new Map()
+  const hashes = new Map()
+  const sets = new Map()
+
+  const hash = (k) => hashes.get(k) ?? hashes.set(k, new Map()).get(k)
+  const set = (k) => sets.get(k) ?? sets.set(k, new Set()).get(k)
+  const incr = (k, by) => {
+    const v = Number(strings.get(k) ?? 0) + by
+    strings.set(k, String(v))
+    return v
+  }
+
+  function run(op, a) {
+    switch (op) {
+      case 'INCR': return incr(a[0], 1)
+      case 'INCRBY': return incr(a[0], Number(a[1]))
+      case 'GET': return strings.get(a[0]) ?? null
+      case 'EXPIRE': return 1
+      case 'HINCRBY': {
+        const h = hash(a[0])
+        const v = Number(h.get(a[1]) ?? 0) + Number(a[2])
+        h.set(a[1], String(v))
+        return v
+      }
+      case 'HGETALL': {
+        const h = hashes.get(a[0])
+        return h ? [...h].flat() : []
+      }
+      case 'PFADD': {
+        const s = set(a[0])
+        const before = s.size
+        for (const x of a.slice(1)) s.add(x)
+        return s.size > before ? 1 : 0
+      }
+      case 'PFCOUNT': return sets.get(a[0])?.size ?? 0
+      default: throw new Error(`fake-redis: unsupported ${op}`)
+    }
+  }
+
+  return {
+    exec: async (cmds) => cmds.map(([op, ...args]) => run(String(op).toUpperCase(), args.map(String))),
+    strings, hashes, sets,
+  }
+}

@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
+import { AdminDashboard } from './admin/AdminDashboard'
 import { CelebrationPopup } from './components/CelebrationPopup'
 import { TeamScoreboard } from './components/TeamScoreboard'
+import { answersOf, trackRoundEnd, trackRoundStart, trackVisit } from './game/analytics'
 import { applyDifficulty, ROUNDS, poolFor } from './game/content'
-import { AUDIENCE_CHANNEL, audienceUrl, isAudienceWindow } from './game/hostSync'
+import { AUDIENCE_CHANNEL, audienceUrl, isAdminHost, isAudienceWindow } from './game/hostSync'
 import type { AudienceMessage } from './game/hostSync'
 import { sourceColor } from './game/sourceTheme'
 import { loadPlayMode, loadSeen, markSeen, resetSeen, saveBest } from './game/storage'
@@ -29,6 +31,7 @@ interface LogoOutcome { known: number; total: number; missed: Entity[] }
 export default function App() {
   // تبويب الجمهور شجرة مكوّناتٍ مستقلّة تماماً — لا تشارك حالة أو
   // خطاطيف Game، فيبقى قرار الدور هنا بلا أثرٍ على قواعد الخطاطيف.
+  if (isAdminHost()) return <AdminDashboard />
   return isAudienceWindow() ? <AudienceView /> : <Game />
 }
 
@@ -98,7 +101,20 @@ function Game() {
     }
     seenKeyRef.current = seenKey
     start(roundId, title, applyDifficulty(pool, mode), count)
+    trackRoundStart(roundId, {
+      // الأغنية بلا نمط لعب أصلاً (تخمينٌ شفهي) — لا تُحسب في توزيع الأنماط
+      mode: roundId === 'songs' ? undefined : mode,
+      teams: !!teams, audience: audienceOpen, count: Math.min(count, pool.length),
+    })
   }
+
+  function startLogoCards(count: number) {
+    setLogoCount(count)
+    setView('logos')
+    trackRoundStart('logos-cards', { mode: 'hard', teams: !!teams, audience: audienceOpen, count })
+  }
+
+  useEffect(() => { trackVisit() }, [])
 
   function adjustScore(index: 0 | 1, delta: number) {
     setTeams((prev) => {
@@ -162,8 +178,7 @@ function Game() {
     // بالنمطين الآخرين يمرّ عبر مسار الاختيار من متعدد العادي مثل أي
     // جولة — نفس بنك الأسئلة (logoQuestions) الذي تستعيره «لعبتي» أصلاً.
     if (id === 'logos' && mode === 'hard') {
-      setLogoCount(count)
-      setView('logos')
+      startLogoCards(count)
       return
     }
     const meta = ROUNDS.find((r) => r.id === id)!
@@ -194,11 +209,14 @@ function Game() {
       const bestKey = state.roundId === 'logos' ? 'logos-mc' : state.roundId
       setIsRecord(saveBest(bestKey, state.score))
       if (teams) setCelebrating(true)
+      trackRoundEnd(state.roundId, true, answersOf(state.records))
     }
     next()
   }
 
   function goHome() {
+    // الخروج منتصف الجولة يُسجَّل بما أُجيب حتى لحظته، لا كجولةٍ مكتملة
+    if (state.phase === 'playing' && state.roundId) trackRoundEnd(state.roundId, false, answersOf(state.records))
     home()
     setLogoOutcome(null)
     setCelebrating(false)
@@ -213,11 +231,12 @@ function Game() {
         teams={teams}
         onAdjust={adjustScore}
         sendAudience={audienceOpen ? sendAudience : undefined}
-        onFinish={(known, total, missed) => {
+        onFinish={(known, total, missed, cards) => {
           setIsRecord(saveBest('logos', known))
           setLogoOutcome({ known, total, missed })
           setView('logoResults')
           if (teams) setCelebrating(true)
+          trackRoundEnd('logos-cards', true, cards.map((e) => ({ q: `card_${e.id}`, c: !missed.includes(e), r: 'logos-cards' })))
         }}
         onQuit={goHome}
       />
@@ -230,7 +249,7 @@ function Game() {
         <LogoResults
           {...logoOutcome}
           isRecord={isRecord}
-          onReplay={() => { setLogoOutcome(null); setView('logos') }}
+          onReplay={() => { setLogoOutcome(null); startLogoCards(logoCount) }}
           onHome={goHome}
         />
         {celebrating && teams && (

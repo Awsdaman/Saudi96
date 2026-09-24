@@ -13,7 +13,7 @@ const SEEN_KEY = 'logos-cards'
 
 interface Props {
   count: number
-  onFinish: (known: number, total: number, missed: Entity[]) => void
+  onFinish: (known: number, total: number, missed: Entity[], cards: Entity[]) => void
   onQuit: () => void
   teams?: [Team, Team] | null
   onAdjust?: (index: 0 | 1, delta: number) => void
@@ -56,7 +56,7 @@ export function LogoRound({ count, onFinish, onQuit, teams, onAdjust, sendAudien
     else missed.current.push(entity)
 
     if (isLast) {
-      onFinish(gotIt ? known + 1 : known, cards.length, missed.current)
+      onFinish(gotIt ? known + 1 : known, cards.length, missed.current, cards)
       return
     }
     setIndex((i) => i + 1)

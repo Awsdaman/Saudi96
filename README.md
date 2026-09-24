@@ -420,6 +420,34 @@ Re-check before any event you host with this. `npm run review:people` regenerate
 `public/people-review.html`, a contact sheet grouped by category — every portrait in this
 round was checked on it, which is how the wrong-person failures below were caught.
 
+## Admin dashboard & analytics
+
+Opening **`saudi96.vercel.app/admin`** shows a password-protected dashboard instead of the
+game (`vercel.json` rewrites `/admin` to the same page; a `saudi96-admin.*` host also works
+if one is ever added under Settings → Domains): unique visitors (total and per day, Riyadh time), rounds started and
+completed per category, accuracy per category, easy/medium/hard and team/solo/audience-screen
+usage, average round length, and the most-missed questions.
+
+- **Tracking** (`src/game/analytics.ts`) is anonymous: a random ID per browser in
+  `localStorage`, no names or personal data. One person on two devices counts as two
+  visitors. Nothing is sent from `file://`, the audience tab, or the admin site itself.
+- **Server** is one Vercel function, `api/events.ts`: `POST` records strictly validated
+  events, `GET` returns aggregates only with the `x-admin-password` header. Ten wrong
+  passwords from one address lock it out for 15 minutes.
+- **Storage** is Upstash Redis over its REST API (no SDK).
+
+One-time setup in the Vercel dashboard:
+
+1. **Storage** tab → create an **Upstash for Redis** database (free plan) → connect it to
+   this project. Vercel injects `KV_REST_API_URL` / `KV_REST_API_TOKEN` automatically.
+2. **Settings → Environment Variables** → add `ADMIN_PASSWORD` (Production) with a long
+   password of your choice.
+3. Redeploy (Deployments → ⋯ → Redeploy) so the new variables take effect.
+
+Locally, `npm run dev` serves the same function with an in-memory store
+(`scripts/analytics-dev-plugin.mjs`); open `http://localhost:5173/?admin`, password `dev`.
+Data resets when the dev server stops.
+
 ## Known gaps
 
 - **44 of 58 people have a portrait.** Six ministers (Culture, Sport, Communications,

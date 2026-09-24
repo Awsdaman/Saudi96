@@ -29,6 +29,7 @@ test('the background is defined once, in index.css — no screen carries its own
 test('every full-width screen keeps its content clear of the sadu frame', () => {
   const guarded = ['Home', 'Play', 'Results', 'CustomBuilder', 'LogoRound', 'AudienceView', 'TeamSetup', 'Credits']
   for (const name of guarded) assert.match(read(`src/screens/${name}.css`), /--frame-gutter/, `${name}.css ignores --frame-gutter`)
+  assert.match(read('src/admin/AdminDashboard.css'), /--frame-gutter/, 'the admin dashboard would sit on the frame')
   assert.match(read('src/components/TeamScoreboard.css'), /--frame-w/, 'the scoreboard would sit on the frame')
 })
 

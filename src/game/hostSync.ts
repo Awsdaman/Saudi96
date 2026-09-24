@@ -36,6 +36,22 @@ export function isAudienceWindow(): boolean {
   }
 }
 
+/**
+ * لوحة الإدارة على المسار /admin من الموقع نفسه (vercel.json يعيد توجيهه
+ * إلى الصفحة ذاتها)، أو من عنوانٍ مستقلّ إن أُضيف لاحقاً
+ * (saudi96-admin.vercel.app). البيانات محميّةٌ بكلمة المرور في الخادم،
+ * لا بهذا الفحص. محلياً أيضاً: ?admin على خادم التطوير.
+ */
+export function isAdminHost(): boolean {
+  try {
+    if (window.location.hostname.startsWith('saudi96-admin')) return true
+    if (window.location.pathname.replace(/\/+$/, '') === '/admin') return true
+    return import.meta.env.DEV && new URLSearchParams(window.location.search).has('admin')
+  } catch {
+    return false
+  }
+}
+
 export function audienceUrl(): string {
   const url = new URL(window.location.href)
   url.search = 'role=audience'
