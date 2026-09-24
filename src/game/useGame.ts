@@ -9,7 +9,7 @@ export function useGame() {
   const questionId = question?.id ?? ''
   const start = useCallback((roundId: GameRoundId, title: string, pool: readonly Question[], count: number) =>
     dispatch({ type: 'start', roundId, title, pool, count }), [])
-  const answer = useCallback((choice: number) => dispatch({ type: 'answer', questionId, choice }), [questionId])
+  const answer = useCallback((choice: number, discounted?: boolean) => dispatch({ type: 'answer', questionId, choice, discounted }), [questionId])
   const next = useCallback(() => dispatch({ type: 'next', questionId }), [questionId])
   const home = useCallback(() => dispatch({ type: 'home' }), [])
   const songAction = useCallback((type: 'song-clue' | 'song-reveal' | 'song-heard', songPhase: SongPhase) =>

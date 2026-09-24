@@ -1,32 +1,30 @@
-import type { Question, SongPhase } from './types'
-
-/** أقصى مضاعف يمكن بلوغه بالسلسلة المتتابعة */
-export const MAX_STREAK_BONUS = 5
+import type { Question } from './types'
 
 /**
- * نقاطٌ ثابتة موحَّدة — كانت تعتمد على تصنيف صعوبة السؤال (١٠٠-٤٠٠)،
- * فتبدو للاعب متفاوتةً بلا سبب واضح إذ لا يرى تصنيف الصعوبة أصلاً في
- * أي مكان. الآن قيمتان فقط في اللعبة كلها: سؤال اختيارٍ من متعدد
- * عادي، وتذكّر «خمّن الشعار» الحرّ بلا خيارات (أصعب، فنقاطه أعلى).
+ * نقطةٌ ثابتة واحدة لكل إجابة صحيحة، في كل جولةٍ وكل صيغة، بلا استثناء:
+ * اختيارٌ من متعدد، تذكّر «خمّن الشعار» الحرّ، وأيّ مرحلةٍ من مراحل
+ * «خمّن الأغنية». كانت تتفاوت (٣٠٠ أساسية × مضاعف سلسلة، ٥٠٠ للشعار
+ * الحرّ، ٣٠٠/١٥٠/٥٠ حسب مرحلة الأغنية) فبدت للاعب عشوائية التفاوت —
+ * نفس السؤال يمنح نقاطاً مختلفة بلا سببٍ ظاهر. رقمٌ واحد يُنهي الالتباس.
  */
-export const MC_POINTS = 300
-export const LOGO_RECALL_POINTS = 500
+export const POINTS = 300
 
-/** نقاط كل مرحلة في «خمّن الأغنية» — تتناقص كلما احتجت مقطعاً أطول */
-const SONG_PHASE_POINTS: Record<SongPhase, number> = { 1: 300, 2: 150, 3: 50 }
+/**
+ * إظهار الخيارات في السؤال المخفي (نمط متوسط/صعب) هو مخاطرةٌ اختيارية:
+ * تخمينٌ بلا خيارات (المستضيف يسأل شفهياً ويستعمل «اعرض لي الإجابة»
+ * وحده) يستحقّ النقطة الكاملة؛ طلب الخيارات على الشاشة يُنزلها إلى
+ * نصفها — فالكشف مخاطرةٌ، لا مجرّد توقيت.
+ */
+export const DISCOUNTED_POINTS = 150
 
-/** مضاعف السلسلة: يزيد ١٠٪ لكل إجابة صحيحة متتابعة حتى ٥٠٪ */
-export function streakMultiplier(streak: number): number {
-  return 1 + Math.min(streak, MAX_STREAK_BONUS) * 0.1
+/** النقاط النهائية لسؤال اختيارٍ من متعدد — كاملة، أو منصّفة إن أُظهرت الخيارات أولاً */
+export function scoreAnswer(discounted = false): number {
+  return discounted ? DISCOUNTED_POINTS : POINTS
 }
 
-/** النقاط النهائية لسؤال اختيارٍ من متعدد: قيمةٌ ثابتة، ومضاعف السلسلة فوقها. */
-export function scoreAnswer(streak: number): number {
-  return Math.round(MC_POINTS * streakMultiplier(streak))
-}
-
-export function scoreSong(phase: SongPhase, streak: number): number {
-  return Math.round(SONG_PHASE_POINTS[phase] * streakMultiplier(streak))
+/** النقاط النهائية لأي مرحلةٍ في «خمّن الأغنية» — ثابتة دائماً، بلا فرقٍ بين المراحل */
+export function scoreSong(): number {
+  return POINTS
 }
 
 /** خلط عشوائي (Fisher–Yates) — لا يعدّل المصفوفة الأصلية */

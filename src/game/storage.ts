@@ -47,25 +47,73 @@ export function saveLength(round: string, count: number) {
   }
 }
 
-const EASY_KEY = 'saudiknowledge.easyMode'
+const EASY_KEY = 'saudiknowledge.playMode'
 
 /**
- * نمط اللعب: سهلٌ (مع الخيارات) بدل صعبٍ (بدون خيارات) — يقرّره اللاعب
- * بعد اختيار التصنيف. في الجولات ذات الاختيار من متعدد يعني إظهار
- * الخيارات فوراً بدل إخفائها حتى تُطلَب؛ في «خمّن الشعار» يعني عرض
- * خياراتٍ للاختيار من بينها بدل بطاقات التذكّر الحرّ بلا خيارات.
+ * نمط اللعب — ثلاث درجات يقرّرها اللاعب بعد اختيار التصنيف:
+ *  سهل   — الخيارات ظاهرة فوراً، بمموّهاتها المعتادة.
+ *  متوسط — الخيارات نفسها، لكن مخفيّة حتى تُطلَب («أظهر الخيارات»).
+ *  صعب   — مخفيّة أيضاً، لكن بمموّهاتٍ أعسر (انظر content.ts، applyDifficulty).
+ * في «خمّن الشعار» تحديداً: سهل/متوسط اختيارٌ من متعدد (بتوقيتين
+ * مختلفين)، وصعب بطاقات التذكّر الحرّ بلا خيارات على الإطلاق — أصعب
+ * من أي خيارات مهما صُعِّبت، فلا حاجة لمموّهاتٍ أعسر هناك أصلاً.
+ * القيمة الافتراضية «متوسط» — أقرب لسلوك الإصدار السابق حين لم يكن
+ * هناك سوى مفتاحٍ ثنائي، افتراضه إخفاء الخيارات بمحتواها المعتاد.
  */
-export function loadEasyMode(): boolean {
+export function loadPlayMode(): 'easy' | 'medium' | 'hard' {
   try {
-    return localStorage.getItem(EASY_KEY) === '1'
+    const v = localStorage.getItem(EASY_KEY)
+    return v === 'easy' || v === 'medium' || v === 'hard' ? v : 'medium'
   } catch {
-    return false
+    return 'medium'
   }
 }
 
-export function saveEasyMode(value: boolean) {
+export function savePlayMode(mode: 'easy' | 'medium' | 'hard') {
   try {
-    localStorage.setItem(EASY_KEY, value ? '1' : '0')
+    localStorage.setItem(EASY_KEY, mode)
+  } catch {
+    // التخزين قد يكون معطّلاً — لا يمنع اللعب
+  }
+}
+
+const SEEN_KEY = 'saudiknowledge.seen'
+
+function readSeen(): Record<string, string[]> {
+  try {
+    return JSON.parse(localStorage.getItem(SEEN_KEY) ?? '{}') as Record<string, string[]>
+  } catch {
+    return {}
+  }
+}
+
+/**
+ * أسئلة سبق طرحها لهذا المصدر (جولة، أو تركيبة «لعبتي») — تُستبعد من
+ * الاختيار العشوائي حتى تنفد كلّها، فلا يتكرّر سؤالٌ قبل أن يمرّ البنك
+ * كلّه، مهما لُعبت الفئة نفسها من المرّات.
+ */
+export function loadSeen(key: string): Set<string> {
+  return new Set(readSeen()[key] ?? [])
+}
+
+export function markSeen(key: string, ids: readonly string[]) {
+  if (!ids.length) return
+  try {
+    const all = readSeen()
+    const merged = Array.from(new Set([...(all[key] ?? []), ...ids]))
+    localStorage.setItem(SEEN_KEY, JSON.stringify({ ...all, [key]: merged }))
+  } catch {
+    // التخزين قد يكون معطّلاً — لا يمنع اللعب
+  }
+}
+
+/** يُستدعى حين ينفد البنك غير المشاهَد فيبدأ الدورة من جديد */
+export function resetSeen(key: string) {
+  try {
+    const all = readSeen()
+    if (!(key in all)) return
+    delete all[key]
+    localStorage.setItem(SEEN_KEY, JSON.stringify(all))
   } catch {
     // التخزين قد يكون معطّلاً — لا يمنع اللعب
   }

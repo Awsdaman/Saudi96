@@ -29,7 +29,9 @@ export function SongPlay({
 }: Props) {
   const [howTo, setHowTo] = useState(false)
   const [failed, setFailed] = useState(false)
-  const [awarded, setAwarded] = useState(false)
+  // نافذة توزيع النقاط تنتظر ضغطة «التالي» بدل الظهور فوراً عند الحكم —
+  // وإلا حجبت اسم الأغنية والفنان قبل أن يراهما أحد.
+  const [awarding, setAwarding] = useState(false)
   const { song } = question
   const phase = state.songPhase
   const revealed = state.songRevealed
@@ -57,11 +59,13 @@ export function SongPlay({
   // بعد المرحلة الثالثة (المقطع المشهور) لا مقطع تالٍ — الزرّ هناك
   // يستسلم للسؤال بدل أن ينتقل، فيحمل نصّاً مختلفاً عن مرحلتَي التقدّم
   const isLastPhase = phase === 3
-  const nextPhasePoints = !isLastPhase ? scoreSong((phase + 1) as SongPhase, state.streak) : null
-  const src = phase === 1 ? song.clips!.intro3 : phase === 2 ? song.clips!.intro8 : song.clips!.famous
   const firstLength = (song.intro3End ?? 3) - (song.intro3Start ?? 0)
   const secondLength = (song.intro8End ?? 8) - (song.intro8Start ?? 0)
-  const duration = phase === 1 ? firstLength : phase === 2 ? secondLength : song.famousEnd! - song.famousStart!
+  const famousLength = song.famousEnd! - song.famousStart!
+  // بعد الكشف يُشغَّل المقطع المشهور دائماً، أيّاً كانت مرحلة التخمين
+  // التي عرفها فيها اللاعب — حتى من عرفها من أول ثلاث ثوانٍ يسمعه.
+  const src = revealed ? song.clips!.famous : phase === 1 ? song.clips!.intro3 : phase === 2 ? song.clips!.intro8 : song.clips!.famous
+  const duration = revealed ? famousLength : phase === 1 ? firstLength : phase === 2 ? secondLength : famousLength
   const labels = [
     !song.intro3Start && firstLength === 3 ? 'أول 3 ثوانٍ' : `المقطع الأول · ${firstLength.toFixed(2).replace(/\.?0+$/, '')} ث`,
     !song.intro8Start && secondLength === 8 ? 'أول 8 ثوانٍ' : `المقطع الثاني · ${secondLength.toFixed(2).replace(/\.?0+$/, '')} ث`,
@@ -73,7 +77,7 @@ export function SongPlay({
       if (e.key === 'Escape' && !howTo) { e.preventDefault(); onQuit() }
     }}>
       <div className="ask">
-        <ScoreBar index={state.index} total={state.questions.length} score={state.score} streak={state.streak}
+        <ScoreBar index={state.index} total={state.questions.length} score={state.score}
           roundTitle={state.title} itemLabel={state.roundId === 'songs' ? 'أغنية' : 'سؤال'} />
         <h1 className="prompt">{question.prompt}</h1>
         <ol className="song-phases" aria-label="مراحل التخمين">
@@ -85,9 +89,9 @@ export function SongPlay({
           ))}
         </ol>
 
-        {!revealed && <p className="song-potential"><strong className="ltr">{scoreSong(phase, state.streak)}</strong> نقطة</p>}
-        <SongAudio key={`${question.id}-${phase}`} src={src} duration={duration}
-          enabled={!revealed && !howTo} onHeard={() => onAction('song-heard', phase)} onError={setFailed} />
+        {!revealed && <p className="song-potential"><strong className="ltr">{scoreSong()}</strong> نقطة</p>}
+        <SongAudio key={`${question.id}-${phase}-${revealed}`} src={src} duration={duration}
+          enabled={!howTo} onHeard={() => onAction('song-heard', phase)} onError={setFailed} />
 
         {!revealed ? (
           <div className="song-decision">
@@ -96,12 +100,7 @@ export function SongPlay({
                 onClick={() => onAction('song-reveal', phase)}>عرفت الأغنية</button>
               <button className="btn btn-quiet song-next-btn" disabled={!state.songHeard || howTo}
                 onClick={() => { setFailed(false); onAction('song-clue', phase) }}>
-                {isLastPhase ? 'لم أعرفها' : (
-                  <>
-                    المقطع التالي
-                    <small className="song-next-hint">تنخفض النقاط إلى <span className="ltr">{nextPhasePoints}</span></small>
-                  </>
-                )}
+                {isLastPhase ? 'لم أعرفها' : 'المقطع التالي'}
               </button>
             </div>
             {failed && <button className="btn btn-quiet" onClick={onUnavailable}>تجاوز الأغنية بلا عقوبة</button>}
@@ -122,7 +121,7 @@ export function SongPlay({
                     : record?.correct ? <>إجابة صحيحة · <span className="ltr">+{record.points}</span> نقطة</>
                     : 'لم تعرفها هذه المرة · بلا نقاط'}
                 </p>
-                <button className="btn btn-primary" onClick={onNext}>
+                <button className="btn btn-primary" onClick={() => (teams && record?.correct ? setAwarding(true) : onNext())}>
                   {state.index + 1 === state.questions.length ? 'النتيجة' : 'التالي'}
                 </button>
               </>
@@ -136,14 +135,12 @@ export function SongPlay({
       </div>
       {howTo && <HowToModal title={meta.title} steps={meta.howTo} onClose={() => setHowTo(false)} />}
 
-      {teams && record?.correct && !awarded && (
+      {awarding && teams && record && (
         <AwardPopup
           points={record.points}
           teams={teams}
-          // توزيع النقاط يُنهي هذه الأغنية — ينتقل للتالي على طول، بلا
-          // ضغطة «التالي» إضافية بعد إغلاق النافذة.
-          onAward={(i) => { onAdjust?.(i, record.points); setAwarded(true); onNext() }}
-          onSkip={() => { setAwarded(true); onNext() }}
+          onAward={(i) => { onAdjust?.(i, record.points); setAwarding(false); onNext() }}
+          onSkip={() => { setAwarding(false); onNext() }}
         />
       )}
     </main>

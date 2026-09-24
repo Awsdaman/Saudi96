@@ -27,9 +27,18 @@
 }
 
 .verdict-points {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
   color: var(--gold);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
+}
+
+.verdict-discount {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 0.82rem;
 }
 
 .verdict-text {

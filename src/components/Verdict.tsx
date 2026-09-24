@@ -6,6 +6,8 @@ interface Props {
   /** نصّ الإجابة الصحيحة */
   answer: string
   points: number
+  /** أظهر اللاعب الخيارات قبل أن يجيب — نقاطٌ منصَّفة، ويُقال له لماذا */
+  discounted?: boolean
   explanation?: string
   /** آخر سؤال في الجولة */
   last: boolean
@@ -25,7 +27,7 @@ interface Props {
  * تُكلّف مئة وسبعة وعشرين كيلوبايت في حزمة تُفتح من القرص.
  */
 export function Verdict({
-  show, correct, answer, points, explanation, last, onNext,
+  show, correct, answer, points, discounted, explanation, last, onNext,
 }: Props) {
   if (!show) return null
 
@@ -45,6 +47,7 @@ export function Verdict({
       {points > 0 && (
         <span className="verdict-points">
           <span className="ltr">+{points.toLocaleString('en-US')}</span>
+          {discounted && <small className="verdict-discount">نقاطٌ منصَّفة — أُظهرت الخيارات</small>}
         </span>
       )}
 

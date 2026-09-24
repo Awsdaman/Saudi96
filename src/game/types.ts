@@ -58,12 +58,23 @@ export interface ChoiceQuestion {
   reveal?: RevealKind
   options: string[]
   answerIndex: number
+  /**
+   * خياراتٌ أعسر لنمط اللعب الصعب — مموّهاتٌ أقرب للإجابة الصحيحة (اسمٌ
+   * أولٌ نفسه بعائلةٍ مختلفة، رقمٌ قريب، حقيقةٌ حقيقية من سؤالٍ آخر بنفس
+   * الشكل...). تبقى فارغة حيث لا معنى لتصعيبها (الأغنية بلا خيارات
+   * أصلاً)، فيسقط نمط اللعب الصعب حينها إلى خيارات options العادية.
+   */
+  hardOptions?: string[]
+  hardAnswerIndex?: number
   /** يظهر بعد الإجابة */
   explanation?: string
   difficulty: Difficulty
   category?: string
   sourceUrl?: string
 }
+
+/** نمط اللعب: يتحكّم بتوقيت ظهور الخيارات، وحدّة تصعيبها. */
+export type PlayMode = 'easy' | 'medium' | 'hard'
 
 /** جهة حكومية أو شركة أو مشروع — مصدر أسئلة جولة الشعارات */
 export interface Entity {

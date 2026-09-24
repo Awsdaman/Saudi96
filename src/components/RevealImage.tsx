@@ -23,6 +23,13 @@ export function RevealImage({ src, kind, revealed, plate = 'dark', label, frame 
   // فارغ ما دامت الصورة هي اللغز: وصفها قبل الكشف يُفسده
   const alt = revealed && label ? label : ''
   const [expanded, setExpanded] = useState(false)
+  // حركتا الانقشاع والتّوسّع مدّتهما ثابتة في CSS، بلا علاقة بتحميل
+  // الصورة فعلياً من الشبكة — على اتصالٍ بطيء (كما على فيرسل بعيداً عن
+  // الجهاز) كانت الحركة تشتغل على صورةٍ لم تصل بعد فتظهر فجأة منتصف
+  // الحركة، أشبه بتقطّعٍ أو تأخّر. الآن تبدأ الحركة بعد اكتمال التحميل
+  // فقط (onLoad)، وقبله تبقى شفّافة بلا أي حركة.
+  const [loaded, setLoaded] = useState(false)
+  const onLoad = () => setLoaded(true)
   // زرّ الحجم الكامل يظهر بعد اكتمال حركة الكشف الذاتية (أو فوراً حين
   // لا حركة أصلاً) — لا قبلها، وإلا فتح ثغرةً تكشف اللغز قبل أوانه.
   // يُعاد ضبطه تلقائياً عند كل سؤال جديد لأن Play.tsx يُركِّب هذا
@@ -62,13 +69,15 @@ export function RevealImage({ src, kind, revealed, plate = 'dark', label, frame 
     // الانقشاع حركةٌ ذاتية بمدّةٍ ثابتة (CSS)، لا مرتبطة بمؤقّت اللعبة —
     // key={src} يعيد تشغيلها من الصفر عند كل سؤال جديد.
     return (
-      <div className={cls}>
+      <div className={`${cls} ${loaded ? '' : 'reveal-loading'}`}>
         <img
           key={src}
-          className={`reveal-img ${revealed ? '' : 'reveal-blur-anim'}`}
+          className={`reveal-img ${loaded && !revealed ? 'reveal-blur-anim' : ''}`}
           src={src}
           alt={alt}
-          style={revealed ? { filter: 'none' } : undefined}
+          style={!loaded ? { opacity: 0 } : revealed ? { filter: 'none' } : undefined}
+          onLoad={onLoad}
+          onError={onLoad}
           onAnimationEnd={() => setSettled(true)}
         />
         {expandButton}
@@ -81,13 +90,15 @@ export function RevealImage({ src, kind, revealed, plate = 'dark', label, frame 
     // تبدأ من تفصيل مقصوص ثم تتّسع الصورة — حركةٌ ذاتية بمدّةٍ ثابتة،
     // لا مرتبطة بمؤقّت اللعبة (لا مؤقّت أصلاً بعد اليوم)
     return (
-      <div className={`${cls} reveal-clip`}>
+      <div className={`${cls} reveal-clip ${loaded ? '' : 'reveal-loading'}`}>
         <img
           key={src}
-          className={`reveal-img ${revealed ? '' : 'reveal-zoom-anim'}`}
+          className={`reveal-img ${loaded && !revealed ? 'reveal-zoom-anim' : ''}`}
           src={src}
           alt={alt}
-          style={revealed ? { transform: 'scale(1)' } : undefined}
+          style={!loaded ? { opacity: 0 } : revealed ? { transform: 'scale(1)' } : undefined}
+          onLoad={onLoad}
+          onError={onLoad}
           onAnimationEnd={() => setSettled(true)}
         />
         {expandButton}
@@ -97,8 +108,15 @@ export function RevealImage({ src, kind, revealed, plate = 'dark', label, frame 
   }
 
   return (
-    <div className={cls}>
-      <img className="reveal-img" src={src} alt={alt} />
+    <div className={`${cls} ${loaded ? '' : 'reveal-loading'}`}>
+      <img
+        className="reveal-img"
+        src={src}
+        alt={alt}
+        style={!loaded ? { opacity: 0 } : undefined}
+        onLoad={onLoad}
+        onError={onLoad}
+      />
       {expandButton}
       {lightbox}
     </div>

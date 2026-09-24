@@ -7,18 +7,18 @@ import { ROUNDS, poolFor } from '../game/content'
 import { DEFAULT_ICON_TILE, iconTileUrl, ROUND_THEME, tapestryUrl } from '../game/roundTheme'
 import {
   loadBest,
-  loadEasyMode,
   loadLength,
-  saveEasyMode,
+  loadPlayMode,
+  savePlayMode,
   saveLength,
 } from '../game/storage'
-import type { RoundId } from '../game/types'
+import type { PlayMode, RoundId } from '../game/types'
 import './Home.css'
 
 const INTRO_KEY = 'saudiknowledge.introShown'
 
 interface Props {
-  onStart: (id: RoundId, count: number, easy: boolean) => void
+  onStart: (id: RoundId, count: number, mode: PlayMode) => void
   onCustom: () => void
   onCredits: () => void
 }
@@ -44,9 +44,8 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
   const [customMode, setCustomMode] = useState(false)
   const [customText, setCustomText] = useState('')
   const [howTo, setHowTo] = useState(false)
-  // نمط اللعب: سهلٌ (مع الخيارات) أو صعبٌ (بدون خيارات) — انظر التعليق
-  // في storage.ts لمعناه في كل نوع جولة.
-  const [easyMode, setEasyMode] = useState(loadEasyMode)
+  // نمط اللعب: سهل/متوسط/صعب — انظر التعليق في storage.ts لمعناه في كل نوع جولة.
+  const [playMode, setPlayMode] = useState(loadPlayMode)
   // تظهر مرّة واحدة عند فتح الموقع (لا عند كل رجوعٍ إلى الرئيسية أثناء
   // نفس الجلسة) — sessionStorage يُنسى بإغلاق التبويب، فتظهر من جديد
   // في الجلسة التالية.
@@ -67,9 +66,9 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
     }
   }
 
-  function chooseMode(easy: boolean) {
-    setEasyMode(easy)
-    saveEasyMode(easy)
+  function chooseMode(mode: PlayMode) {
+    setPlayMode(mode)
+    savePlayMode(mode)
   }
 
   const shownId = previewId ?? selectedId
@@ -137,7 +136,7 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
   function confirm() {
     if (!selectedId || poolSize === 0) return
     saveLength(selectedId, count)
-    onStart(selectedId, Math.min(count, poolSize), easyMode)
+    onStart(selectedId, Math.min(count, poolSize), playMode)
   }
 
   const rows: Row[] = ROUNDS.map((r) => ({
@@ -272,37 +271,47 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
                 </div>
               </div> : <p className="song-draft-note">الأغاني قيد التجهيز. اختر المقطع المشهور لكل أغنية في صفحة المراجعة لتصبح جاهزة للعب.</p>}
 
-              {/* لا معنى له في الأغنية (تخمين شفهي ذاتي الحكم) — في كل
-                  جولةٍ أخرى يقرّر إظهار الخيارات فوراً أو إخفاءها حتى
-                  تُطلَب، وفي الشعار تحديداً يبدّل بين بطاقات التذكّر
-                  الحرّ (بلا خيارات) وصيغة الاختيار من متعدد. */}
+              {/* لا معنى له في الأغنية (تخمين شفهي ذاتي الحكم). في كل جولةٍ
+                  أخرى: سهل/متوسط يقرّران إظهار الخيارات فوراً أو إخفاءها حتى
+                  تُطلَب، وصعب يزيد مموّهاتٍ أعسر فوق الإخفاء. في الشعار
+                  تحديداً يبقى صعب بطاقات التذكّر الحرّ بلا خيارات على
+                  الإطلاق — أعسر من أي خياراتٍ مهما صُعِّبت. */}
               {poolSize > 0 && selectedId !== 'songs' && (
                 <div className="setup-block">
                   <h3 className="setup-h3">نمط اللعب</h3>
                   <div className="setup-chips">
                     <button
-                      className={`setup-chip ${easyMode ? 'is-on' : ''}`}
-                      onClick={() => chooseMode(true)}
-                      aria-pressed={easyMode}
+                      className={`setup-chip ${playMode === 'easy' ? 'is-on' : ''}`}
+                      onClick={() => chooseMode('easy')}
+                      aria-pressed={playMode === 'easy'}
                     >
                       <span className="chip-dot" aria-hidden="true" />
                       <span className="chip-label">
                         سهل
-                        <small className="chip-sub">
-                          {selectedId === 'logos' ? 'اختيارٌ من متعدد' : 'الخيارات ظاهرة دائماً'}
-                        </small>
+                        <small className="chip-sub">الخيارات ظاهرة دائماً</small>
                       </span>
                     </button>
                     <button
-                      className={`setup-chip ${!easyMode ? 'is-on' : ''}`}
-                      onClick={() => chooseMode(false)}
-                      aria-pressed={!easyMode}
+                      className={`setup-chip ${playMode === 'medium' ? 'is-on' : ''}`}
+                      onClick={() => chooseMode('medium')}
+                      aria-pressed={playMode === 'medium'}
+                    >
+                      <span className="chip-dot" aria-hidden="true" />
+                      <span className="chip-label">
+                        متوسط
+                        <small className="chip-sub">الخيارات مخفية حتى تُطلَب — طلبها ينصّف النقاط</small>
+                      </span>
+                    </button>
+                    <button
+                      className={`setup-chip ${playMode === 'hard' ? 'is-on' : ''}`}
+                      onClick={() => chooseMode('hard')}
+                      aria-pressed={playMode === 'hard'}
                     >
                       <span className="chip-dot" aria-hidden="true" />
                       <span className="chip-label">
                         صعب
                         <small className="chip-sub">
-                          {selectedId === 'logos' ? 'بلا خيارات — تذكّرٌ حرّ' : 'الخيارات مخفية حتى تُطلَب'}
+                          {selectedId === 'logos' ? 'بلا خيارات — تذكّرٌ حرّ' : 'خياراتٌ أعسر ومخفية — طلبها ينصّف النقاط'}
                         </small>
                       </span>
                     </button>

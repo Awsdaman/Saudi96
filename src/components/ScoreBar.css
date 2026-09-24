@@ -29,12 +29,6 @@
   margin-inline-start: auto;
 }
 
-.chip-streak {
-  color: var(--gold);
-  border-color: color-mix(in srgb, var(--gold) 45%, transparent);
-  background: color-mix(in srgb, var(--gold) 10%, transparent);
-}
-
 .round-track {
   height: 0.625rem;
   border-radius: 999px;

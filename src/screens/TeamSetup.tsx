@@ -67,6 +67,12 @@ export function TeamSetup({ onStart, onSkip }: Props) {
         <button className="btn btn-primary teamsetup-start" type="submit">ابدأ</button>
         <button className="btn-link teamsetup-skip" type="button" onClick={onSkip}>لعب بلا فرق</button>
       </form>
+
+      <p className="teamsetup-credits">
+        <span>الفكرة والتنفيذ: أوس دمنهوري</span>
+        <span>التصميم: أحمد خياط</span>
+        <span>التدقيق والمراجعة: عمرو الحربي</span>
+      </p>
     </div>
   )
 }

@@ -3,10 +3,13 @@ import { AwardPopup } from '../components/AwardPopup'
 import { HowToModal } from '../components/HowToModal'
 import { LogoCard } from '../components/LogoCard'
 import { ROUNDS, logoCards } from '../game/content'
-import { LOGO_RECALL_POINTS, shuffle } from '../game/engine'
+import { POINTS, shuffle } from '../game/engine'
 import type { AudienceMessage } from '../game/hostSync'
+import { loadSeen, markSeen, resetSeen } from '../game/storage'
 import type { Entity, Team } from '../game/types'
 import './LogoRound.css'
+
+const SEEN_KEY = 'logos-cards'
 
 interface Props {
   count: number
@@ -18,7 +21,23 @@ interface Props {
 }
 
 export function LogoRound({ count, onFinish, onQuit, teams, onAdjust, sendAudience }: Props) {
-  const cards = useMemo(() => shuffle(logoCards()).slice(0, count), [count])
+  const cards = useMemo(() => {
+    const all = logoCards()
+    const seen = loadSeen(SEEN_KEY)
+    let pool = all.filter((e) => !seen.has(e.id))
+    if (pool.length < count) {
+      resetSeen(SEEN_KEY)
+      pool = all
+    }
+    return shuffle(pool).slice(0, count)
+  }, [count])
+  // تُعلَّم البطاقات المختارة «مشاهَدة» فور بدء الجولة — أثرٌ جانبي، فمكانه
+  // تأثيرٌ لا useMemo (الذي قد يُستدعى مرّتين في StrictMode بلا ضمان
+  // استقرار قيمته المُعادة إن أحدث أثراً جانبياً بداخله).
+  useEffect(() => {
+    markSeen(SEEN_KEY, cards.map((e) => e.id))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cards])
   const meta = ROUNDS.find((r) => r.id === 'logos')!
   const [howTo, setHowTo] = useState(false)
   const [index, setIndex] = useState(0)
@@ -30,7 +49,7 @@ export function LogoRound({ count, onFinish, onQuit, teams, onAdjust, sendAudien
 
   const entity = cards[index]
   const isLast = index + 1 >= cards.length
-  const points = entity ? LOGO_RECALL_POINTS : 0
+  const points = entity ? POINTS : 0
 
   function advance(gotIt: boolean) {
     if (gotIt) setKnown((k) => k + 1)

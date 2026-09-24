@@ -6,7 +6,7 @@ import peopleRaw from '../data/people.json'
 import triviaRaw from '../data/trivia.json'
 import songsRaw from '../data/songs.json'
 import { shuffle } from './engine'
-import type { Difficulty, Entity, Question, RoundMeta, Song, SongQuestion } from './types'
+import type { Difficulty, Entity, PlayMode, Question, RoundMeta, Song, SongQuestion } from './types'
 
 export const songs = songsRaw as Song[]
 
@@ -69,6 +69,12 @@ function optionsFor<T>(correct: T, pool: readonly T[], label: (x: T) => string):
   return { options, answerIndex: 0 } // buildRound يتكفّل بالخلط لاحقاً
 }
 
+/** خيارات النمط الصعب — نفس المنطق، من مجموعةٍ أضيق (أقرب شبهاً للإجابة) */
+function hardOptionsFor<T>(correct: T, pool: readonly T[], label: (x: T) => string): { hardOptions: string[]; hardAnswerIndex: number } {
+  const { options, answerIndex } = optionsFor(correct, pool, label)
+  return { hardOptions: options, hardAnswerIndex: answerIndex }
+}
+
 /** صعوبة الجهة حسب شهرتها التقريبية */
 export function entityDifficulty(e: Entity): Difficulty {
   if (e.type === 'commission') return 4
@@ -118,6 +124,11 @@ export function landmarkQuestions(): Question[] {
   return landmarks.map((l) => {
     const sameCat = landmarks.filter((x) => x.category === l.category)
     const pool = sameCat.length >= 4 ? sameCat : landmarks
+    // النمط الصعب: مموّهاتٌ من المنطقة والتصنيف نفسيهما إن كفت — معلمان
+    // في المنطقة نفسها أصعب تمييزاً من معلمٍ بعيد من تصنيفٍ مختلف كلياً.
+    const sameRegionCat = landmarks.filter((x) => x.regionAr === l.regionAr && x.category === l.category)
+    const sameRegion = landmarks.filter((x) => x.regionAr === l.regionAr)
+    const hardPool = sameRegionCat.length >= 4 ? sameRegionCat : sameRegion.length >= 4 ? sameRegion : pool
     const base = {
       id: `lmk_${l.id}`,
       round: 'landmarks' as const,
@@ -125,6 +136,7 @@ export function landmarkQuestions(): Question[] {
       category: l.category,
       explanation: l.noteAr,
       ...optionsFor(l, pool, (x) => x.nameAr),
+      ...hardOptionsFor(l, hardPool, (x) => x.nameAr),
     }
     return l.image
       ? { ...base, prompt: 'ما هذا المعلم؟', image: l.image, reveal: 'zoom' as const }
@@ -144,6 +156,19 @@ function cityOptionsFor(correctCity: string): { options: string[]; answerIndex: 
   return { options: [correctCity, ...shuffle(others).slice(0, 3)], answerIndex: 0 }
 }
 
+/**
+ * النمط الصعب لسؤال العاصمة: مموّهاتٌ من المدن الحقيقية غير العواصم
+ * حصراً — عاصمةٌ أخرى تُستبعَد بمعرفة عواصم البقية وحدها، أمّا مدينةٌ
+ * حقيقية ليست عاصمة أحد فتحتاج معرفةً فعلية لا استبعاداً.
+ */
+const nonCapitalCities = regions.flatMap((r) => r.otherCitiesAr)
+
+function cityHardOptionsFor(correctCity: string): { hardOptions: string[]; hardAnswerIndex: number } {
+  const others = nonCapitalCities.filter((c) => c !== correctCity)
+  const pool = others.length >= 3 ? others : allCities.filter((c) => c !== correctCity)
+  return { hardOptions: [correctCity, ...shuffle(pool).slice(0, 3)], hardAnswerIndex: 0 }
+}
+
 /** جولة المناطق — عواصم المناطق، وصورة المنطقة إن وُجدت */
 export function regionQuestions(): Question[] {
   const capitals: Question[] = regions.map((r) => ({
@@ -154,6 +179,7 @@ export function regionQuestions(): Question[] {
     category: 'عواصم المناطق',
     explanation: r.noteAr,
     ...cityOptionsFor(r.capitalAr),
+    ...cityHardOptionsFor(r.capitalAr),
   }))
 
   const photos: Question[] = regions
@@ -168,9 +194,27 @@ export function regionQuestions(): Question[] {
       category: 'مشاهد المناطق',
       explanation: `${r.nameAr} — ${r.noteAr}`,
       ...optionsFor(r, regions, (x) => x.nameAr),
+      ...hardOptionsFor(r, regions, (x) => x.nameAr),
     }))
 
   return [...capitals, ...photos]
+}
+
+/**
+ * تصنيفٌ تقريبي لطراز كل طبق — يُستعمَل حصراً لتضييق مموّهات النمط
+ * الصعب (طبق أرزٍّ مع أطباق أرزّ أخرى أصعب تمييزاً من طبق خبزٍ بعيد
+ * الشبه)، لا لأي غرضٍ آخر في اللعبة.
+ */
+const DISH_STYLE: Record<string, 'rice' | 'bread' | 'other'> = {
+  saleeg: 'rice', 'madini-rice': 'rice', 'hassawi-rice': 'rice', haneeth: 'rice',
+  sayadiyah: 'rice', kubaibat: 'rice', mlaihiyya: 'rice',
+  marqooq: 'bread', ruqsh: 'bread', muqanah: 'bread',
+}
+
+function dishHardPool(d: Dish): readonly Dish[] {
+  const style = DISH_STYLE[d.id] ?? 'other'
+  const same = dishes.filter((x) => x.id !== d.id && (DISH_STYLE[x.id] ?? 'other') === style)
+  return same.length >= 3 ? same : dishes
 }
 
 /** جولة الأطباق — المطابقة بين المنطقة وطبقها الرسمي، وصورة الطبق إن وُجدت */
@@ -183,6 +227,7 @@ export function dishQuestions(): Question[] {
     category: 'أطباق المناطق',
     explanation: `${d.nameAr} — ${d.descAr}`,
     ...optionsFor(d, dishes, (x) => x.nameAr),
+    ...hardOptionsFor(d, dishHardPool(d), (x) => x.nameAr),
   }))
 
   const photos: Question[] = dishes
@@ -197,9 +242,36 @@ export function dishQuestions(): Question[] {
       category: 'صور الأطباق',
       explanation: `${d.nameAr} — الطبق الرسمي لمنطقة ${d.regionAr}`,
       ...optionsFor(d, dishes, (x) => x.nameAr),
+      ...hardOptionsFor(d, dishHardPool(d), (x) => x.nameAr),
     }))
 
   return [...pairings, ...photos]
+}
+
+/**
+ * النمط الصعب — حصراً للأسئلة التي إجابتها عددٌ صحيحٌ بسيط («كم دولة
+ * تشترك مع السعودية بحدود برية؟» = ٧): مموّهاتٌ أقرب رقمياً (٦،٨،٥،٩...)
+ * بدل خيارات السؤال الأصلية المتباعدة أحياناً. جُرِّبت أولاً استعارة
+ * إجاباتٍ صحيحةٍ من أسئلةٍ أخرى بالتصنيف نفسه، فجاءت مموّهاتٌ لا معنى
+ * لها كخيار («صحراوي حار» أمام سؤال العاصمة) لغياب تصنيفٍ دلاليٍّ أدقّ
+ * من «التصنيف» العام في البيانات؛ الأمان أولى من التغطية الكاملة هنا،
+ * فبقيت الأسئلة غير العددية بخياراتها المعتادة في كل الأنماط.
+ */
+function triviaHardOptions(t: Trivia): { hardOptions: string[]; hardAnswerIndex: number } | Record<string, never> {
+  const correct = t.options[t.answerIndex]
+  if (!/^\d+$/.test(correct.trim())) return {}
+  const n = Number(correct)
+  const used = new Set(t.options.map((o) => Number(o)).filter((x) => !Number.isNaN(x)))
+  const picked: number[] = []
+  for (const d of [1, -1, 2, -2, 3, -3, 4, -4]) {
+    if (picked.length >= 3) break
+    const cand = n + d
+    if (cand < 0 || used.has(cand) || picked.includes(cand)) continue
+    picked.push(cand)
+    used.add(cand)
+  }
+  if (picked.length < 3) return {}
+  return { hardOptions: [correct, ...picked.map(String)], hardAnswerIndex: 0 }
 }
 
 /** جولة الأسئلة المعرفية — من حقيبة البحث */
@@ -214,6 +286,7 @@ export function triviaQuestions(): Question[] {
     category: t.category,
     explanation: t.explanation,
     sourceUrl: t.sourceUrl,
+    ...triviaHardOptions(t),
   }))
 }
 
@@ -253,6 +326,46 @@ function factExplanation(p: Person): string {
   return `${p.nameAr} — ${p.roleAr} منذ ${p.since}`
 }
 
+/** ألقابٌ تتقدّم الاسم الشخصي بدل أن تكون جزءاً منه */
+const PERSON_TITLES = new Set(['الأمير', 'الأميرة', 'الملك', 'الملكة'])
+
+/** يفصل الاسم إلى «شخصي» (مع لقبه إن وُجد) و«عائلي/نسب» — انظر personNameHardOptions */
+function splitPersonName(name: string): { given: string; family: string } {
+  const tokens = name.split(' ')
+  let i = 0
+  while (i < tokens.length - 1 && PERSON_TITLES.has(tokens[i])) i++
+  return { given: tokens.slice(0, i + 1).join(' '), family: tokens.slice(i + 1).join(' ') }
+}
+
+/**
+ * النمط الصعب لسؤال الصورة: الاسم الشخصي نفسه مع نسبٍ/عائلةٍ من أشخاصٍ
+ * حقيقيين آخرين — تركيبةٌ مختلَقة (ريانة + هوساوي بدل برناوي) من
+ * جزأين حقيقيين، لا اسمٌ مزيَّف بالكامل ولا حقيقةٌ خاطئة تُقال عن أحد.
+ */
+function personNameHardOptions(p: Person, pool: readonly Person[]): { hardOptions: string[]; hardAnswerIndex: number } {
+  const { given, family } = splitPersonName(p.nameAr)
+  const realNames = new Set(people.map((x) => x.nameAr))
+  const familyPool = (src: readonly Person[]) =>
+    shuffle(Array.from(new Set(
+      src.filter((x) => x.id !== p.id).map((x) => splitPersonName(x.nameAr).family).filter((f) => f && f !== family),
+    )))
+
+  const picked: string[] = []
+  for (const fam of [...familyPool(pool), ...familyPool(people)]) {
+    if (picked.length >= 3) break
+    const combo = `${given} ${fam}`
+    if (combo !== p.nameAr && !realNames.has(combo) && !picked.includes(combo)) picked.push(combo)
+  }
+  // شبكة أمان أخيرة لو ظلّ العدد ناقصاً (بياناتٌ ضئيلة جداً)
+  if (picked.length < 3) {
+    for (const name of shuffle(people.filter((x) => x.id !== p.id).map((x) => x.nameAr))) {
+      if (picked.length >= 3) break
+      if (!picked.includes(name)) picked.push(name)
+    }
+  }
+  return { hardOptions: [p.nameAr, ...picked], hardAnswerIndex: 0 }
+}
+
 /**
  * يبني خيارات من الفئة نفسها، ويوسّع الدائرة إن لم تكفِ الفئة أربعةَ خيارات
  * (رواد الفضاء ثلاثة، وقادة الأعمال اثنان).
@@ -274,8 +387,10 @@ function peopleOptions(correct: Person, tiers: readonly (readonly Person[])[], l
 }
 
 /**
- * جولة الشخصيات — سؤال مصوّر عن الاسم، وسؤال نصّي عن المنصب أو الفترة أو المنطقة أو الشهرة.
- * السؤال النصّي لا يحتاج صورة، فمن لا صورة له يبقى في اللعبة بسؤال واحد.
+ * جولة الشخصيات — سؤال مصوّر عن الاسم لمن له صورة، وسؤال نصّي عن المنصب
+ * أو الفترة أو المنطقة أو الشهرة لمن لا صورة له. لا يجتمع السؤالان لشخصٍ
+ * واحد في البنك: سؤال الصورة يكشف منصبه ضمن شرحه (explanation)، فسؤالٌ
+ * نصّيٌّ عنه لاحقاً في الجلسة نفسها كان يصير محلولاً سلفاً بلا معرفةٍ حقيقية.
  */
 export function peopleQuestions(): Question[] {
   const withPhoto = people.filter((p) => p.image)
@@ -285,6 +400,7 @@ export function peopleQuestions(): Question[] {
 
   for (const p of people) {
     if (p.image) {
+      const sameGroupPhoto = byGroup(p.group, withPhoto)
       out.push({
         id: `who_${p.id}`,
         round: 'people',
@@ -294,22 +410,26 @@ export function peopleQuestions(): Question[] {
         difficulty: p.group === 'governors' ? 4 : 3,
         category: GROUP_LABEL[p.group],
         explanation: `${p.nameAr} — ${p.roleAr}`,
-        ...peopleOptions(p, [byGroup(p.group, withPhoto), byFact(p.factKind, withPhoto), withPhoto], (x) => x.nameAr),
+        ...peopleOptions(p, [sameGroupPhoto, byFact(p.factKind, withPhoto), withPhoto], (x) => x.nameAr),
+        ...personNameHardOptions(p, sameGroupPhoto.length >= 4 ? sameGroupPhoto : withPhoto),
+      })
+    } else {
+      const sameGroup = byGroup(p.group, people)
+      out.push({
+        id: `fact_${p.id}`,
+        round: 'people',
+        prompt: factPrompt(p),
+        difficulty: p.group === 'governors' ? 4 : 3,
+        category: GROUP_LABEL[p.group],
+        explanation: factExplanation(p),
+        // نفس الفئة أولاً — رياضي مع رياضيين لا مع رائد فضاء — ثم نفس نوع
+        // السؤال، ثم الجميع؛ بلا الفئة أولاً كانت مموّهات «الشهرة» تخلط
+        // مجالات مختلفة كلياً (كرة قدم مع فضاء) فتُكشَف الإجابة بلا معرفة.
+        ...peopleOptions(p, [sameGroup, byFact(p.factKind, people), people], (x) => x.factAr),
+        // النمط الصعب: الفئة نفسها حصراً — بلا التوسّع لنوع السؤال ثم الجميع
+        ...hardOptionsFor(p, sameGroup.length >= 4 ? sameGroup : people, (x) => x.factAr),
       })
     }
-
-    out.push({
-      id: `fact_${p.id}`,
-      round: 'people',
-      prompt: factPrompt(p),
-      difficulty: p.group === 'governors' ? 4 : 3,
-      category: GROUP_LABEL[p.group],
-      explanation: factExplanation(p),
-      // نفس الفئة أولاً — رياضي مع رياضيين لا مع رائد فضاء — ثم نفس نوع
-      // السؤال، ثم الجميع؛ بلا الفئة أولاً كانت مموّهات «الشهرة» تخلط
-      // مجالات مختلفة كلياً (كرة قدم مع فضاء) فتُكشَف الإجابة بلا معرفة.
-      ...peopleOptions(p, [byGroup(p.group, people), byFact(p.factKind, people), people], (x) => x.factAr),
-    })
   }
 
   return out
@@ -322,8 +442,8 @@ export const ROUNDS: RoundMeta[] = [
       'استمع إلى المقطع الأول، وخمّن اسم الأغنية بصوتك.',
       'اضغط «لا أعلم» لسماع المقطع الثاني، ثم اضغطها مرة أخرى لسماع المقطع المشهور.',
       'إذا عرفتها، قل الاسم أولاً واضغط «عرفت الأغنية»، ثم قيّم إجابتك بعد ظهور الاسم.',
-      'الإجابة الصحيحة تمنحك 300 نقطة في المرحلة الأولى، و200 في الثانية، و100 في الثالثة، مع مضاعف السلسلة.',
-      'إعادة المقطع مجانية، والتفكير بلا مؤقّت. الانتقال بين المراحل لا يقطع السلسلة.',
+      'الإجابة الصحيحة تمنحك 300 نقطة دائماً، في أيّ مرحلةٍ عرفتها.',
+      'إعادة المقطع مجانية، والتفكير بلا مؤقّت.',
       '«لا أعلم» في المرحلة الثالثة تكشف الإجابة وتُنهي السؤال بلا نقاط.',
     ],
   },
@@ -333,33 +453,33 @@ export const ROUNDS: RoundMeta[] = [
       'يظهر الرمز وحده بلا اسم مكتوب.',
       'خمّن الجهة في بالك، ثم اضغط «اعرض الإجابة».',
       'يظهر الشعار كاملاً مع الاسم، فاحكم على نفسك: عرفتها أو ما عرفتها.',
+      'كل إجابة صحيحة تمنحك 300 نقطة.',
     ],
   },
   {
     id: 'landmarks', title: 'خمّن المعلم', subtitle: 'مواقع اليونسكو والمعالم والعمارة', icon: '▲',
     howTo: [
       'تبدأ الصورة من تفصيل مقصوص ثم تتّسع شيئاً فشيئاً.',
-      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات».',
-      'اختر الإجابة الصحيحة، بلا مؤقّت — خذ راحتك.',
-      'كل إجابة صحيحة متتابعة ترفع مضاعف النقاط.',
+      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات» إن احتجتها.',
+      'الإجابة الصحيحة تمنحك 300 نقطة، لكن 150 فقط إن أظهرتَ الخيارات أولاً (في النمط المتوسط أو الصعب) — طلبها مخاطرةٌ تُنقص نصف النقاط.',
     ],
   },
   {
     id: 'regions', title: 'خمّن المنطقة', subtitle: 'المناطق الثلاث عشرة وعواصمها', icon: '●',
     howTo: [
       'أسئلة عن المناطق الثلاث عشرة وعواصمها.',
-      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات».',
+      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات» إن احتجتها.',
       'اختر الإجابة الصحيحة، بلا مؤقّت — خذ راحتك.',
-      'السلسلة المتتابعة من الإجابات الصحيحة تضاعف النقاط.',
+      'الإجابة الصحيحة تمنحك 300 نقطة، لكن 150 فقط إن أظهرتَ الخيارات أولاً (في النمط المتوسط أو الصعب).',
     ],
   },
   {
     id: 'dishes', title: 'خمّن الطبق', subtitle: 'الأطباق الرسمية للمناطق', icon: '◗',
     howTo: [
       'لكل منطقة طبق رسمي واحد معتمد.',
-      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات».',
+      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات» إن احتجتها.',
       'اختر الإجابة الصحيحة، بلا مؤقّت — خذ راحتك.',
-      'السلسلة المتتابعة من الإجابات الصحيحة تضاعف النقاط.',
+      'الإجابة الصحيحة تمنحك 300 نقطة، لكن 150 فقط إن أظهرتَ الخيارات أولاً (في النمط المتوسط أو الصعب).',
     ],
   },
   {
@@ -367,9 +487,9 @@ export const ROUNDS: RoundMeta[] = [
     howTo: [
       'تظهر صورة شخصية والسؤال عن اسمها، أو يأتي الاسم والسؤال عن منصبه أو منطقته أو فترة حكمه أو ما اشتُهر به.',
       'الخيارات من الفئة نفسها: ملك مع ملوك، ووزير مع وزراء.',
-      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات».',
+      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات» إن احتجتها.',
       'اختر الإجابة الصحيحة، بلا مؤقّت — خذ راحتك.',
-      'السلسلة المتتابعة من الإجابات الصحيحة تضاعف النقاط.',
+      'الإجابة الصحيحة تمنحك 300 نقطة، لكن 150 فقط إن أظهرتَ الخيارات أولاً (في النمط المتوسط أو الصعب).',
       'أسماء الوزراء وأمراء المناطق محدّثة حسب آخر تشكيل.',
     ],
   },
@@ -377,9 +497,9 @@ export const ROUNDS: RoundMeta[] = [
     id: 'trivia', title: 'أسئلة معرفية', subtitle: 'جغرافيا وتاريخ وثقافة', icon: '✦',
     howTo: [
       'أسئلة من جغرافيا وتاريخ وثقافة ومعالم ومحميات ورؤية 2030 وغيرها.',
-      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات».',
+      'جرّب الإجابة في بالك أولاً، ثم اضغط «أظهر الخيارات» إن احتجتها.',
       'اختر الإجابة الصحيحة، بلا مؤقّت — خذ راحتك.',
-      'السلسلة المتتابعة من الإجابات الصحيحة تضاعف النقاط.',
+      'الإجابة الصحيحة تمنحك 300 نقطة، لكن 150 فقط إن أظهرتَ الخيارات أولاً (في النمط المتوسط أو الصعب).',
       'بعد كل إجابة يظهر شرح مختصر.',
     ],
   },
@@ -489,4 +609,19 @@ export function availableFromSources(sources: readonly PoolSource[], ids: readon
 /** الجهات المؤهَّلة لجولة «خمّن الشعار» بصيغة البطاقات */
 export function logoCards(): Entity[] {
   return entities.filter((e) => e.lockup || e.logo)
+}
+
+/**
+ * يستبدل خيارات الأسئلة بنسختها الأعسر (hardOptions) في نمط اللعب
+ * الصعب — يُستدعى مرّةً على بنك الأسئلة قبل بدء الجولة، فتبقى بقية
+ * الشيفرة (Play.tsx، AnswerGrid، تبويب الجمهور) غافلةً عن وجود نمطين
+ * أصلاً؛ الأسئلة بلا مموّهاتٍ أعسر (الأغنية، أو ما لم يُصعَّب) تمرّ كما هي.
+ */
+export function applyDifficulty(pool: readonly Question[], mode: PlayMode): Question[] {
+  if (mode !== 'hard') return pool.slice()
+  return pool.map((q) =>
+    q.kind === 'song' || !q.hardOptions || q.hardAnswerIndex === undefined
+      ? q
+      : { ...q, options: q.hardOptions, answerIndex: q.hardAnswerIndex },
+  )
 }

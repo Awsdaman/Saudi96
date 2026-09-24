@@ -94,3 +94,13 @@
 
 .teamsetup-start { align-self: center; margin-top: 6px; min-width: 160px; }
 .teamsetup-skip { align-self: center; }
+
+.teamsetup-credits {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-align: center;
+}

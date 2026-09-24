@@ -17,9 +17,10 @@
 }
 
 .logocard-img {
+  /* بلا حشوة إضافية — الرموز مقصوصة مسبقاً بدقة (make-symbols.mjs)،
+     وأي حشوة هنا تقصّها مجدداً بصرياً فتبدو أصغر مما هي عليه في
+     شاشة العرض (AudienceView.css)، التي تعرضها بلا حشوة أصلاً. */
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 8%;
-  box-sizing: border-box;
 }

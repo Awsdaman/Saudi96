@@ -3,12 +3,12 @@ import { useMemo, useState } from 'react'
 import { availableFromSources, poolSources, poolFromSources } from '../game/content'
 import { DEFAULT_ICON_TILE } from '../game/roundTheme'
 import { SOURCE_THEME } from '../game/sourceTheme'
-import type { Question } from '../game/types'
-import { loadEasyMode, loadLength, saveEasyMode, saveLength } from '../game/storage'
+import type { PlayMode, Question } from '../game/types'
+import { loadLength, loadPlayMode, savePlayMode, saveLength } from '../game/storage'
 import './CustomBuilder.css'
 
 interface Props {
-  onStart: (pool: Question[], count: number) => void
+  onStart: (pool: Question[], count: number, sourceIds: string[], mode: PlayMode) => void
   onBack: () => void
 }
 
@@ -26,12 +26,12 @@ export function CustomBuilder({ onStart, onBack }: Props) {
   // نصّ الحقل منفصلٌ عن length نفسه — انظر التعليق نفسه في Home.tsx.
   const [customMode, setCustomMode] = useState(() => !LENGTHS.includes(loadLength('custom') ?? 15))
   const [customText, setCustomText] = useState(() => String(loadLength('custom') ?? 15))
-  // نمط اللعب (سهل/صعب) نفسه المستخدَم في الرئيسية — انظر التعليق في storage.ts
-  const [easyMode, setEasyMode] = useState(loadEasyMode)
+  // نمط اللعب (سهل/متوسط/صعب) نفسه المستخدَم في الرئيسية — انظر التعليق في storage.ts
+  const [playMode, setPlayMode] = useState(loadPlayMode)
 
-  function chooseMode(easy: boolean) {
-    setEasyMode(easy)
-    saveEasyMode(easy)
+  function chooseMode(mode: PlayMode) {
+    setPlayMode(mode)
+    savePlayMode(mode)
   }
 
   const available = useMemo(() => availableFromSources(sources, [...picked]), [sources, picked])
@@ -194,9 +194,9 @@ export function CustomBuilder({ onStart, onBack }: Props) {
         <h2 className="builder-group-title">نمط اللعب</h2>
         <div className="mode-chips">
           <button
-            className={`mode-chip ${easyMode ? 'is-on' : ''}`}
-            onClick={() => chooseMode(true)}
-            aria-pressed={easyMode}
+            className={`mode-chip ${playMode === 'easy' ? 'is-on' : ''}`}
+            onClick={() => chooseMode('easy')}
+            aria-pressed={playMode === 'easy'}
           >
             <span className="mode-dot" aria-hidden="true" />
             <span className="mode-label">
@@ -205,14 +205,25 @@ export function CustomBuilder({ onStart, onBack }: Props) {
             </span>
           </button>
           <button
-            className={`mode-chip ${!easyMode ? 'is-on' : ''}`}
-            onClick={() => chooseMode(false)}
-            aria-pressed={!easyMode}
+            className={`mode-chip ${playMode === 'medium' ? 'is-on' : ''}`}
+            onClick={() => chooseMode('medium')}
+            aria-pressed={playMode === 'medium'}
+          >
+            <span className="mode-dot" aria-hidden="true" />
+            <span className="mode-label">
+              متوسط
+              <small className="mode-sub">الخيارات مخفية حتى تُطلَب — طلبها ينصّف النقاط</small>
+            </span>
+          </button>
+          <button
+            className={`mode-chip ${playMode === 'hard' ? 'is-on' : ''}`}
+            onClick={() => chooseMode('hard')}
+            aria-pressed={playMode === 'hard'}
           >
             <span className="mode-dot" aria-hidden="true" />
             <span className="mode-label">
               صعب
-              <small className="mode-sub">الخيارات مخفية حتى تُطلَب</small>
+              <small className="mode-sub">خياراتٌ أعسر ومخفية — طلبها ينصّف النقاط</small>
             </span>
           </button>
         </div>
@@ -233,7 +244,7 @@ export function CustomBuilder({ onStart, onBack }: Props) {
           <button
             className="btn btn-primary"
             disabled={!canStart}
-            onClick={() => { saveLength('custom', realLength); onStart(poolFromSources([...picked]), realLength) }}
+            onClick={() => { saveLength('custom', realLength); onStart(poolFromSources([...picked]), realLength, [...picked], playMode) }}
           >
             ابدأ
           </button>

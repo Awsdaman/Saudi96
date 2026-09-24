@@ -6,7 +6,7 @@ import { ROUNDS } from '../game/content'
 import type { AudienceMessage } from '../game/hostSync'
 import { RevealImage } from '../components/RevealImage'
 import { ScoreBar } from '../components/ScoreBar'
-import { loadEasyMode } from '../game/storage'
+import { loadPlayMode } from '../game/storage'
 import { Verdict } from '../components/Verdict'
 import type { GameState } from '../game/useGame'
 import type { ChoiceQuestion, Team } from '../game/types'
@@ -15,7 +15,7 @@ import './Play.css'
 interface Props {
   state: GameState
   question: ChoiceQuestion
-  onAnswer: (i: number) => void
+  onAnswer: (i: number, discounted?: boolean) => void
   onNext: () => void
   onQuit: () => void
   teams?: [Team, Team] | null
@@ -28,23 +28,38 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
   const last = state.records[state.records.length - 1]
   const meta = ROUNDS.find((r) => r.id === question.round)
   const [howTo, setHowTo] = useState(false)
-  // ظهرت نافذة توزيع النقاط لهذا السؤال فعلاً — لا تتكرّر عند إعادة التصيير
-  const [awarded, setAwarded] = useState(false)
-  // المقدّم يسأل الحضور بصوته وهم يجيبون شفهياً، فلا داعي أن يخمّن مثلهم —
-  // زرٌّ يكشف له وحده الإجابة الصحيحة، دون أن يمسّ state.selected أو
-  // يصل إلى تبويب الجمهور (sendAudience أعلاه لا يرسل answerIndex إلا
-  // بعد done، وهذا الكشف محليٌّ بحتٌ في هذا المكوّن). يُعاد ضبطه تلقائياً
-  // مع كل سؤالٍ جديد لأن Play.tsx يُركَّب من جديد بمفتاح question.id.
-  const [hostReveal, setHostReveal] = useState(false)
+  // نافذة توزيع النقاط بين الفريقين تنتظر ضغطة «التالي» بدل الظهور فوراً
+  // عند الإجابة — وإلا حجبت لوحة الحكم (Verdict) بإجابتها وشرحها قبل أن
+  // يراهما أحد. تُعاد لـfalse تلقائياً مع كل سؤالٍ جديد لأن Play.tsx
+  // يُركَّب من جديد بمفتاح question.id.
+  const [awarding, setAwarding] = useState(false)
 
   // إخفاء الخيارات تفادياً لتلميح الحل بالاستبعاد بلا معرفة فعلية —
   // نمط اللعب (سهل/صعب) يختاره اللاعب في شاشة الإعداد، ويُقرأ هنا عند
   // كل سؤال جديد (المكوّن يُعاد تركيبه بمفتاح question.id).
-  const [choicesShown, setChoicesShown] = useState(loadEasyMode)
+  const [choicesShown, setChoicesShown] = useState(() => loadPlayMode() === 'easy')
+  // طلب الخيارات في النمط المتوسط/الصعب مخاطرةٌ يتجنّبها اللاعب — تُنصَّف
+  // نقاطه إن أجاب بعدها. في السهل الخيارات ظاهرةٌ أصلاً بلا طلب، فهذا
+  // العلم يبقى false دائماً هناك (الزرّ لا يظهر لتغييره). «اعرض لي
+  // الإجابة» لا يمسّه أبداً — أداة المستضيف المنفصلة تبقى بكامل نقاطها.
+  const [manuallyRevealed, setManuallyRevealed] = useState(false)
+
+  function revealChoices() {
+    setChoicesShown(true)
+    setManuallyRevealed(true)
+  }
 
   const answerText = question.options[question.answerIndex]
   const isLast = state.index + 1 >= state.questions.length
   const showChoices = choicesShown || done
+
+  // في وضع الفريقين، إجابةٌ صحيحة تفتح نافذة توزيع النقاط بدل الانتقال
+  // المباشر — الجميع يرى الإجابة والشرح كاملين على لوحة الحكم أولاً،
+  // ثم يقرّر المستضيف من يستحقّها بعد هذه الضغطة تحديداً.
+  function advance() {
+    if (teams && last?.correct) setAwarding(true)
+    else onNext()
+  }
 
   // يُبلَّغ تبويب الجمهور بالسؤال دون إجابته — answerIndex لا يصل إلا
   // بعد أن يحسم المستضيف الأمر (done)، فتبقى الإجابة عنده حتى تلك اللحظة.
@@ -70,9 +85,9 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
 
   // المستمع يُركّب مرة واحدة ويقرأ من ref، وإلا التقط إغلاقاً قديماً
   // فتضيع ضغطة Enter التي تلي الإجابة مباشرةً قبل إعادة التصيير.
-  const latest = useRef({ done, showChoices, count: question.options.length, onAnswer, onNext, onQuit })
+  const latest = useRef({ done, showChoices, manuallyRevealed, count: question.options.length, onAnswer, advance, onQuit })
   useEffect(() => {
-    latest.current = { done, showChoices, count: question.options.length, onAnswer, onNext, onQuit }
+    latest.current = { done, showChoices, manuallyRevealed, count: question.options.length, onAnswer, advance, onQuit }
   })
 
   // اختصارات لوحة المفاتيح: مسافة/Enter تُظهر الخيارات أولاً، ثم ١-٤
@@ -84,19 +99,19 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
       if (cur.done) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          cur.onNext()
+          cur.advance()
         }
         return
       }
       if (!cur.showChoices) {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          setChoicesShown(true)
+          revealChoices()
         }
         return
       }
       const n = Number(e.key)
-      if (n >= 1 && n <= cur.count) cur.onAnswer(n - 1)
+      if (n >= 1 && n <= cur.count) cur.onAnswer(n - 1, cur.manuallyRevealed)
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -112,7 +127,6 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
           index={state.index}
           total={state.questions.length}
           score={state.score}
-          streak={state.streak}
           roundTitle={state.title}
         />
 
@@ -123,24 +137,18 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
             options={question.options}
             answerIndex={question.answerIndex}
             selected={state.selected}
-            onPick={onAnswer}
+            onPick={(i) => onAnswer(i, manuallyRevealed)}
           />
         ) : (
-          <button className="btn btn-primary play-reveal-choices" onClick={() => setChoicesShown(true)}>
+          <button className="btn btn-primary play-reveal-choices" onClick={revealChoices}>
             أظهر الخيارات
           </button>
         )}
 
         {!done && (
-          hostReveal ? (
-            <p className="host-reveal-answer">
-              الإجابة الصحيحة: <strong>{answerText}</strong>
-            </p>
-          ) : (
-            <button className="btn btn-quiet host-reveal-btn" onClick={() => setHostReveal(true)}>
-              👁 اعرض لي الإجابة
-            </button>
-          )
+          <button className="btn btn-quiet host-reveal-btn" onClick={() => onAnswer(question.answerIndex, false)}>
+            👁 اعرض لي الإجابة
+          </button>
         )}
 
         <Verdict
@@ -148,9 +156,10 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
           correct={!!last?.correct}
           answer={answerText}
           points={last?.points ?? 0}
+          discounted={last?.discounted}
           explanation={question.explanation}
           last={isLast}
-          onNext={onNext}
+          onNext={advance}
         />
 
         <div className="play-foot">
@@ -179,14 +188,12 @@ export function Play({ state, question, onAnswer, onNext, onQuit, teams, onAdjus
         <HowToModal title={meta.title} steps={meta.howTo} onClose={() => setHowTo(false)} />
       )}
 
-      {teams && done && last?.correct && !awarded && (
+      {awarding && teams && last && (
         <AwardPopup
           points={last.points}
           teams={teams}
-          // توزيع النقاط يُنهي هذا السؤال — ينتقل للتالي على طول، بلا
-          // ضغطة «التالي» إضافية بعد إغلاق النافذة.
-          onAward={(i) => { onAdjust?.(i, last.points); setAwarded(true); onNext() }}
-          onSkip={() => { setAwarded(true); onNext() }}
+          onAward={(i) => { onAdjust?.(i, last.points); setAwarding(false); onNext() }}
+          onSkip={() => { setAwarding(false); onNext() }}
         />
       )}
     </div>

@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { TeamScoreboard } from './components/TeamScoreboard'
-import { ROUNDS, poolFor } from './game/content'
+import { applyDifficulty, ROUNDS, poolFor } from './game/content'
 import { AUDIENCE_CHANNEL, audienceUrl, isAudienceWindow } from './game/hostSync'
 import type { AudienceMessage } from './game/hostSync'
 import { sourceColor } from './game/sourceTheme'
-import { saveBest } from './game/storage'
+import { loadPlayMode, loadSeen, markSeen, resetSeen, saveBest } from './game/storage'
 import { useGame } from './game/useGame'
 import { useRoundTheme } from './game/useRoundTheme'
 import { useStageScale } from './game/useStageScale'
-import type { Entity, Question, RoundId, Team } from './game/types'
+import type { Entity, PlayMode, Question, RoundId, Team } from './game/types'
 import { AudienceView } from './screens/AudienceView'
 import { Credits } from './screens/Credits'
 import { CustomBuilder } from './screens/CustomBuilder'
@@ -37,7 +37,10 @@ function Game() {
   const [logoCount, setLogoCount] = useState(12)
   const [isRecord, setIsRecord] = useState(false)
   const [logoOutcome, setLogoOutcome] = useState<LogoOutcome | null>(null)
-  const lastCustom = useRef<{ pool: Question[]; count: number } | null>(null)
+  const lastCustom = useRef<{ pool: Question[]; count: number; sourceIds: string[]; mode: PlayMode } | null>(null)
+  // مفتاح تتبّع الأسئلة المشاهَدة للجولة الجارية — جولةٌ عادية بمعرّفها،
+  // و«لعبتي» بتركيبة مصادرها (فتُتابَع كلّ تركيبةٍ على حدة).
+  const seenKeyRef = useRef<string | null>(null)
 
   // شاشة الفريقين تفتح الجلسة، مرّةً واحدة، قبل الرئيسية — انظر التعليق
   // في TeamSetup.tsx. null بعد «لعب بلا فرق» يخفي الشريط العائم كلياً.
@@ -69,6 +72,29 @@ function Game() {
     if (state.phase === 'results' || view === 'logoResults') sendAudience({ type: 'results', score: state.score })
     else sendAudience({ type: 'idle' })
   }, [audienceOpen, view, state.phase, state.score])
+
+  // تُعلَّم أسئلة الجولة «مشاهَدة» فور بدئها — فلا تُقترَح مجدداً لهذا
+  // المصدر نفسه حتى ينفد بنك أسئلته كاملاً، ثم يُستأنَف الاختيار من جديد.
+  useEffect(() => {
+    if (state.phase === 'playing' && state.index === 0 && state.questions.length && seenKeyRef.current) {
+      markSeen(seenKeyRef.current, state.questions.map((q) => q.id))
+    }
+  }, [state.phase, state.index, state.questions])
+
+  /**
+   * يستبعد الأسئلة المشاهَدة من قبل لهذا المصدر (يعيد الدورة من جديد إن
+   * نفد ما تبقّى)، ثم يستبدل خيارات الأسئلة بنسختها الأعسر في النمط الصعب.
+   */
+  function startTracked(roundId: RoundId | 'custom', title: string, fullPool: readonly Question[], count: number, seenKey: string, mode: PlayMode) {
+    const seen = loadSeen(seenKey)
+    let pool: readonly Question[] = fullPool.filter((q) => !seen.has(q.id))
+    if (pool.length < count) {
+      resetSeen(seenKey)
+      pool = fullPool
+    }
+    seenKeyRef.current = seenKey
+    start(roundId, title, applyDifficulty(pool, mode), count)
+  }
 
   function adjustScore(index: 0 | 1, delta: number) {
     setTeams((prev) => {
@@ -124,13 +150,14 @@ function Game() {
     )
   }
 
-  function beginRound(id: RoundId, count: number, easy: boolean) {
+  function beginRound(id: RoundId, count: number, mode: PlayMode) {
     setIsRecord(false)
     lastCustom.current = null
-    // «خمّن الشعار» بالنمط الصعب يبقى بطاقات التذكّر الحرّ المخصّصة؛
-    // بالنمط السهل يمرّ عبر مسار الاختيار من متعدد العادي مثل أي جولة —
-    // نفس بنك الأسئلة (logoQuestions) الذي تستعيره «لعبتي» أصلاً.
-    if (id === 'logos' && !easy) {
+    // «خمّن الشعار» بالنمط الصعب يبقى بطاقات التذكّر الحرّ المخصّصة —
+    // أعسر من أي خياراتٍ مهما صُعِّبت، فلا حاجة لمموّهاتٍ أعسر هناك.
+    // بالنمطين الآخرين يمرّ عبر مسار الاختيار من متعدد العادي مثل أي
+    // جولة — نفس بنك الأسئلة (logoQuestions) الذي تستعيره «لعبتي» أصلاً.
+    if (id === 'logos' && mode === 'hard') {
       setLogoCount(count)
       setView('logos')
       return
@@ -140,14 +167,14 @@ function Game() {
     // بدء جولةٍ عادية يُبطل «لعبتي» السابقة، وإلا أعاد زرّ «جولة أخرى»
     // في شاشة النتيجة تلك الجولةَ المخصّصة بدل الجولة التي انتهت للتوّ
     lastCustom.current = null
-    start(id, meta.title, poolFor(id), count)
+    startTracked(id, meta.title, poolFor(id), count, id, mode)
   }
 
-  function beginCustom(pool: Question[], count: number) {
-    lastCustom.current = { pool, count }
+  function beginCustom(pool: Question[], count: number, sourceIds: string[], mode: PlayMode) {
+    lastCustom.current = { pool, count, sourceIds, mode }
     setIsRecord(false)
     setView('home')
-    start('custom', 'لعبتي', pool, count)
+    startTracked('custom', 'لعبتي', pool, count, `custom:${[...sourceIds].sort().join('|')}`, mode)
   }
 
   // الانتقال إلى النتائج يمرّ دائماً عبر next، فهنا تُحفظ النتيجة —
@@ -210,8 +237,8 @@ function Game() {
         onReplay={() => {
           setIsRecord(false)
           const c = lastCustom.current
-          if (c) beginCustom(c.pool, c.count)
-          else start(state.roundId!, state.title, poolFor(state.roundId!), state.questions.length)
+          if (c) beginCustom(c.pool, c.count, c.sourceIds, c.mode)
+          else startTracked(state.roundId!, state.title, poolFor(state.roundId!), state.questions.length, state.roundId!, loadPlayMode())
         }}
         onHome={goHome}
       />

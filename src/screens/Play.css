@@ -14,7 +14,16 @@
   --surface: color-mix(in srgb, var(--green-bright) 9%, var(--surface-0));
   --raised: color-mix(in srgb, var(--green-bright) 14%, var(--raised-0));
   --line: color-mix(in srgb, var(--green-bright) 32%, var(--line-0));
+  display: flex;
+  flex-direction: column;
 }
+
+/* الصورة يجب أن ترتفع فوق السؤال دائماً — .ask يلي RevealImage في
+   الشيفرة (Play.tsx) فيحتاج ترتيبه الأول هنا؛ بلا هذا كان .ask
+   بارتفاع الشاشة كاملةً (min-height أدناه) يدفع الصورة أسفل الطيّة
+   فلا تُرى إلا بالتمرير. محايَدةٌ للتخطيط العمودي بجانب الصورة
+   (has-image-portrait على الشاشات العريضة) أدناه. */
+.play .reveal { order: -1; }
 
 /* عمود اللعب: الشريط، السؤال، الخيارات، الحكم — كتلةٌ واحدة تتوسّط
    المساحة المتاحة بدل أن تلتصق بأعلى الشاشة */
@@ -66,8 +75,8 @@
 
 .play-reveal-choices { align-self: center; min-width: 11.875rem; }
 
-/* أداة المقدّم: يراها هو وحده على جهازه — لا تصل شاشة الجمهور ولا
-   تُسجَّل كإجابة. حدٌّ متقطّع يميّزها بصرياً عن أزرار اللعب الفعلية. */
+/* يكشف الإجابة الصحيحة للجميع مباشرةً (كأنّ المستضيف اختارها) — حدٌّ
+   متقطّع يميّزه بصرياً عن أزرار الاختيار الفعلية. */
 .host-reveal-btn {
   align-self: center;
   border: 1.5px dashed var(--line);
@@ -76,18 +85,6 @@
   font-size: 0.95rem;
 }
 .host-reveal-btn:hover { border-color: var(--muted); color: var(--text); }
-
-.host-reveal-answer {
-  align-self: center;
-  text-align: center;
-  color: var(--muted);
-  font-size: 0.92rem;
-  padding: 0.5rem 1rem;
-  border: 1.5px dashed color-mix(in srgb, var(--correct) 55%, var(--line));
-  border-radius: 10px;
-  background: var(--correct-fill);
-}
-.host-reveal-answer strong { color: var(--correct); }
 
 .play-foot {
   display: flex;
@@ -116,6 +113,10 @@
   .play.has-image-portrait .reveal-portrait {
     height: min(60vh, 32.5rem);
     margin-inline: 0;
+    /* على الشاشة العريضة يعود الترتيب الأصلي: السؤال يمينَ، الصورة
+       يسارَ (انظر التعليق في JSX) — بلا هذا كان order:-1 أعلاه يقلب
+       الجانبين هنا أيضاً */
+    order: 0;
   }
 }
 
