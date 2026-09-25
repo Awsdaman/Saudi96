@@ -21,6 +21,9 @@ interface Stats {
   avgLength: number
   questions: { id: string; seen: number; wrong: number }[]
   questionsTracked: number
+  /** الأحدث أولاً — قد يغيب عن ردٍّ من نسخة خادمٍ أقدم */
+  feedback?: { text: string; at: string }[]
+  feedbackTotal?: number
 }
 
 type Result = { ok: true; stats: Stats } | { ok: false; status: number; message: string }
@@ -259,6 +262,8 @@ function Dashboard({ stats, loading, error, onRefresh, onLogout }: {
         <StatTile label="متوسط طول الجولة" value={stats.avgLength ? stats.avgLength.toFixed(1) : '0'} unit="سؤال" />
       </section>
 
+      <FeedbackList items={stats.feedback ?? []} total={stats.feedbackTotal ?? 0} />
+
       <section className="admin-card">
         <h2 className="admin-h2">الأجهزة الفريدة يومياً</h2>
         <p className="admin-muted admin-small">آخر 30 يوماً — مرّر فوق أي يوم لتفاصيله</p>
@@ -328,6 +333,40 @@ function Dashboard({ stats, loading, error, onRefresh, onLogout }: {
         )}
       </section>
     </div>
+  )
+}
+
+/** اقتراحات اللاعبين من زرّ «اقتراح أو إضافة للعبة» — الأحدث أولاً */
+function FeedbackList({ items, total }: { items: { text: string; at: string }[]; total: number }) {
+  const when = (iso: string) => {
+    const d = new Date(iso)
+    if (Number.isNaN(d.getTime())) return ''
+    // بتوقيت الرياض ونظام ٢٤ ساعة، كبقية تواريخ اللوحة
+    return d.toLocaleString('en-GB', {
+      timeZone: 'Asia/Riyadh', year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+    })
+  }
+  return (
+    <section className="admin-card">
+      <h2 className="admin-h2">اقتراحات اللاعبين</h2>
+      <p className="admin-muted admin-small">
+        من زرّ «اقتراح أو إضافة للعبة» في الصفحة الرئيسية · <span className="ltr">{fmt(total)}</span> اقتراحاً
+        {total > items.length && <> · تُعرض أحدث <span className="ltr">{fmt(items.length)}</span></>}
+      </p>
+      {items.length ? (
+        <ul className="admin-feedback">
+          {items.map((f, i) => (
+            <li key={`${f.at}-${i}`} className="admin-feedback-item">
+              <p className="admin-feedback-text">{f.text}</p>
+              <span className="admin-muted admin-small ltr">{when(f.at)}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="admin-empty">لم يصل أي اقتراح بعد.</p>
+      )}
+    </section>
   )
 }
 

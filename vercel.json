@@ -2,11 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/admin", "destination": "/index.html" }
+    { "source": "/swa", "destination": "/index.html" }
   ],
   "headers": [
     {
-      "source": "/admin",
+      "source": "/swa",
       "headers": [
         { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
         { "key": "Cache-Control", "value": "no-store" }

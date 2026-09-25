@@ -7,6 +7,7 @@ export function createFakeRedis() {
   const strings = new Map()
   const hashes = new Map()
   const sets = new Map()
+  const lists = new Map()
 
   const hash = (k) => hashes.get(k) ?? hashes.set(k, new Map()).get(k)
   const set = (k) => sets.get(k) ?? sets.set(k, new Set()).get(k)
@@ -47,12 +48,24 @@ export function createFakeRedis() {
         return s.size > before ? 1 : 0
       }
       case 'PFCOUNT': return sets.get(a[0])?.size ?? 0
+      case 'LPUSH': {
+        const l = lists.get(a[0]) ?? lists.set(a[0], []).get(a[0])
+        for (const x of a.slice(1)) l.unshift(x)
+        return l.length
+      }
+      case 'LTRIM': {
+        const l = lists.get(a[0])
+        if (l) lists.set(a[0], l.slice(Number(a[1]), Number(a[2]) + 1))
+        return 'OK'
+      }
+      case 'LRANGE': return (lists.get(a[0]) ?? []).slice(Number(a[1]), Number(a[2]) + 1)
+      case 'LLEN': return lists.get(a[0])?.length ?? 0
       default: throw new Error(`fake-redis: unsupported ${op}`)
     }
   }
 
   return {
     exec: async (cmds) => cmds.map(([op, ...args]) => run(String(op).toUpperCase(), args.map(String))),
-    strings, hashes, sets,
+    strings, hashes, sets, lists,
   }
 }

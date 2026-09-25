@@ -58,6 +58,32 @@ function send(event: Record<string, unknown>) {
   fetch(ENDPOINT, { method: 'POST', body, keepalive: true }).catch(() => {})
 }
 
+export type FeedbackResult = 'ok' | 'offline' | 'rate' | 'invalid' | 'error'
+export const FEEDBACK_MIN = 3
+export const FEEDBACK_MAX = 1000
+
+/**
+ * اقتراحٌ أو إضافةٌ يكتبها اللاعب — تظهر في لوحة الإدارة. على خلاف بقية
+ * الأحداث تنتظر الردّ، ليعرف اللاعب أن رسالته وصلت. من ملفٍّ مفتوحٍ من
+ * القرص (file://) لا خادم يستقبلها.
+ */
+export async function sendFeedback(text: string): Promise<FeedbackResult> {
+  if (!window.location.protocol.startsWith('http')) return 'offline'
+  try {
+    const res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type: 'feedback', text, visitor: visitorId() }),
+    })
+    if (res.ok) return 'ok'
+    if (res.status === 429) return 'rate'
+    if (res.status === 400) return 'invalid'
+    return 'error'
+  } catch {
+    return 'error'
+  }
+}
+
 /** زيارةٌ واحدة لكل جلسة تبويب — لا لكل إعادة تصيير أو رجوعٍ للرئيسية */
 export function trackVisit() {
   try {

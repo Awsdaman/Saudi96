@@ -422,11 +422,20 @@ round was checked on it, which is how the wrong-person failures below were caugh
 
 ## Admin dashboard & analytics
 
-Opening **`saudi96.vercel.app/admin`** shows a password-protected dashboard instead of the
-game (`vercel.json` rewrites `/admin` to the same page; a `saudi96-admin.*` host also works
-if one is ever added under Settings → Domains): unique visitors (total and per day, Riyadh time), rounds started and
+Opening **`saudi96.vercel.app/swa`** shows a password-protected dashboard instead of the
+game (`vercel.json` rewrites `/swa` to the same page and marks it `noindex` / `no-store`; the
+path lives in `ADMIN_PATH` in `src/game/hostSync.ts`). The old `/admin` path was retired and
+now returns 404. A `saudi96-admin.*` host also works if one is ever added under Settings →
+Domains. It shows player suggestions, unique visitors (total and per day, Riyadh time), rounds started and
 completed per category, accuracy per category, easy/medium/hard and team/solo/audience-screen
 usage, average round length, and the most-missed questions.
+
+- **Player suggestions**: «اقتراح أو إضافة للعبة» under «جهّز جولتك» on the home screen opens
+  a text box (`src/components/FeedbackModal.tsx`). The text (3–1000 characters, control
+  characters stripped) and its time are stored in the Redis list `sk:feedback`, newest 500
+  kept; no visitor ID or address is stored with it. Each device and each address may send
+  5 per hour. The dashboard lists the newest 200. Sending needs the live site — from
+  `file://` the box explains that instead.
 
 - **Tracking** (`src/game/analytics.ts`) is anonymous: a random ID per browser in
   `localStorage`, no names or personal data. Nothing is sent from `file://`, the audience

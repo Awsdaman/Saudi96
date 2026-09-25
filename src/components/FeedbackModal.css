@@ -1,0 +1,41 @@
+/* نافذة الاقتراحات — تبني على .howto (الخلفية والإطار) وتضيف حقل النص */
+.feedback { width: min(100%, 32rem); }
+
+.feedback-form { display: flex; flex-direction: column; gap: 0.625rem; }
+
+.feedback-label { color: var(--muted); font-size: 0.95rem; line-height: 1.7; }
+
+.feedback-text {
+  width: 100%;
+  min-height: 8rem;
+  resize: vertical;
+  padding: 0.75rem 0.875rem;
+  border-radius: 12px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  color: var(--text);
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.feedback-text::placeholder { color: var(--dim); }
+.feedback-text:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 1px; border-color: transparent; }
+
+.feedback-count { align-self: flex-end; color: var(--dim); font-size: 0.8rem; }
+
+.feedback-note { color: var(--dim); font-size: 0.82rem; line-height: 1.6; }
+
+.feedback-error {
+  padding: 0.625rem 0.875rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--wrong) 50%, transparent);
+  background: var(--wrong-fill);
+  line-height: 1.6;
+  font-size: 0.92rem;
+}
+
+.feedback-thanks { color: var(--text); line-height: 1.8; }
+
+.feedback-actions { display: flex; gap: 0.625rem; flex-wrap: wrap; margin-top: 0.25rem; }
+

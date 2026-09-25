@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react'
 import { useState } from 'react'
+import { FeedbackModal } from '../components/FeedbackModal'
 import { HowToModal } from '../components/HowToModal'
 import { IntroModal } from '../components/IntroModal'
 import { RoundIcon } from '../components/RoundIcon'
@@ -44,6 +45,7 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
   const [customMode, setCustomMode] = useState(false)
   const [customText, setCustomText] = useState('')
   const [howTo, setHowTo] = useState(false)
+  const [feedback, setFeedback] = useState(false)
   // نمط اللعب: سهل/متوسط/صعب — انظر التعليق في storage.ts لمعناه في كل نوع جولة.
   const [playMode, setPlayMode] = useState(loadPlayMode)
   // تظهر مرّة واحدة عند فتح الموقع (لا عند كل رجوعٍ إلى الرئيسية أثناء
@@ -332,6 +334,9 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
             <>
               <h2 className="setup-title">جهّز جولتك</h2>
               <p className="setup-sub">اختر تصنيفاً من القائمة، ثم حدّد عدد الأسئلة وابدأ.</p>
+              <button className="btn btn-quiet setup-feedback" onClick={() => setFeedback(true)}>
+                اقتراح أو إضافة للعبة
+              </button>
             </>
           )}
         </aside>
@@ -349,6 +354,7 @@ export function Home({ onStart, onCustom, onCredits }: Props) {
       </div>
 
       {howTo && meta && <HowToModal title={meta.title} steps={meta.howTo} onClose={() => setHowTo(false)} />}
+      {feedback && <FeedbackModal onClose={() => setFeedback(false)} />}
       {showIntro && (
         <IntroModal
           categories={rows.map((r) => ({ title: r.title, subtitle: r.subtitle }))}

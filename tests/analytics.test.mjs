@@ -163,3 +163,58 @@ test('the Riyadh day rolls over at 21:00 UTC', () => {
   assert.equal(riyadhDay(Date.parse('2026-09-24T20:59:00Z')), '2026-09-24')
   assert.equal(riyadhDay(Date.parse('2026-09-24T21:00:00Z')), '2026-09-25')
 })
+
+test('player feedback is cleaned, capped, rate-limited, and stored without who sent it', async () => {
+  const redis = fresh()
+  const fb = (text, visitor = V1, ip = '1.2.3.4') => POST(new Request('http://x/api/events', {
+    method: 'POST', headers: { 'x-forwarded-for': ip }, body: JSON.stringify({ type: 'feedback', visitor, text }),
+  }))
+  assert.equal((await fb('  أضيفوا تصنيف الأمثال الشعبية\r\n\r\n\r\n\r\nشكراً\u0007  ')).status, 204)
+  const stored = redis.lists.get('sk:feedback').map((x) => JSON.parse(x))
+  assert.equal(stored.length, 1)
+  assert.equal(stored[0].text, 'أضيفوا تصنيف الأمثال الشعبية\n\nشكراً')
+  assert.deepEqual(Object.keys(stored[0]).sort(), ['at', 'text'], 'no visitor id or address is kept')
+  assert.ok(!JSON.stringify([...redis.strings.keys()]).includes(V1), 'rate-limit keys are hashed')
+
+  for (const bad of ['', '  ', 'ab', 'x'.repeat(1001), 42, null]) assert.equal((await fb(bad)).status, 400)
+  assert.equal((await fb('ok text', 'short')).status, 400)
+
+  // 5 في الساعة لكل جهاز، ولكل عنوان حتى لو تبدّل المعرّف
+  for (let i = 0; i < 4; i++) assert.equal((await fb(`idea ${i}`)).status, 204)
+  assert.equal((await fb('one too many')).status, 429)
+  assert.equal((await fb('new device, same address', V2)).status, 429)
+  assert.equal((await fb('another place', V2, '8.8.8.8')).status, 204)
+  assert.equal(redis.lists.get('sk:feedback').length, 6)
+})
+
+test('the admin dashboard lists feedback newest first, and only with the password', async () => {
+  const redis = fresh()
+  process.env.ADMIN_PASSWORD = 'pw'
+  try {
+    for (const [i, text] of ['first idea', 'second idea'].entries()) {
+      await POST(new Request('http://x/api/events', {
+        method: 'POST', headers: { 'x-forwarded-for': `7.7.7.${i}` }, body: JSON.stringify({ type: 'feedback', visitor: V1 + i, text }),
+      }))
+    }
+    redis.lists.get('sk:feedback').push('not json')
+    assert.equal((await get('nope')).status, 401)
+    const s = await (await get('pw')).json()
+    assert.deepEqual(s.feedback.map((f) => f.text), ['second idea', 'first idea'])
+    assert.equal(s.feedbackTotal, 3)
+  } finally {
+    delete process.env.ADMIN_PASSWORD
+  }
+})
+
+test('the admin page lives at /swa, and /admin no longer serves it', async () => {
+  const { readFile } = await import('node:fs/promises')
+  const config = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'))
+  const sources = [...config.rewrites, ...config.headers].map((r) => r.source)
+  assert.deepEqual(sources, ['/swa', '/swa'])
+  const headers = Object.fromEntries(config.headers[0].headers.map((h) => [h.key, h.value]))
+  assert.equal(headers['X-Robots-Tag'], 'noindex, nofollow')
+  assert.equal(headers['Cache-Control'], 'no-store')
+  const hostSync = await readFile(new URL('../src/game/hostSync.ts', import.meta.url), 'utf8')
+  assert.match(hostSync, /ADMIN_PATH = '\/swa'/)
+  assert.doesNotMatch(hostSync, /=== '\/admin'/)
+})

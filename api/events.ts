@@ -2,8 +2,9 @@ import { createHash, timingSafeEqual } from 'node:crypto'
 
 /**
  * إحصاءات اللعبة — دالّةٌ واحدة على فيرسل:
- *   POST  يسجّل حدثاً مجهول الهوية من اللعبة (زيارة، بدء جولة، نهايتها).
- *   GET   يعيد الإحصاءات المجمّعة للوحة الإدارة، بكلمة المرور وحدها.
+ *   POST  يسجّل حدثاً مجهول الهوية من اللعبة (زيارة، بدء جولة، نهايتها)،
+ *         أو اقتراحاً يكتبه اللاعب (feedback).
+ *   GET   يعيد الإحصاءات المجمّعة والاقتراحات للوحة الإدارة، بكلمة المرور وحدها.
  *
  * التخزين في Upstash Redis عبر واجهته REST (بلا مكتبة إضافية)، ومفاتيحه
  * يحقنها تكامل فيرسل تلقائياً: KV_REST_API_URL / KV_REST_API_TOKEN
@@ -26,6 +27,12 @@ const MAX_ANSWERS = 500
 const MAX_FAILS = 10
 const LOCK_SECONDS = 15 * 60
 const MIN_SEEN_FOR_RANKING = 3
+/** الاقتراحات: طول النص، وأقصى عددٍ يُحفظ (الأحدث)، وحدّ الإرسال لكل جهاز وعنوان في الساعة */
+const FEEDBACK_MIN = 3
+const FEEDBACK_MAX = 1000
+const FEEDBACK_KEEP = 500
+const FEEDBACK_SHOWN = 200
+const FEEDBACK_PER_HOUR = 5
 
 const ROUNDS = new Set(['songs', 'logos', 'logos-cards', 'landmarks', 'regions', 'dishes', 'people', 'trivia', 'custom'])
 const MODES = new Set(['easy', 'medium', 'hard'])
@@ -145,6 +152,59 @@ function commandsFor(ev: unknown, now: number): Cmd[] | null {
   return null
 }
 
+/** مفتاحٌ مُجزَّأ — لا يُخزَّن العنوان أو المعرّف نفسه */
+const hashed = (s: string) => createHash('sha256').update(s).digest('hex').slice(0, 24)
+const clientIp = (request: Request) => (request.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim()
+
+/** نصّ الاقتراح بعد التنظيف — أو null إن كان فارغاً أو قصيراً أو طويلاً */
+export function cleanFeedback(raw: unknown): string | null {
+  if (typeof raw !== 'string') return null
+  const text = raw
+    .replace(/\r\n?/g, '\n')
+    // محارف التحكّم (عدا السطر الجديد) لا مكان لها في نصٍّ يُعرض — إزالتها هي المقصود
+    // oxlint-disable-next-line no-control-regex
+    .replace(/[\u0000-\u0009\u000B-\u001F\u007F]/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+  if (text.length < FEEDBACK_MIN || text.length > FEEDBACK_MAX) return null
+  return text
+}
+
+/**
+ * اقتراحٌ من اللاعب: يُحفظ النص ووقته فقط، بلا معرّف الجهاز ولا العنوان.
+ * حدٌّ للإرسال لكل جهازٍ ولكل عنوان يمنع إغراق القائمة، والقائمة نفسها
+ * لا تتجاوز أحدث FEEDBACK_KEEP اقتراحاً.
+ */
+async function postFeedback(ev: Record<string, unknown>, request: Request, now: number): Promise<Response> {
+  if (typeof ev.visitor !== 'string' || !VISITOR.test(ev.visitor)) return json({ error: 'invalid' }, 400)
+  const text = cleanFeedback(ev.text)
+  if (!text) return json({ error: 'invalid' }, 400)
+  const keys = [`${P}fbrate:v:${hashed(ev.visitor)}`, `${P}fbrate:ip:${hashed(clientIp(request))}`]
+  try {
+    const counts = await exec(keys.flatMap((k) => [['INCR', k], ['EXPIRE', k, 3600, 'NX']] as Cmd[]))
+    if (Number(counts[0]) > FEEDBACK_PER_HOUR || Number(counts[2]) > FEEDBACK_PER_HOUR) return json({ error: 'rate' }, 429)
+    await exec([
+      ['LPUSH', `${P}feedback`, JSON.stringify({ text, at: new Date(now).toISOString() })],
+      ['LTRIM', `${P}feedback`, 0, FEEDBACK_KEEP - 1],
+    ])
+  } catch {
+    return json({ error: 'storage' }, 503)
+  }
+  return new Response(null, { status: 204 })
+}
+
+function parseFeedback(list: unknown): { text: string; at: string }[] {
+  if (!Array.isArray(list)) return []
+  return list.flatMap((item) => {
+    try {
+      const x = JSON.parse(String(item)) as unknown
+      return isObj(x) && typeof x.text === 'string' && typeof x.at === 'string' ? [{ text: x.text, at: x.at }] : []
+    } catch {
+      return []
+    }
+  })
+}
+
 export async function POST(request: Request): Promise<Response> {
   const text = await request.text()
   if (text.length > MAX_BODY) return json({ error: 'too-large' }, 413)
@@ -154,6 +214,7 @@ export async function POST(request: Request): Promise<Response> {
   } catch {
     return json({ error: 'bad-json' }, 400)
   }
+  if (isObj(body) && body.type === 'feedback') return postFeedback(body, request, Date.now())
   const cmds = commandsFor(body, Date.now())
   if (!cmds) return json({ error: 'invalid' }, 400)
   try {
@@ -183,8 +244,7 @@ export async function GET(request: Request): Promise<Response> {
   if (!expected) return json({ error: 'admin-not-configured' }, 503)
 
   // عدّاد المحاولات الفاشلة لكل عنوان — مُجزَّأً، فلا يُخزَّن العنوان نفسه
-  const ip = (request.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim()
-  const failKey = `${P}fail:${createHash('sha256').update(ip).digest('hex').slice(0, 24)}`
+  const failKey = `${P}fail:${hashed(clientIp(request))}`
 
   try {
     const [fails] = await exec([['GET', failKey]])
@@ -208,6 +268,7 @@ export async function GET(request: Request): Promise<Response> {
       ['HGETALL', `${P}q:seen`], ['HGETALL', `${P}q:wrong`],
       ['MGET', ...days.map((d) => `${P}visits:${d}`)],
       ['MGET', ...days.map((d) => `${P}rounds:${d}`)],
+      ['LRANGE', `${P}feedback`, 0, FEEDBACK_SHOWN - 1], ['LLEN', `${P}feedback`],
     ]
     const perDay: Cmd[] = days.flatMap((d) => [['SCARD', `${P}dev:${d}`], ['PFCOUNT', `${P}visitors:${d}`]])
     const r = await exec([...fixed, ...perDay])
@@ -251,6 +312,8 @@ export async function GET(request: Request): Promise<Response> {
       avgLength: length.n ? length.sum / length.n : 0,
       questions,
       questionsTracked: Object.keys(seen).length,
+      feedback: parseFeedback(r[15]),
+      feedbackTotal: Number(r[16]) || 0,
     })
   } catch {
     return json({ error: 'storage' }, 503)

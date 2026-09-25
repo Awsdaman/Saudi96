@@ -89,6 +89,16 @@
 
 .setup-sub { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
 
+/* «اقتراح أو إضافة للعبة» تحت «جهّز جولتك» — يفتح نافذة الاقتراحات */
+.setup-panel .setup-feedback {   /* أدقّ من .btn-quiet التي تتوسّط بنفسها */
+  align-self: stretch;
+  margin-top: 4px;
+  font-size: 0.95rem;
+}
+
+.setup-feedback:hover { color: var(--text); border-color: var(--green-bright); }
+.setup-feedback:focus-visible { outline: 2px solid var(--green-bright); outline-offset: 2px; }
+
 .setup-block { display: flex; flex-direction: column; gap: 9px; margin-top: 6px; }
 
 .setup-h3 { font-size: 0.85rem; font-weight: 700; color: var(--muted); }
