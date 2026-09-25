@@ -101,6 +101,7 @@ export function FeedbackModal({ onClose }: Props) {
               }}
               maxLength={FEEDBACK_MAX}
               rows={5}
+              dir="auto"
               placeholder="اكتب اقتراحك هنا…"
             />
             <span className="feedback-count" aria-live="polite">

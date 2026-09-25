@@ -32,7 +32,13 @@ const FEEDBACK_MIN = 3
 const FEEDBACK_MAX = 1000
 const FEEDBACK_KEEP = 500
 const FEEDBACK_SHOWN = 200
-const FEEDBACK_PER_HOUR = 5
+const FEEDBACK_PER_DEVICE_HOUR = 5
+/**
+ * أعلى من حدّ الجهاز عمداً: شركات الجوّال تُشرك آلاف المشتركين في عنوانٍ
+ * واحد (CGNAT)، وكذلك شبكة قاعة الفعالية — حدّ 5 للعنوان كان سيمنع لاعبين
+ * حقيقيين لا علاقة لهم ببعض. يبقى حاجزاً أمام سكربتٍ يبدّل معرّف الجهاز.
+ */
+const FEEDBACK_PER_ADDRESS_HOUR = 30
 
 const ROUNDS = new Set(['songs', 'logos', 'logos-cards', 'landmarks', 'regions', 'dishes', 'people', 'trivia', 'custom'])
 const MODES = new Set(['easy', 'medium', 'hard'])
@@ -179,10 +185,18 @@ async function postFeedback(ev: Record<string, unknown>, request: Request, now: 
   if (typeof ev.visitor !== 'string' || !VISITOR.test(ev.visitor)) return json({ error: 'invalid' }, 400)
   const text = cleanFeedback(ev.text)
   if (!text) return json({ error: 'invalid' }, 400)
-  const keys = [`${P}fbrate:v:${hashed(ev.visitor)}`, `${P}fbrate:ip:${hashed(clientIp(request))}`]
+  const deviceKey = `${P}fbrate:v:${hashed(ev.visitor)}`
+  const addressKey = `${P}fbrate:ip:${hashed(clientIp(request))}`
   try {
-    const counts = await exec(keys.flatMap((k) => [['INCR', k], ['EXPIRE', k, 3600, 'NX']] as Cmd[]))
-    if (Number(counts[0]) > FEEDBACK_PER_HOUR || Number(counts[2]) > FEEDBACK_PER_HOUR) return json({ error: 'rate' }, 429)
+    // SET … EX … NX يبدأ نافذة الساعة مرّةً واحدة، وINCR يحفظ مهلتها —
+    // صيغةٌ يدعمها كل إصدارٍ من Redis، بخلاف خيار NX لأمر EXPIRE (Redis 7 وحده)
+    const counts = await exec([
+      ['SET', deviceKey, 0, 'EX', 3600, 'NX'], ['INCR', deviceKey],
+      ['SET', addressKey, 0, 'EX', 3600, 'NX'], ['INCR', addressKey],
+    ])
+    if (Number(counts[1]) > FEEDBACK_PER_DEVICE_HOUR || Number(counts[3]) > FEEDBACK_PER_ADDRESS_HOUR) {
+      return json({ error: 'rate' }, 429)
+    }
     await exec([
       ['LPUSH', `${P}feedback`, JSON.stringify({ text, at: new Date(now).toISOString() })],
       ['LTRIM', `${P}feedback`, 0, FEEDBACK_KEEP - 1],

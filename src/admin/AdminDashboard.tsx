@@ -358,7 +358,8 @@ function FeedbackList({ items, total }: { items: { text: string; at: string }[];
         <ul className="admin-feedback">
           {items.map((f, i) => (
             <li key={`${f.at}-${i}`} className="admin-feedback-item">
-              <p className="admin-feedback-text">{f.text}</p>
+              {/* dir=auto: رسالةٌ بالإنجليزية تُقرأ من اليسار لا تنقلب علاماتها */}
+              <p className="admin-feedback-text" dir="auto">{f.text}</p>
               <span className="admin-muted admin-small ltr">{when(f.at)}</span>
             </li>
           ))}

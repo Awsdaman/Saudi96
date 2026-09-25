@@ -30,7 +30,18 @@ export function createFakeRedis() {
         return s.size - before
       }
       case 'SCARD': return sets.get(a[0])?.size ?? 0
-      case 'EXPIRE': return 1
+      // صارمٌ عمداً: خيارات EXPIRE (NX/XX/GT/LT) من Redis 7 وحده — مرفوضةٌ هنا
+      // كي لا تمرّ الاختبارات بشيفرةٍ قد تفشل على إصدارٍ أقدم
+      case 'EXPIRE':
+        if (a.length !== 2) throw new Error('fake-redis: EXPIRE options are Redis 7 only')
+        return 1
+      case 'SET': {
+        const [k, v, ...opts] = a
+        const nx = opts.includes('NX')
+        if (nx && strings.has(k)) return null
+        strings.set(k, v)
+        return 'OK'
+      }
       case 'HINCRBY': {
         const h = hash(a[0])
         const v = Number(h.get(a[1]) ?? 0) + Number(a[2])

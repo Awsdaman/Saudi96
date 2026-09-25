@@ -179,12 +179,16 @@ test('player feedback is cleaned, capped, rate-limited, and stored without who s
   for (const bad of ['', '  ', 'ab', 'x'.repeat(1001), 42, null]) assert.equal((await fb(bad)).status, 400)
   assert.equal((await fb('ok text', 'short')).status, 400)
 
-  // 5 في الساعة لكل جهاز، ولكل عنوان حتى لو تبدّل المعرّف
+  // 5 في الساعة لكل جهاز…
   for (let i = 0; i < 4; i++) assert.equal((await fb(`idea ${i}`)).status, 204)
   assert.equal((await fb('one too many')).status, 429)
-  assert.equal((await fb('new device, same address', V2)).status, 429)
-  assert.equal((await fb('another place', V2, '8.8.8.8')).status, 204)
+  // …لكن لاعبٌ آخر على العنوان نفسه (شبكة جوّال مشتركة، قاعة فعالية) يصل
+  assert.equal((await fb('new device, same address', V2)).status, 204)
   assert.equal(redis.lists.get('sk:feedback').length, 6)
+  // والعنوان الواحد حدّه 30 في الساعة، مهما تبدّلت المعرّفات
+  const shared = '5.6.7.8'
+  for (let i = 0; i < 30; i++) assert.equal((await fb(`crowd ${i}`, `device-${String(i).padStart(8, '0')}`, shared)).status, 204)
+  assert.equal((await fb('script', 'device-99999999', shared)).status, 429)
 })
 
 test('the admin dashboard lists feedback newest first, and only with the password', async () => {
