@@ -10,7 +10,7 @@ Songs use the same round-length setup, shuffled questions, streak bonus, results
 
 Guess aloud, press **عرفت الأغنية**, then self-check the revealed title with **إجابتي صحيحة / إجابتي خاطئة**. The artist is optional supplementary information. A wrong self-check ends the question. **لا أعلم** in phase three reveals the answer and records a miss. Clue progression does not break a streak; a final miss does.
 
-Correct answers earn **300 / 200 / 100** base points by phase, multiplied by the existing streak bonus (10% per preceding correct answer, up to 50%). Replays are free and thinking time is unlimited. If audio cannot load, retry or skip it without losing the streak; technical skips are excluded from accuracy. Audio stops when leaving, revealing an answer, opening help, or hiding the page. Use the play button when automatic playback is blocked.
+Correct answers earn **300 / 150 / 50** points by phase (first clip / second clip / famous section). There is no streak bonus. Replays are free and thinking time is unlimited. If audio cannot load, retry or skip it without losing the streak; technical skips are excluded from accuracy. Audio stops when leaving, revealing an answer, opening help, or hiding the page. Use the play button when automatic playback is blocked.
 
 ### Prepare recordings
 

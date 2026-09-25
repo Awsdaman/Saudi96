@@ -52,14 +52,16 @@ test('three phases stay on the same question and only the final give-up scores a
   assert.equal(act(s, 'next').phase, 'results')
 })
 
-test('song points are flat 300 regardless of phase or streak', () => {
-  assert.equal(scoreSong(), 300)
+test('song points drop by phase (300 / 150 / 50) and ignore the streak', () => {
+  const expected = { 1: 300, 2: 150, 3: 50 }
   for (let phase = 1; phase <= 3; phase++) {
+    assert.equal(scoreSong(phase), expected[phase])
     let s = { ...start(), streak: 3 }
     while (s.songPhase < phase) s = act(hear(s), 'song-clue')
     assert.equal(s.streak, 3)
     s = solve(s)
-    assert.equal(s.score, 300)
+    assert.equal(s.score, expected[phase])
+    assert.equal(s.records[0].points, expected[phase])
     assert.equal(s.streak, 4)
     assert.equal(s.records[0].songPhase, phase)
   }

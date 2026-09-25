@@ -89,7 +89,7 @@ export function SongPlay({
           ))}
         </ol>
 
-        {!revealed && <p className="song-potential"><strong className="ltr">{scoreSong()}</strong> نقطة</p>}
+        {!revealed && <p className="song-potential"><strong className="ltr">{scoreSong(phase)}</strong> نقطة</p>}
         <SongAudio key={`${question.id}-${phase}-${revealed}`} src={src} duration={duration}
           enabled={!howTo} onHeard={() => onAction('song-heard', phase)} onError={setFailed} />
 

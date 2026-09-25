@@ -50,7 +50,7 @@ export type Action =
 function finish(state: GameState, correct: boolean, selected: number | null, unavailable = false, discounted = false, revealed = false): GameState {
   const question = state.questions[state.index]
   const points = correct
-    ? question.kind === 'song' ? scoreSong() : scoreAnswer(discounted)
+    ? question.kind === 'song' ? scoreSong(state.songPhase) : scoreAnswer(discounted)
     : 0
   const streak = unavailable ? state.streak : correct ? state.streak + 1 : 0
   return {

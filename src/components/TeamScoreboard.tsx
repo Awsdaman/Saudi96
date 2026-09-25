@@ -9,6 +9,9 @@ interface Props {
   audienceHref?: string
 }
 
+/** خطوة الزرّين: نقاط اللعبة من مضاعفات 50 (300، 150، 50) */
+export const MANUAL_STEP = 50
+
 /** شريطٌ عائم فوق كل الشاشات — النقاط يدويّة، يقرّرها من يستضيف الجلسة */
 export function TeamScoreboard({ teams, onAdjust, audienceHref }: Props) {
   return (
@@ -30,16 +33,16 @@ export function TeamScoreboard({ teams, onAdjust, audienceHref }: Props) {
           <div className="teamscore-controls">
             <button
               className="teamscore-btn"
-              onClick={() => onAdjust(i as 0 | 1, -1)}
-              aria-label={`إنقاص نقطة من ${team.name}`}
+              onClick={() => onAdjust(i as 0 | 1, -MANUAL_STEP)}
+              aria-label={`إنقاص ${MANUAL_STEP} نقطة من ${team.name}`}
             >
               −
             </button>
             <span className="teamscore-value ltr">{team.score}</span>
             <button
               className="teamscore-btn"
-              onClick={() => onAdjust(i as 0 | 1, 1)}
-              aria-label={`نقطة لـ${team.name}`}
+              onClick={() => onAdjust(i as 0 | 1, MANUAL_STEP)}
+              aria-label={`${MANUAL_STEP} نقطة لـ${team.name}`}
             >
               +
             </button>
