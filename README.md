@@ -344,7 +344,8 @@ credits screen says so rather than implying a licence that does not exist.
 | `regions.json` | The 13 regions and their capitals |
 | `dishes.json` | The 13 official regional dishes |
 | `people.json` | 58 people in 8 groups — 24 cabinet members, the 7 kings, the 13 regional governors, 3 astronauts, 4 athletes, 3 musicians, 2 business leaders, 2 historic figures. Each carries a `group` (which pool its distractors come from) and a `factKind` (which second question it generates) |
-| `trivia.json` | 285 questions across 13 categories — geography, regions, history, landmarks, culture & food, nature reserves & wildlife, Vision 2030, economy & energy, sport, notable figures, government, science & tech, heritage & customs |
+| `trivia.json` | 263 questions across 13 categories — geography, regions, history, landmarks, culture & food, nature reserves & wildlife, Vision 2030, economy & energy, sport, notable figures, government, science & tech, heritage & customs |
+| `trivia-hard.json` | Hand-written hard-mode distractors (question id → 3 wrong answers), near-miss traps whose wrongness is certain — e.g. الدرعية for «ما عاصمة المملكة؟». Hard mode uses these first, then closer numbers for plain-number answers, else the normal options. `npm run validate` rejects unknown ids, duplicates, or the correct answer listed as wrong |
 
 Difficulty runs 1–4 as in the research pack: 1 is common knowledge, 4 is the deliberate
 traps (jareesh not kabsa as the national dish; Sakaka as Al-Jawf's capital; the

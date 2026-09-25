@@ -30,6 +30,18 @@ for (const q of trivia) {
   if (!q.explanation) warn.push(`${q.id}: بلا شرح`)
 }
 
+// ── مموّهات النمط الصعب المكتوبة يدوياً ──
+// ثلاثٌ بالضبط، مختلفة، ولا واحدة منها الإجابة الصحيحة نفسها
+const triviaHard = read('src/data/trivia-hard.json')
+for (const [id, wrong] of Object.entries(triviaHard)) {
+  const q = trivia.find((t) => t.id === id)
+  if (!q) { fail(`trivia-hard: لا سؤال بالمعرّف ${id}`); continue }
+  if (!Array.isArray(wrong) || wrong.length !== 3) fail(`trivia-hard ${id}: يجب ثلاثة مموّهات`)
+  else if (new Set(wrong).size !== 3) fail(`trivia-hard ${id}: مموّهات مكررة`)
+  if (wrong?.some((w) => typeof w !== 'string' || !w.trim())) fail(`trivia-hard ${id}: مموّهٌ فارغ`)
+  if (wrong?.includes(q.options[q.answerIndex])) fail(`trivia-hard ${id}: الإجابة الصحيحة بين المموّهات`)
+}
+
 // ── الجهات ──
 const entIds = new Set()
 for (const e of entities) {

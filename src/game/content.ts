@@ -4,6 +4,7 @@ import regionsRaw from '../data/regions.json'
 import dishesRaw from '../data/dishes.json'
 import peopleRaw from '../data/people.json'
 import triviaRaw from '../data/trivia.json'
+import triviaHardRaw from '../data/trivia-hard.json'
 import songsRaw from '../data/songs.json'
 import { shuffle } from './engine'
 import type { Difficulty, Entity, PlayMode, Question, RoundMeta, Song, SongQuestion } from './types'
@@ -249,16 +250,20 @@ export function dishQuestions(): Question[] {
 }
 
 /**
- * النمط الصعب — حصراً للأسئلة التي إجابتها عددٌ صحيحٌ بسيط («كم دولة
- * تشترك مع السعودية بحدود برية؟» = ٧): مموّهاتٌ أقرب رقمياً (٦،٨،٥،٩...)
- * بدل خيارات السؤال الأصلية المتباعدة أحياناً. جُرِّبت أولاً استعارة
- * إجاباتٍ صحيحةٍ من أسئلةٍ أخرى بالتصنيف نفسه، فجاءت مموّهاتٌ لا معنى
- * لها كخيار («صحراوي حار» أمام سؤال العاصمة) لغياب تصنيفٍ دلاليٍّ أدقّ
- * من «التصنيف» العام في البيانات؛ الأمان أولى من التغطية الكاملة هنا،
- * فبقيت الأسئلة غير العددية بخياراتها المعتادة في كل الأنماط.
+ * النمط الصعب للأسئلة المعرفية، بالترتيب:
+ *  1. مموّهاتٌ مكتوبةٌ يدوياً في trivia-hard.json — أفخاخٌ قريبة موثوقٌ
+ *     خطؤها (الدرعية أمام «عاصمة المملكة»، 22 سبتمبر أمام اليوم الوطني).
+ *  2. للإجابة العددية البسيطة («كم دولة...؟» = ٧): أعدادٌ أقرب (٦، ٨، ٥...).
+ *  3. غير ذلك: الخيارات المعتادة، وهي أصلاً متقاربةٌ في أغلب البنك.
+ * جُرِّبت قبلها استعارة إجاباتٍ من أسئلةٍ أخرى بالتصنيف نفسه آلياً،
+ * فجاءت مموّهاتٌ بلا معنى («صحراوي حار» أمام سؤال العاصمة).
  */
+const triviaHard = triviaHardRaw as Record<string, string[]>
+
 function triviaHardOptions(t: Trivia): { hardOptions: string[]; hardAnswerIndex: number } | Record<string, never> {
   const correct = t.options[t.answerIndex]
+  const curated = triviaHard[t.id]
+  if (curated) return { hardOptions: [correct, ...curated], hardAnswerIndex: 0 }
   if (!/^\d+$/.test(correct.trim())) return {}
   const n = Number(correct)
   const used = new Set(t.options.map((o) => Number(o)).filter((x) => !Number.isNaN(x)))
